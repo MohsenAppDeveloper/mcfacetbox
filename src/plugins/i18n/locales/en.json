@@ -173,6 +173,9 @@
         "delimiter": "delimiter"
       }
     },
+    "dataIterator": {
+      "loadingText": "loading..."
+    },
     "dataFooter": {
       "itemsPerPageText": "Items per page:",
       "itemsPerPageAll": "All",

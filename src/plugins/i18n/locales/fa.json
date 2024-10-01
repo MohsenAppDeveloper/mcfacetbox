@@ -1,12 +1,29 @@
 {
+    "validatorrequired": "*ورود اطلاعات این قسمت اجباری میباشد",
+    "validatoremail": "آدرس ایمیل صحیح نمیباشد",
+    "active": "فعال",
+    "description": "توضیحات",
+    "usertype": "نوع کاربری",
+    "nameandfamily": "نام و نام خانوادگی",
+    "email": "پست الکترونیک",
+    "mobilenumber": "شماره همراه",
+    "gateaddeditsubtitle": "اطلاعات مورد نظر برای درگاه را وارد نمایید",
+    "gatetitle": "عنوان درگاه",
+    "gateaddedit": "افزودن / ویرایش درگاه",
     "userManagement": "مدیریت کاربران",
     "gateManagement": "مدیریت درگاه",
     "projectManagement": "مدیریت پروژه",
     "workReport": "گزارش عملکرد",
     "AppName": "مسیر",
-    "Register v1": "ثبت‌نام v1",
-    "Register v2": "ثبت‌نام v2",
-    "Register": "ثبت‌نام",
+    "Register v1": "ثبت‌ نام v1",
+    "Register v2": "ثبت‌ نام v2",
+    "Register": "ثبت‌ نام",
+    "Show": "نمایش",
+    "to": "تا",
+    "of": "از",
+    "entries": "مورد",
+    "accept": "تایید",
+    "cancel": "انصراف",
     "Forget Password v1": "فراموشی رمز عبور v1",
     "Forget Password v2": "فراموشی رمز عبور v2",
     "Forgot Password v1": "رمز عبور را فراموش کرده‌ام v1",
@@ -113,6 +130,9 @@
             "ariaLabel": {
                 "delimiter": "تفکیک‌ کننده"
             }
+        },
+        "dataIterator": {
+            "loadingText": "در حال بارگذاری..."
         },
         "dataFooter": {
             "itemsPerPageText": "موارد در هر صفحه:",

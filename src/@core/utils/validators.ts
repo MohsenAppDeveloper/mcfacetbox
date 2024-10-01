@@ -1,24 +1,26 @@
-import { isEmpty, isEmptyArray, isNullOrUndefined } from './helpers'
+import { isEmpty, isEmptyArray, isNullOrUndefined } from './helpers';
 
 // 👉 Required Validator
-export const requiredValidator = (value: unknown) => {
-  if (isNullOrUndefined(value) || isEmptyArray(value) || value === false)
-    return 'This field is required'
+export const requiredValidator = (value: unknown, errormessage: string) => {
 
-  return !!String(value).trim().length || 'This field is required'
+  if (isNullOrUndefined(value) || isEmptyArray(value) || value === false)
+    return errormessage
+
+  return !!String(value).trim().length || errormessage
+  // 'This field is required'
 }
 
 // 👉 Email Validator
-export const emailValidator = (value: unknown) => {
+export const emailValidator = (value: unknown, errormessage: string) => {
   if (isEmpty(value))
     return true
 
   const re = /^(?:[^<>()[\]\\.,;:\s@"]+(?:\.[^<>()[\]\\.,;:\s@"]+)*|".+")@(?:\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\]|(?:[a-z\-\d]+\.)+[a-z]{2,})$/i
 
   if (Array.isArray(value))
-    return value.every(val => re.test(String(val))) || 'The Email field must be a valid email'
+    return value.every(val => re.test(String(val))) || errormessage
 
-  return re.test(String(value)) || 'The Email field must be a valid email'
+  return re.test(String(value)) || errormessage
 }
 
 // 👉 Password Validator

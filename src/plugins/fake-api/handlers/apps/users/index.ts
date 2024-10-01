@@ -1,9 +1,9 @@
+import { paginateArray } from '@api-utils/paginateArray'
+import { db } from '@db/apps/users/db'
 import is from '@sindresorhus/is'
 import destr from 'destr'
 import type { PathParams } from 'msw'
 import { HttpResponse, http } from 'msw'
-import { db } from '@db/apps/users/db'
-import { paginateArray } from '@api-utils/paginateArray'
 
 export const handlerAppsUsers = [
   // Get Users Details
@@ -90,17 +90,17 @@ export const handlerAppsUsers = [
       }
     }
 
-    const totalUsers = filteredUsers.length
+    const totalItems = filteredUsers.length
 
     // total pages
-    const totalPages = Math.ceil(totalUsers / itemsPerPageLocal)
+    const totalPages = Math.ceil(totalItems / itemsPerPageLocal)
 
     return HttpResponse.json(
       {
-        users: paginateArray(filteredUsers, itemsPerPageLocal, pageLocal),
+        items: paginateArray(filteredUsers, itemsPerPageLocal, pageLocal),
         totalPages,
-        totalUsers,
-        page: pageLocal > Math.ceil(totalUsers / itemsPerPageLocal) ? 1 : page,
+        totalItems,
+        page: pageLocal > Math.ceil(totalItems / itemsPerPageLocal) ? 1 : page,
       },
       { status: 200 },
     )

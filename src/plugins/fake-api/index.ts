@@ -41,6 +41,7 @@ export default function () {
   const workerUrl = `${import.meta.env.BASE_URL ?? '/'}mockServiceWorker.js`
 
   worker.start({
+    quiet: true,
     serviceWorker: {
       url: workerUrl,
     },

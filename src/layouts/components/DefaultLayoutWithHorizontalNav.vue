@@ -5,7 +5,6 @@ import { themeConfig } from '@themeConfig'
 
 // Components
 import { VNodeRenderer } from '@/@layouts/components/VNodeRenderer'
-import Footer from '@/layouts/components/Footer.vue'
 import NavBarNotifications from '@/layouts/components/NavBarNotifications.vue'
 import NavSearchBar from '@/layouts/components/NavSearchBar.vue'
 import NavbarShortcuts from '@/layouts/components/NavbarShortcuts.vue'
@@ -63,9 +62,9 @@ watch([isFallbackStateActive, refLoadingIndicator], () => {
     </RouterView>
 
     <!-- 👉 Footer -->
-    <template #footer>
+    <!-- <template #footer>
       <Footer />
-    </template>
+    </template> -->
 
     <!-- 👉 Customizer -->
     <TheCustomizer />

@@ -24,16 +24,12 @@ const updatePage = (value: number) => {
 
     <div class="d-flex align-center justify-sm-space-between justify-center flex-wrap gap-3 px-6 py-3">
       <p class="text-disabled mb-0">
-        {{ paginationMeta({ page, itemsPerPage }, totalItems) }}
+        {{ paginationMeta({ page, itemsPerPage }, totalItems, $t("Show"), $t("to"), $t("of"), $t("entries")) }}
       </p>
 
-      <VPagination
-        :model-value="page"
-        active-color="primary"
-        :length="Math.ceil(totalItems / itemsPerPage)"
+      <VPagination :model-value="page" active-color="primary" :length="Math.ceil(totalItems / itemsPerPage)"
         :total-visible="$vuetify.display.xs ? 1 : Math.min(Math.ceil(totalItems / itemsPerPage), 5)"
-        @update:model-value="updatePage"
-      />
+        @update:model-value="updatePage" />
     </div>
   </div>
 </template>

@@ -9,6 +9,8 @@ export const useApi = createFetch({
     },
   },
   options: {
+    // immediate: false,
+    updateDataOnError: true,
     refetch: true,
     async beforeFetch({ options }) {
       const accessToken = useCookie('accessToken').value
@@ -33,7 +35,7 @@ export const useApi = createFetch({
         parsedData = destr(data)
       }
       catch (error) {
-        console.error(error)
+        console.error('afterfetcherror', error)
       }
 
       return { data: parsedData, response }

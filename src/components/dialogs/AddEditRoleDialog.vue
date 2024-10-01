@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { VForm } from 'vuetify/components/VForm'
+import { VForm } from 'vuetify/components/VForm';
 
 interface Permission {
   name: string
@@ -169,11 +169,8 @@ const onReset = () => {
 </script>
 
 <template>
-  <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : 900"
-    :model-value="props.isDialogVisible"
-    @update:model-value="onReset"
-  >
+  <VDialog :width="$vuetify.display.smAndDown ? 'auto' : 900" :model-value="props.isDialogVisible"
+    @update:model-value="onReset">
     <!-- 👉 Dialog close btn -->
     <DialogCloseBtn @click="onReset" />
 
@@ -190,11 +187,7 @@ const onReset = () => {
         <!-- 👉 Form -->
         <VForm ref="refPermissionForm">
           <!-- 👉 Role name -->
-          <AppTextField
-            v-model="role"
-            label="Role Name"
-            placeholder="Enter Role Name"
-          />
+          <AppTextField v-model="role" label="Role Name" placeholder="Enter Role Name" />
 
           <h5 class="text-h5 my-6">
             Role Permissions
@@ -212,20 +205,13 @@ const onReset = () => {
               </td>
               <td colspan="3">
                 <div class="d-flex justify-end">
-                  <VCheckbox
-                    v-model="isSelectAll"
-                    v-model:indeterminate="isIndeterminate"
-                    label="Select All"
-                  />
+                  <VCheckbox v-model="isSelectAll" v-model:indeterminate="isIndeterminate" label="Select All" />
                 </div>
               </td>
             </tr>
 
             <!-- 👉 Other permission loop -->
-            <template
-              v-for="permission in permissions"
-              :key="permission.name"
-            >
+            <template v-for="permission in permissions" :key="permission.name">
               <tr>
                 <td>
                   <h6 class="text-h6">
@@ -234,26 +220,17 @@ const onReset = () => {
                 </td>
                 <td>
                   <div class="d-flex justify-end">
-                    <VCheckbox
-                      v-model="permission.read"
-                      label="Read"
-                    />
+                    <VCheckbox v-model="permission.read" label="Read" />
                   </div>
                 </td>
                 <td>
                   <div class="d-flex justify-end">
-                    <VCheckbox
-                      v-model="permission.write"
-                      label="Write"
-                    />
+                    <VCheckbox v-model="permission.write" label="Write" />
                   </div>
                 </td>
                 <td>
                   <div class="d-flex justify-end">
-                    <VCheckbox
-                      v-model="permission.create"
-                      label="Create"
-                    />
+                    <VCheckbox v-model="permission.create" label="Create" />
                   </div>
                 </td>
               </tr>
@@ -266,11 +243,7 @@ const onReset = () => {
               Submit
             </VBtn>
 
-            <VBtn
-              color="secondary"
-              variant="tonal"
-              @click="onReset"
-            >
+            <VBtn color="secondary" variant="tonal" @click="onReset">
               Cancel
             </VBtn>
           </div>
