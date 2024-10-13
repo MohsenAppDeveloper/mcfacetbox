@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppSearchHeaderBg from '@images/pages/app-search-header-bg.png'
+import AppSearchHeaderBg from '@images/pages/app-search-header-bg.png';
 
 interface Props {
   title?: string
@@ -22,34 +22,22 @@ const props = withDefaults(defineProps<Props>(), {
 
 <template>
   <!-- 👉 Search Banner  -->
-  <VCard
-    flat
-    class="text-center search-header"
-    :class="props.customClass"
-    :style="`background: url(${AppSearchHeaderBg});`"
-  >
+  <VCard flat class="text-center search-header" :class="props.customClass"
+    :style="`background: url(${AppSearchHeaderBg});`">
     <VCardText>
       <slot name="title">
         <h4 class="text-h4 mb-2 font-weight-medium">
           {{ props.title }}
         </h4>
       </slot>
-      <div
-        class="d-flex"
-        :class="isReverse ? 'flex-column' : 'flex-column-reverse' "
-      >
+      <div class="d-flex" :class="isReverse ? 'flex-column' : 'flex-column-reverse'">
         <p class="mb-0">
           {{ props.subtitle }}
         </p>
         <!-- 👉 Search Input -->
         <div>
-          <AppTextField
-            v-bind="$attrs"
-            class="search-header-input mx-auto my-4"
-            :placeholder="props.placeholder"
-            :density="props.density"
-            prepend-inner-icon="tabler-search"
-          />
+          <AppTextField v-bind="$attrs" class="search-header-input mx-auto my-4" :placeholder="props.placeholder"
+            :density="props.density" prepend-inner-icon="tabler-search" />
         </div>
       </div>
     </VCardText>

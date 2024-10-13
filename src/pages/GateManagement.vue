@@ -1,8 +1,9 @@
 <script setup lang="ts">
 //!SECTION این فرم برای مدیریت پنل ها در این سامانه میباشد
+import MCInputDatePicker from '@/components/MCInputDatePicker.vue';
 import type { UserProperties } from '@db/apps/users/types';
+
 import { FetchError } from 'ofetch';
-import { VBtn } from 'vuetify/lib/components/index.mjs';
 class GridResult<T> {
     page = 0;
     totalPages = 0;
@@ -15,11 +16,16 @@ const searchQuery = ref('')
 const selectedRole = ref()
 const selectedPlan = ref()
 const selectedStatus = ref()
+// const dealDuration = ref()
+// selecteddate.value = new Date()
 // Data table options
 const itemsPerPage = ref(10)
 const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
+const currentdate = ref('');
+
+// selecteddate.value = new Date().toISOString().substring(0, 10);
 // Update data table options
 const updateOptions = (options: any) => {
     sortBy.value = options.sortBy[0]?.key
@@ -60,11 +66,11 @@ try {
 //     immediate: false,
 // }
 // )
-// watch(loadingdata, async (newdata, olddata) => {
-//     console.log('newdata', newdata);
-//     console.log('olddata', olddata);
+watch(currentdate, async (newdata, olddata) => {
+    console.log('newcurrentDate', newdata);
+    console.log('oldcurrentDate', olddata);
 
-// })
+})
 onFetchResponse((response) => {
     console.log('hasresponse', response)
 })
@@ -172,12 +178,26 @@ const deleteUser = async (id: number) => {
     <section>
         <VCard>
             <VCardText class="d-flex flex-wrap gap-4">
-                <div class="d-flex gap-2 align-center">
-                    <VBtn @click="clickbutton">
+
+                <div class="d-flex align-center flex-wrap gap-4 ma-2">
+                    <!-- 👉 Search  -->
+                    <AppTextField v-model="searchQuery" :placeholder="$t('gatesearchtitle')"
+                        style="inline-size: 15.625rem;" />
+
+                    <!-- 👉 Add user button -->
+                    <AppSelect v-model="selectedRole" placeholder="Select Role" :items="roles" clearable
+                        clear-icon="tabler-x" style="inline-size: 10rem;" />
+                    <MCInputDatePicker v-model:selected-date="currentdate"></MCInputDatePicker>
+
+                    <VSpacer />
+                </div>
+
+                <div class="d-flex gap-2 align-center ma-2 ms-auto ">
+                    <!-- <VBtn @click="clickbutton">
                         TestLoad
-                    </VBtn>
+                    </VBtn> -->
                     <p class="text-body-1 mb-0">
-                        Show
+                        {{ $t('Show') }}
                     </p>
                     <AppSelect :model-value="itemsPerPage" :items="[
                         { value: 10, title: '10' },
@@ -186,17 +206,6 @@ const deleteUser = async (id: number) => {
                         { value: 100, title: '100' },
                         { value: -1, title: 'All' },
                     ]" style="inline-size: 5.5rem;" @update:model-value="itemsPerPage = parseInt($event, 10)" />
-                </div>
-
-                <VSpacer />
-
-                <div class="d-flex align-center flex-wrap gap-4">
-                    <!-- 👉 Search  -->
-                    <AppTextField v-model="searchQuery" placeholder="Search User" style="inline-size: 15.625rem;" />
-
-                    <!-- 👉 Add user button -->
-                    <AppSelect v-model="selectedRole" placeholder="Select Role" :items="roles" clearable
-                        clear-icon="tabler-x" style="inline-size: 10rem;" />
                 </div>
             </VCardText>
 
@@ -306,6 +315,6 @@ const deleteUser = async (id: number) => {
         </VCard>
 
         <!-- 👉 Add New User -->
-        <AddGateDialog v-model:is-dialog-visible="isAddNewGateDialogVisible" @user-data="addNewUser" />
+        <MCDialogGateAdd v-model:is-dialog-visible="isAddNewGateDialogVisible" @user-data="addNewUser" />
     </section>
 </template>

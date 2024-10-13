@@ -1,4 +1,8 @@
+import { getI18n } from '@/plugins/i18n/index'
 import { deepMerge } from '@antfu/utils'
+import JalaaliAdapter from '@date-io/jalaali'
+import { themeConfig } from '@themeConfig'
+import jMoment from 'moment-jalaali'
 import type { App } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { createVuetify } from 'vuetify'
@@ -7,13 +11,13 @@ import { createVueI18nAdapter } from 'vuetify/locale/adapters/vue-i18n'
 import defaults from './defaults'
 import { icons } from './icons'
 import { staticPrimaryColor, staticPrimaryDarkenColor, themes } from './theme'
-import { getI18n } from '@/plugins/i18n/index'
-import { themeConfig } from '@themeConfig'
-
 // Styles
 import { cookieRef } from '@/@layouts/stores/config'
 import '@core/scss/template/libs/vuetify/index.scss'
 import 'vuetify/styles'
+
+
+
 
 export default function (app: App) {
   const cookieThemeValues = {
@@ -33,13 +37,23 @@ export default function (app: App) {
       },
     },
   }
+  jMoment.loadPersian({ dialect: 'persian-modern', usePersianDigits: true })
 
+  let date = {
+    adapter: JalaaliAdapter,
+    formats: {
+      normalDateWithWeekday: 'jD jMMMM',
+      monthShort: 'jMMMM',
+      // dayOfMonth: date => date.getDate(),
+    },
+  }
   const optionTheme = deepMerge({ themes }, cookieThemeValues)
 
   const vuetify = createVuetify({
     aliases: {
       IconBtn: VBtn,
     },
+    date,
     defaults,
     icons,
     theme: optionTheme,

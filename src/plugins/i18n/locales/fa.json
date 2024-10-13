@@ -12,6 +12,7 @@
     "gateaddedit": "افزودن / ویرایش درگاه",
     "userManagement": "مدیریت کاربران",
     "gateManagement": "مدیریت درگاه",
+    "gatesearchtitle": "جستجوی درگاه",
     "projectManagement": "مدیریت پروژه",
     "workReport": "گزارش عملکرد",
     "AppName": "مسیر",
@@ -126,10 +127,18 @@
         "close": "بستن",
         "open": "باز کردن",
         "loading": "در حال بارگذاری",
+        "confirmEdit": {
+            "ok": "تایید",
+            "cancel": "انصراف"
+        },
         "carousel": {
             "ariaLabel": {
                 "delimiter": "تفکیک‌ کننده"
             }
+        },
+        "datePicker": {
+            "header": "تاریخ امروز",
+            "title": "تاریخ را انتخاب کنید"
         },
         "dataIterator": {
             "loadingText": "در حال بارگذاری..."

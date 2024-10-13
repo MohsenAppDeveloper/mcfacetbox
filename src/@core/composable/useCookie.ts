@@ -23,21 +23,39 @@ const CookieDefaults: CookieOptions<any> = {
 }
 
 export const useCookie = <T = string | null | undefined>(name: string, _opts?: CookieOptions<T>): CookieRef<T> => {
-  const opts = { ...CookieDefaults, ..._opts || {} }
-  const cookies = parse(document.cookie, opts)
+  try {
 
-  const cookie = ref<T | undefined>(cookies[name] as any ?? opts.default?.())
+    const opts = { ...CookieDefaults, ..._opts || {} }
+    const cookies = parse(document.cookie, opts)
 
-  watch(cookie, () => {
-    document.cookie = serializeCookie(name, cookie.value, opts)
-  })
+    const cookie = ref<T | undefined>(cookies[name] as any ?? opts.default?.())
 
-  return cookie as CookieRef<T>
+    watch(cookie, () => {
+      document.cookie = serializeCookie(name, cookie.value, opts)
+    })
+
+    return cookie as CookieRef<T>
+  } catch (error) {
+    console.error('usecookie', error);
+
+    return {} as CookieRef<T>
+  }
+
 }
 
 function serializeCookie(name: string, value: any, opts: CookieSerializeOptions = {}) {
-  if (value === null || value === undefined)
-    return serialize(name, value, { ...opts, maxAge: -1 })
+  try {
+    if (value === null || value === undefined)
+      return serialize(name, value, { ...opts, maxAge: -1 })
 
-  return serialize(name, value, opts)
+    return serialize(name, value, opts)
+  } catch (error) {
+    // console.trace('serialaize', name);
+    // console.error('serialaize', value);
+    // console.error('serialaize', opts);
+    console.error('serialize', error);
+
+    return ''
+  }
+
 }
