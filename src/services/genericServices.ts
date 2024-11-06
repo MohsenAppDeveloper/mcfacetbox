@@ -9,8 +9,8 @@ export async function serviceAdd<T extends BodyInit | Record<string, any>>(dataM
             method: 'POST',
             body: JSON.parse(JSON.stringify(dataModel)),
             ignoreResponseError: false
-        }).then((responce) => {
-            serviceData.value = responce.body
+        }).then((response) => {
+            serviceData.value = response.body
         }, (error) => {
             const temp = (error as FetchError)
             serviceError.value = temp.message
@@ -27,8 +27,7 @@ export async function serviceUpdate<T extends BodyInit | Record<string, any>>(da
     const serviceData = ref(0)
     const serviceError = ref('')
     try {
-
-        await $api(serviceUrl + entityId, {
+        await $api((serviceUrl + "/").replace("//", "/") + entityId, {
             method: 'PUT',
             body: JSON.parse(JSON.stringify(dataModel)),
             ignoreResponseError: false
@@ -47,17 +46,20 @@ export async function serviceUpdate<T extends BodyInit | Record<string, any>>(da
 }
 
 export async function serviceDelete(id: number, serviceUrl: string) {
-    const data = ref(null)
-    const error = ref(null)
-    await $api(serviceUrl + id, {
-        method: 'DELETE',
-    }).then((responce) => {
-        data.value = responce.body
-    }, (error) => {
-        const temp = (error as FetchError)
-        error.value = temp.message
-    }).catch((error) => {
-        error.value = error.data
+    const serviceData = ref()
+    const serviceError = ref()
+
+    await $api((serviceUrl + "/").replace("//", "/") + id, {
+        method: 'DELETE', parseResponse: JSON.parse,
+        onResponse({ request, response, options }) {
+            serviceData.value = response
+            // console.log("[fetch response]", request, response.status, response._data.body);
+        }, onResponseError({ response }) {
+            serviceError.value = response._data.errors
+        }
+    }
+    ).catch((error) => {
+        serviceError.value = error.data
     })
-    return { data, error }
+    return { serviceData, serviceError }
 }

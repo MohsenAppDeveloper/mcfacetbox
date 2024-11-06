@@ -2,7 +2,7 @@
 //!SECTION این دیالوگ برای افزودن و یا ویرایش یک پنل یا درگاه کاربری میباشد
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import AppTextarea from '@/@core/components/app-form-elements/AppTextarea.vue';
-import { serviceAdd } from '@/services/genericServices';
+import { serviceAdd, serviceUpdate } from '@/services/genericServices';
 import { GateModel, GateProperties } from '@/types/gate';
 import { useToast } from "vue-toastification";
 import type { VForm } from 'vuetify/components/VForm';
@@ -14,29 +14,27 @@ const toast = useToast();
 interface Emit {
     (e: 'update:isDialogVisible', value: boolean): void
     (e: 'gateDataAdded', value: number): void
+    (e: 'gateDataUpdated', value: number): void
+
 }
 
-interface Props {
-    isDialogVisible: boolean
-    gateApiUrl: string
-}
-
-const props = defineProps<Props>()
+const props = defineProps({
+    isDialogVisible: Boolean,
+    gateApiUrl: String,
+})
 const emit = defineEmits<Emit>()
 
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
 const isactive = ref(true)
-const email = ref('')
 const isloading = ref(false)
-let gateModel = reactive<GateModel>(new GateModel())
-
+let gateData = ref<GateProperties>(new GateModel())
 
 async function gateAdd() {
 
-    const { serviceData, serviceError } = await serviceAdd<GateProperties>(gateModel, props.gateApiUrl)
+    const { serviceData, serviceError } = await serviceAdd<GateProperties>(gateData.value, props.gateApiUrl == undefined ? '' : props.gateApiUrl)
     if (serviceData.value) {
-        toast.success(t("dateinsertsuccess"));
+        toast.success(t("dataActionSuccess"));
         emit('gateDataAdded', serviceData.value)
         emit('update:isDialogVisible', false)
         nextTick(() => {
@@ -45,7 +43,26 @@ async function gateAdd() {
         })
     }
     else if (serviceError.value) {
-        toast.error(t("datainsertfaild"));
+        toast.error(t("dataActionFailed"));
+    }
+}
+
+async function gateEdit() {
+
+    const { serviceData, serviceError } = await serviceUpdate<GateProperties>(gateData.value, gateData.value.id, props.gateApiUrl == undefined ? '' : props.gateApiUrl)
+    console.log('gateedit', serviceData.value, serviceError.value);
+
+    if (serviceData.value) {
+        toast.success(t("alert.dataActionSuccess"));
+        emit('gateDataUpdated', serviceData.value)
+        emit('update:isDialogVisible', false)
+        nextTick(() => {
+            refForm.value?.reset()
+            refForm.value?.resetValidation()
+        })
+    }
+    else if (serviceError.value) {
+        toast.error(t("alert.dataActionFailed"));
     }
 }
 const onSubmit = () => {
@@ -54,7 +71,11 @@ const onSubmit = () => {
             isloading.value = true
             setTimeout(() => {
                 isloading.value = false
-                gateAdd()
+                if (gateData.value.id > 0) {
+                    gateEdit()
+                }
+                else
+                    gateAdd()
             }, 3000);
             return;
         }
@@ -65,6 +86,14 @@ const onReset = () => {
     emit('update:isDialogVisible', false)
     refForm.value?.reset()
 }
+
+const updateGate = (gateDataItem: GateProperties) => {
+    console.log('updategate', gateDataItem);
+    gateData.value = gateDataItem;
+}
+
+
+defineExpose({ updateGate })
 </script>
 
 <template>
@@ -73,30 +102,30 @@ const onReset = () => {
         <!-- 👉 Dialog close btn -->
         <DialogCloseBtn @click="onReset" :disabled="isloading" />
         <!-- <PerfectScrollbar :options="{ wheelPropagation: false }"> -->
-        <VCard flat :title="$t('gateaddedit')" :subtitle="$t('gateaddeditsubtitle')">
+        <VCard flat :title="$t('gate.addedit')" :subtitle="$t('gate.addeditsubtitle')">
             <VCardText>
                 <!-- 👉 Form -->
                 <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
                     <VRow>
                         <!-- 👉 Gate Title-->
                         <VCol cols="12">
-                            <AppTextField v-model="gateModel.gateTitle"
-                                :rules="[requiredValidator(gateModel.gateTitle, $t('validatorrequired'))]"
-                                :label="$t('gatetitle')" placeholder="" />
+                            <AppTextField v-model="gateData.gateTitle"
+                                :rules="[requiredValidator(gateData.gateTitle, $t('validatorrequired'))]"
+                                :label="$t('gate.title')" placeholder="" />
                         </VCol>
 
                         <VCol cols="12">
                             <VRow>
                                 <!-- 👉 Contact -->
                                 <VCol cols="12" sm="6">
-                                    <AppTextField v-model="gateModel.contact" type="number"
-                                        :rules="[requiredValidator(gateModel.contact, $t('validatorrequired'))]"
+                                    <AppTextField v-model="gateData.contact" type="number"
+                                        :rules="[requiredValidator(gateData.contact, $t('validatorrequired'))]"
                                         :label="$t('mobilenumber')" placeholder="09xx-xxx-xx-xx" />
                                 </VCol>
                                 <!-- 👉 Email -->
                                 <VCol cols="12" sm="6">
-                                    <AppTextField v-model="gateModel.email"
-                                        :rules="[requiredValidator(gateModel.email, $t('validatorrequired')), emailValidator(gateModel.email, $t('validatoremail'))]"
+                                    <AppTextField v-model="gateData.email"
+                                        :rules="[requiredValidator(gateData.email, $t('validatorrequired')), emailValidator(gateData.email, $t('validatoremail'))]"
                                         :label="$t('email')" placeholder="ٍE-mail" />
                                 </VCol>
                             </VRow>
@@ -106,15 +135,15 @@ const onReset = () => {
                             <VRow>
                                 <!-- 👉 Name -->
                                 <VCol sm="6" cols="12">
-                                    <AppTextField v-model="gateModel.nameFamily"
-                                        :rules="[requiredValidator(gateModel.nameFamily, $t('validatorrequired'))]"
+                                    <AppTextField v-model="gateData.nameFamily"
+                                        :rules="[requiredValidator(gateData.nameFamily, $t('validatorrequired'))]"
                                         :label="$t('nameandfamily')" placeholder="" />
                                 </VCol>
                                 <!-- 👉 UserType -->
                                 <VCol sm="4" cols="12">
-                                    <AppSelect v-model="gateModel.userType" :label="$t('usertype')"
+                                    <AppSelect v-model="gateData.userType" :label="$t('usertype')"
                                         placeholder="Select Role"
-                                        :rules="[requiredValidator(gateModel.userType, $t('validatorrequired'))]"
+                                        :rules="[requiredValidator(gateData.userType, $t('validatorrequired'))]"
                                         :items="['Admin', 'Author', 'Editor', 'Maintainer', 'Subscriber']" />
                                 </VCol>
                                 <VCol sm="2" cols="12" align-self="end">
@@ -124,7 +153,7 @@ const onReset = () => {
                             </VRow>
                         </VCol>
                         <VCol cols="12">
-                            <AppTextarea v-model="gateModel.description" :label="$t('description')"
+                            <AppTextarea v-model="gateData.description" :label="$t('description')"
                                 placeholder="Write note here..." :rows="4" />
                         </VCol>
 

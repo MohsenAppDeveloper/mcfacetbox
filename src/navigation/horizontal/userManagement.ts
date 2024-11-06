@@ -2,14 +2,14 @@
 
 export default [
   {
-    title: "gateManagement",
+    title: "gate.management",
     icon: { icon: "mdi-airplane-takeoff" },
-    to: "dashboards-analytics",
+    to: "gate-management",
   },
   {
-    title: "userManagement",
+    title: "user.management",
     icon: { icon: "mdi-account-outline" },
-    to: "forms-autocomplete",
+    to: "user-role-management",
   },
   {
     title: "projectManagement",

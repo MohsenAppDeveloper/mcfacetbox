@@ -13,7 +13,7 @@ import "vue-toastification/dist/index.css";
 
 
 const options: PluginOptions = {
-    rtl: true, timeout: 30000, position: POSITION.TOP_RIGHT,
+    rtl: true, timeout: 3000, position: POSITION.TOP_RIGHT,
     transition: "Vue-Toastification__fade", hideProgressBar: true
     // You can set your default options here
 };

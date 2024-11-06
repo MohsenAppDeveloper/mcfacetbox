@@ -26,3 +26,8 @@ const configStore = useConfigStore()
     </VApp>
   </VLocaleProvider>
 </template>
+<style lang="css">
+.Vue-Toastification__toast {
+  font-family: 'Vazir' !important;
+}
+</style>

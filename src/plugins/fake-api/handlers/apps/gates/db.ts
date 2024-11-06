@@ -21,7 +21,8 @@ export const db: DB = {
       active: true,
       description: '',
       userType: '',
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     },
     {
       id: 2,
@@ -33,7 +34,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: false,
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     },
     {
       id: 3,
@@ -45,7 +47,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: true,
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     },
     {
       id: 4,
@@ -57,7 +60,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: false,
-      usersavatar: avatar4
+      usersavatar: avatar4,
+      email: ''
     },
     {
       id: 5,
@@ -69,7 +73,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: true,
-      usersavatar: avatar5
+      usersavatar: avatar5,
+      email: ''
     },
     {
       id: 6,
@@ -81,7 +86,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: false,
-      usersavatar: avatar6
+      usersavatar: avatar6,
+      email: ''
     },
     {
       id: 7,
@@ -93,7 +99,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: true,
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     },
     {
       id: 8,
@@ -105,7 +112,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: false,
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     },
     {
       id: 9,
@@ -117,7 +125,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: true,
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     },
     {
       id: 10,
@@ -129,7 +138,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: false,
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     },
     {
       id: 11,
@@ -141,7 +151,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: true,
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     },
     {
       id: 12,
@@ -153,7 +164,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: false,
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     },
     {
       id: 13,
@@ -165,7 +177,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: true,
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     },
     {
       id: 14,
@@ -177,7 +190,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: false,
-      usersavatar: avatar4
+      usersavatar: avatar4,
+      email: ''
     },
     {
       id: 15,
@@ -189,7 +203,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: true,
-      usersavatar: avatar5
+      usersavatar: avatar5,
+      email: ''
     },
     {
       id: 16,
@@ -201,7 +216,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: false,
-      usersavatar: avatar6
+      usersavatar: avatar6,
+      email: ''
     },
     {
       id: 17,
@@ -213,7 +229,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: true,
-      usersavatar: avatar6
+      usersavatar: avatar6,
+      email: ''
     },
     {
       id: 18,
@@ -225,7 +242,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: false,
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     },
     {
       id: 19,
@@ -237,7 +255,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: true,
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     },
     {
       id: 20,
@@ -249,7 +268,8 @@ export const db: DB = {
       description: '',
       userType: '',
       active: false,
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     },
     {
       id: 21,
@@ -261,6 +281,7 @@ export const db: DB = {
       userType: '',
       active: true,
       description: '',
-      usersavatar: avatar1
+      usersavatar: avatar1,
+      email: ''
     }],
 }

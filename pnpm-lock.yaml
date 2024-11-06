@@ -127,6 +127,9 @@ importers:
       vue-router:
         specifier: 4.3.0
         version: 4.3.0(vue@3.4.21(typescript@5.3.3))
+      vue-sweetalert2:
+        specifier: ^5.0.11
+        version: 5.0.11(vue@3.4.21(typescript@5.3.3))
       vue-toastification:
         specifier: 2.0.0-rc.5
         version: 2.0.0-rc.5(vue@3.4.21(typescript@5.3.3))
@@ -4091,6 +4094,9 @@ packages:
     engines: {node: '>=14.0.0'}
     hasBin: true
 
+  sweetalert2@11.4.4:
+    resolution: {integrity: sha512-9yYWQuRT1v9JNI/paPTSYV+68MHwe9C+HQ/I2jtfaFzoJgYRftWXOs4JqmDSjT7m2m4r8ebMMn8LcxD1Wq9B/w==}
+
   swiper@11.0.7:
     resolution: {integrity: sha512-cDfglW1B6uSmB6eB6pNmzDTNLmZtu5bWWa1vak0RU7fOI9qHjMzl7gVBvYSl34b0RU2N11HxxETJqQ5LeqI1cA==}
     engines: {node: '>= 4.7.0'}
@@ -4438,6 +4444,11 @@ packages:
     resolution: {integrity: sha512-e5Obzcy0pWUWl1RJjWclrfTvRALqlB5PFqKjoyVNqql8iyQJ+tK9CXN33EnJdxCeOG694Jwr/XlRdBm5O76eLw==}
     peerDependencies:
       vue: '>=3.0.0'
+
+  vue-sweetalert2@5.0.11:
+    resolution: {integrity: sha512-agujdlcNeLb4Fj0/V3qgR7bEVBN8IzWFoDBP/vrSgbEGl9pjMmxnv32V3lxB0SZtQh6tL6R/UZ+C3q8tzsJbNg==}
+    peerDependencies:
+      vue: '*'
 
   vue-template-compiler@2.7.16:
     resolution: {integrity: sha512-AYbUWAJHLGGQM7+cNTELw+KsOG9nl2CnSv467WobS5Cv9uk3wFcnr1Etsz2sEIHEZvw1U+o9mRlEO6QbZvUPGQ==}
@@ -8810,6 +8821,8 @@ snapshots:
       csso: 5.0.5
       picocolors: 1.0.0
 
+  sweetalert2@11.4.4: {}
+
   swiper@11.0.7: {}
 
   synckit@0.6.2:
@@ -9229,6 +9242,11 @@ snapshots:
   vue-shepherd@3.0.0(vue@3.4.21(typescript@5.3.3)):
     dependencies:
       shepherd.js: 11.2.0
+      vue: 3.4.21(typescript@5.3.3)
+
+  vue-sweetalert2@5.0.11(vue@3.4.21(typescript@5.3.3)):
+    dependencies:
+      sweetalert2: 11.4.4
       vue: 3.4.21(typescript@5.3.3)
 
   vue-template-compiler@2.7.16:

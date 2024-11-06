@@ -1,4 +1,5 @@
-export interface GateProperties {
+
+export interface GateProperties extends Record<string, any> {
     id: number
     gateTitle: string
     contact: string
@@ -13,6 +14,7 @@ export interface GateProperties {
 }
 
 export class GateModel implements GateProperties {
+    [x: string]: any
     id: number = 0
     gateTitle: string = ''
     contact: string = ''
@@ -24,5 +26,23 @@ export class GateModel implements GateProperties {
     userType: string = ''
     usersavatar: string = ''
     description: string = ''
+    isSelected: boolean = false
+    isLoading: boolean = false
+    selectable: boolean = false
+    disabled: boolean = false
+    // [x: string]: any
+    // isSelected = false
+    // isLoading = false
+    // id: number = 0
+    // gateTitle: string = ''
+    // contact: string = ''
+    // nameFamily: string = ''
+    // createDate: string = ''
+    // expireDate: string = ''
+    // active: boolean = false
+    // email: string = ''
+    // userType: string = ''
+    // usersavatar: string = ''
+    // description: string = ''
 
 }

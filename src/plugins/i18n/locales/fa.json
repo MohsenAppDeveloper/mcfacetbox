@@ -7,12 +7,25 @@
     "nameandfamily": "نام و نام خانوادگی",
     "email": "پست الکترونیک",
     "mobilenumber": "شماره همراه",
-    "gateaddeditsubtitle": "اطلاعات مورد نظر برای درگاه را وارد نمایید",
-    "gatetitle": "عنوان درگاه",
-    "gateaddedit": "افزودن / ویرایش درگاه",
+    "gate": {
+        "title": "عنوان درگاه",
+        "addedit": "افزودن / ویرایش درگاه",
+        "delete": "حذف درگاه",
+        "add": "افزودن درگاه",
+        "management": "مدیریت درگاه",
+        "searchTitle": "جستجوی درگاه",
+        "addeditsubtitle": "اطلاعات مورد نظر برای درگاه را وارد نمایید"
+    },
     "userManagement": "مدیریت کاربران",
-    "gateManagement": "مدیریت درگاه",
-    "gatesearchtitle": "جستجوی درگاه",
+    "user": {
+        "add": "افزودن کاربر",
+        "delete": "حذف کاربر",
+        "management": "مدیریت کاربران"
+    },
+    "role": {
+        "add": "افزودن نقش",
+        "delete": "حذف نقش"
+    },
     "createDate": "تاریخ ایجاد",
     "expireDate": "تاریخ انقضاء",
     "status": "وضعیت",
@@ -30,8 +43,6 @@
     "entries": "مورد",
     "accept": "تایید",
     "cancel": "انصراف",
-    "dateinsertsuccess": "عملیات مورد نظر انجام شد",
-    "datainsertfaild": "عملیات مورد نظر با مشکل مواجه شد",
     "Forget Password v1": "فراموشی رمز عبور v1",
     "Forget Password v2": "فراموشی رمز عبور v2",
     "Forgot Password v1": "رمز عبور را فراموش کرده‌ام v1",
@@ -128,6 +139,13 @@
     "25": "۲۵",
     "50": "۵۰",
     "100": "۱۰۰",
+    "alert": {
+        "dataActionSuccess": "عملیات مورد نظر انجام شد",
+        "dataActionFailed": "عملیات مورد نظر با مشکل مواجه شد",
+        "deleteDataSuccess": "حذف مورد نظر انجام شد",
+        "deleteDataFailed": "مشکل در حذف بوجود آمد",
+        "deleteSelectedItem?": "مورد انتخاب شده حذف گردد؟"
+    },
     "$vuetify": {
         "badge": "نشان",
         "noDataText": "هیچ داده‌ای موجود نیست",

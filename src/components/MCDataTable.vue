@@ -1,35 +1,45 @@
 <script lang="ts" setup>
-import { VCardTitle } from 'vuetify/lib/components/index.mjs';
+import { serviceDelete } from '@/services/genericServices';
+import { baseDataTableModel } from '@/types/baseDataTable';
+import Swal from 'sweetalert2';
+import { useToast } from "vue-toastification";
+import { VDataTableServer } from 'vuetify/lib/components/index.mjs';
 
+
+const toast = useToast();
 // const currentdate = ref('');
 
+
 const props = defineProps({
-    headers: Array<object>,
+    headers: Array<any>,
     apiUrl: { type: String, required: true },
     searchLabel: { type: String, default: '' },
-
+    activeDeleteAction: { type: Boolean, default: true },
+    activeEditAction: { type: Boolean, default: true },
 })
-
+interface Emit {
+    (e: 'deletedItem', value: boolean): void
+    (e: 'editItem', value: Record<string, any>): void
+}
+const emit = defineEmits<Emit>()
 // import {useTemplateRef} from vue
 
-class GridResult<T> {
+class GridResult<T extends baseDataTableModel> {
     page = 0
     totalPages = 0
     totalItems = 0
     items: Array<T> = []
 }
 
-// interface Props {
-//     headers: Array<{}>
-//     apiUrl: string
-//     searchLabel: string
-// }
 
 const { t } = useI18n({ useScope: 'global' })
 const searchQuery = ref('')
-const selectedRole = ref()
+const selectedItem = ref<Array<number>>([])
 const selectedPlan = ref()
 const selectedStatus = ref()
+const highlightedItemIndex = ref(0)
+const loadingItemIndex = ref(-1)
+const datatableItems = ref<Array<baseDataTableModel>>([])
 
 const itemsPerPage = ref(10)
 const page = ref(1)
@@ -41,12 +51,11 @@ const updateOptions = (options: any) => {
     orderBy.value = options.sortBy[0]?.order
 }
 
-const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi<GridResult<any>>(createUrl(props.apiUrl, {
+const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi<GridResult<baseDataTableModel>>(createUrl(props.apiUrl, {
     query: {
         q: searchQuery,
         status: selectedStatus,
         plan: selectedPlan,
-        role: selectedRole,
         itemsPerPage,
         page,
         sortBy,
@@ -63,18 +72,19 @@ setTimeout(async () => {
     }
 }, 1000)
 
-// await useApi<GridResult<UserProperties>>(createUrl('/apps/users'),(
-//     options: {
-//     immediate: false,
-// }
-// )
+const datatable = ref(VDataTableServer)
+
 
 onFetchResponse(response => {
     response.json().then(value => {
-        // console.log('hasresponse', value)
-        // datatableItems.value = value.items
-        // console.log('datatableitems', datatableItems.value)
-        // console.log(datatable.value);
+        datatableItems.value.splice(0)
+        resultData.value?.items.forEach((element) => {
+            element.disabled = false
+            element.isLoading = false
+            element.isSelected = false
+            element.selectable = true
+            datatableItems.value.push(element)
+        })
     })
 })
 
@@ -82,21 +92,6 @@ onFetchError(error => {
     // console.log('haserror', error)
 })
 
-const datatableItems = computed((): any[] => {
-    if (resultData.value)
-        return resultData.value.items
-
-    else
-        return new Array<any>()
-})
-
-const datatableTotalItems = computed(() => {
-    if (resultData.value)
-        return resultData.value.totalItems
-
-    else
-        return 0
-})
 
 const searchLabelDefault = computed(() => {
     if (props.searchLabel.length > 0)
@@ -107,18 +102,43 @@ const searchLabelDefault = computed(() => {
 })
 
 const refreshData = () => fetchData(false)
-
-
-// 👉 Delete user
-const deleteUser = async (id: number) => {
-    await $api(`/apps/users/${id}`, {
-        method: 'DELETE',
-    })
-
-    // refetch User
-    // TODO: Make this async
-    // fetchUsers2()
+const updateAction = (dataModel: Record<string, any>) => {
+    emit("editItem", dataModel)
 }
+
+const deleteAction = async (item: baseDataTableModel, index: number) => {
+
+    selectedItem.value.push(item.id);
+    Swal.fire({
+        titleText: t('alert.deleteSelectedItem?'), confirmButtonText: t('$vuetify.confirmEdit.ok'), cancelButtonText: t('$vuetify.confirmEdit.cancel'), showConfirmButton: true, showCancelButton: true, showLoaderOnConfirm: true, showCloseButton: true,
+        preConfirm: async () => {
+            const { serviceData, serviceError } = await serviceDelete(item.id, props.apiUrl); console.log('insidemethod', serviceData.value, serviceError.value);
+            return { serviceData, serviceError }
+        },
+        allowOutsideClick: false
+    }).then((value) => {
+        if (value.isConfirmed) {
+            console.log('deletevalue', value);
+
+            if (value.value?.serviceError.value) {
+                toast.error(t('alert.deleteDataFailed'));
+                emit("deletedItem", false)
+
+            }
+            if (value.value?.serviceData.value) {
+                refreshData()
+                toast.success(t('alert.deleteDataSuccess'));
+                emit("deletedItem", true)
+            }
+            selectedItem.value.splice(index, 1)
+        }
+    })
+    return
+
+}
+const updateHighlightedItem = (index: number) => {
+    highlightedItemIndex.value = index; // به‌روزرسانی ایندکس هایلایت شده  
+};
 defineExpose({ refreshData })
 
 </script>
@@ -159,61 +179,40 @@ defineExpose({ refreshData })
             <VDivider />
 
             <!-- SECTION datatable -->
-            <VDataTableServer ref="datatable" v-model:items-per-page="itemsPerPage" v-model:page="page"
-                :items-per-page-options="[
+            <VDataTableServer ref="datatable" v-model="selectedItem" item-selectable="selectable"
+                v-model:items-per-page="itemsPerPage" v-model:page="page" :items-per-page-options="[
                     { value: 10, title: '10' },
                     { value: 20, title: '20' },
                     { value: 50, title: '50' },
                     { value: -1, title: '$vuetify.dataFooter.itemsPerPageAll' },
-                ]" :items="datatableItems" :items-length="datatableTotalItems" :headers="headers" class="text-no-wrap"
-                show-select :loading="loadingdata" @update:options="updateOptions">
+                ]" :items="datatableItems" item-value="id"
+                :items-length="resultData?.totalItems == undefined ? 0 : resultData.totalItems" :headers="props.headers"
+                class="text-no-wrap" height="300" density="comfortable" show-select :loading="loadingdata"
+                @update:options="updateOptions" select-strategy="single">
 
+                <!-- <template v-for="slotName in Object.keys($slots)" #[slotName]="slotScope">
+                    <slot :name="slotName" :item="slotScope" />
+                </template> -->
+                <template v-for="header in props.headers" v-slot:[`item.${header.key}`]="{ item, index }">
+                    <slot :name="`item.${header.key}`" :value="item">
+                        <div v-if="header.key === 'actions' && (props.activeDeleteAction || props.activeEditAction)">
+                            <IconBtn v-show="props.activeDeleteAction" @click="deleteAction(item, index)">
+                                <VIcon v-if="!item.isLoading" icon="tabler-trash" />
+                                <VProgressCircular size="20" width="3" v-else indeterminate>
+                                </VProgressCircular>
+                            </IconBtn>
+                            <IconBtn v-show="props.activeEditAction" @click="updateAction(item)">
+                                <VIcon icon="tabler-eye" />
+                            </IconBtn>
+                            <slot name="action" :item="item"></slot>
+                        </div>
+                        <span v-else>{{ item[header.key] }}</span>
 
-                <template v-for="slotName in Object.keys($slots)" #[slotName]="slotScope">
-                    <slot :name="slotName" v-bind="slotScope" />
+                    </slot>
                 </template>
-                <!-- Actions -->
-                <template #item.actions="{ item }">
-                    <IconBtn @click="deleteUser(item.id)">
-                        <VIcon icon="tabler-trash" />
-                    </IconBtn>
-
-                    <IconBtn>
-                        <VIcon icon="tabler-eye" />
-                    </IconBtn>
-                    <!-- <VBtn icon variant="text" color="medium-emphasis">
-                        <VIcon icon="tabler-dots-vertical" />
-                        <VMenu activator="parent">
-                            <VList>
-                                <VListItem :to="{ name: 'apps-user-view-id', params: { id: item.id } }">
-                                    <template #prepend>
-                                        <VIcon icon="tabler-eye" />
-                                    </template>
-
-<VListItemTitle>View</VListItemTitle>
-</VListItem>
-
-<VListItem link>
-    <template #prepend>
-                                        <VIcon icon="tabler-pencil" />
-                                    </template>
-    <VListItemTitle>Edit</VListItemTitle>
-</VListItem>
-
-<VListItem @click="deleteUser(item.id)">
-    <template #prepend>
-                                        <VIcon icon="tabler-trash" />
-                                    </template>
-    <VListItemTitle>Delete</VListItemTitle>
-</VListItem>
-</VList>
-</VMenu>
-</VBtn> -->
-                </template>
-
                 <template #bottom>
                     <TablePagination v-model:page="page" :items-per-page="itemsPerPage"
-                        :total-items="datatableTotalItems" />
+                        :total-items="resultData?.totalItems == undefined ? 0 : resultData?.totalItems" />
                 </template>
             </VDataTableServer>
             <!-- SECTION -->
@@ -227,5 +226,10 @@ defineExpose({ refreshData })
 <style lang="scss">
 .v-card-title {
     padding: 0;
+}
+
+.v-data-table__tr:has(td:first-child input[type='checkbox']:checked) {
+    background-color: #f2f2f2;
+
 }
 </style>
