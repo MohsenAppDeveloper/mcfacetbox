@@ -3,7 +3,7 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import AppTextarea from '@/@core/components/app-form-elements/AppTextarea.vue';
 import { serviceAdd, serviceUpdate } from '@/services/genericServices';
-import { GateModel, GateProperties } from '@/types/gate';
+import { IUser, UserModel } from '@/types/users';
 import { useToast } from "vue-toastification";
 import type { VForm } from 'vuetify/components/VForm';
 
@@ -13,47 +13,54 @@ const toast = useToast();
 
 interface Emit {
     (e: 'update:isDialogVisible', value: boolean): void
-    (e: 'gateDataAdded', value: number): void
-    (e: 'gateDataUpdated', value: number): void
+    (e: 'userDataAdded', value: number): void
+    (e: 'userDataUpdated', value: number): void
 
 }
 
+
 const props = defineProps({
-    isDialogVisible: Boolean,
-    gateApiUrl: String,
+    isDialogVisible: { type: Boolean, default: false },
+    apiUrl: String,
 })
 const emit = defineEmits<Emit>()
 
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
-const isactive = ref(true)
 const isloading = ref(false)
-let gateData = reactive<GateProperties>(new GateModel())
+const userData = reactive<IUser>(new UserModel())
+const rolesList = reactive([{ id: 1, title: 'پژوهشگر' }, { id: 2, title: 'مدیر کل' }, { id: 3, title: 'ناظر' }, { id: 4, title: 'ارزیاب یک' }, { id: 5, title: 'ارزیاب دو' }, { id: 6, title: 'مدیر نظارت' }, { id: 7, title: 'خواندنی' }])
+// const selectedRoles = ref([5, 1])
 
-async function gateAdd() {
+// watch(() => props.isDialogVisible, (newvalue, oldvalue) => {
+//     if (!newvalue) {
+//         userData.id = 0;
+//     }
+// })
+async function userAdd() {
 
-    const { serviceData, serviceError } = await serviceAdd<GateProperties>(gateData.value, props.gateApiUrl == undefined ? '' : props.gateApiUrl)
+    const { serviceData, serviceError } = await serviceAdd<IUser>(userData, props.apiUrl == undefined ? '' : props.apiUrl)
     if (serviceData.value) {
-        toast.success(t("dataActionSuccess"));
-        emit('gateDataAdded', serviceData.value)
+        toast.success(t("alert.dataActionSuccess"));
+        emit('userDataAdded', serviceData.value)
         emit('update:isDialogVisible', false)
         nextTick(() => {
             onReset()
         })
     }
     else if (serviceError.value) {
-        toast.error(t("dataActionFailed"));
+        toast.error(t("alert.dataActionFailed"));
     }
 }
 
-async function gateEdit() {
+async function userEdit() {
 
-    const { serviceData, serviceError } = await serviceUpdate<GateProperties>(gateData.value, gateData.value.id, props.gateApiUrl == undefined ? '' : props.gateApiUrl)
+    const { serviceData, serviceError } = await serviceUpdate<IUser>(userData, userData.id, props.apiUrl == undefined ? '' : props.apiUrl)
     console.log('gateedit', serviceData.value, serviceError.value);
 
     if (serviceData.value) {
         toast.success(t("alert.dataActionSuccess"));
-        emit('gateDataUpdated', serviceData.value)
+        emit('userDataUpdated', serviceData.value)
         emit('update:isDialogVisible', false)
         nextTick(() => {
             onReset()
@@ -69,30 +76,32 @@ const onSubmit = () => {
             isloading.value = true
             setTimeout(() => {
                 isloading.value = false
-                if (gateData.value.id > 0) {
-                    gateEdit()
+                if (userData.id > 0) {
+                    userEdit()
                 }
                 else
-                    gateAdd()
+                    userAdd()
             }, 3000);
             return;
         }
     })
 }
-
+// watch(userData.role, (newdata, olddata) => {
+//     console.log('watchuserdata', newdata, olddata);
+// })
 const onReset = () => {
-    gateData.value.id = 0;
+    userData.id = 0;
     emit('update:isDialogVisible', false)
     refForm.value?.reset()
     refForm.value?.resetValidation()
 }
 
-const updateGate = (gateDataItem: GateProperties) => {
-    objectMap(gateData, gateDataItem)
+const updateUser = (userDataItem: IUser) => {
+    objectMap(userData, userDataItem)
 }
 
 
-defineExpose({ updateGate })
+defineExpose({ updateUser })
 </script>
 
 <template>
@@ -101,30 +110,30 @@ defineExpose({ updateGate })
         <!-- 👉 Dialog close btn -->
         <DialogCloseBtn @click="onReset" :disabled="isloading" />
         <!-- <PerfectScrollbar :options="{ wheelPropagation: false }"> -->
-        <VCard flat :title="$t('gate.addedit')" :subtitle="$t('gate.addeditsubtitle')">
+        <VCard flat :title="$t('user.addedit')" :subtitle="$t('user.addeditsubtitle')">
             <VCardText>
                 <!-- 👉 Form -->
                 <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
                     <VRow>
                         <!-- 👉 Gate Title-->
                         <VCol cols="12">
-                            <AppTextField v-model="gateData.gateTitle"
-                                :rules="[requiredValidator(gateData.gateTitle, $t('validatorrequired'))]"
-                                :label="$t('gate.title')" placeholder="" />
+                            <AppTextField v-model="userData.fullName"
+                                :rules="[requiredValidator(userData.fullName, $t('validatorrequired'))]"
+                                :label="$t('nameandfamily')" placeholder="" />
                         </VCol>
 
                         <VCol cols="12">
                             <VRow>
                                 <!-- 👉 Contact -->
                                 <VCol cols="12" sm="6">
-                                    <AppTextField v-model="gateData.contact" type="number"
-                                        :rules="[requiredValidator(gateData.contact, $t('validatorrequired'))]"
+                                    <AppTextField v-model="userData.contact" type="number"
+                                        :rules="[requiredValidator(userData.contact, $t('validatorrequired'))]"
                                         :label="$t('mobilenumber')" placeholder="09xx-xxx-xx-xx" />
                                 </VCol>
                                 <!-- 👉 Email -->
                                 <VCol cols="12" sm="6">
-                                    <AppTextField v-model="gateData.email"
-                                        :rules="[requiredValidator(gateData.email, $t('validatorrequired')), emailValidator(gateData.email, $t('validatoremail'))]"
+                                    <AppTextField v-model="userData.email"
+                                        :rules="[requiredValidator(userData.email, $t('validatorrequired')), emailValidator(userData.email, $t('validatoremail'))]"
                                         :label="$t('email')" placeholder="ٍE-mail" />
                                 </VCol>
                             </VRow>
@@ -133,26 +142,24 @@ defineExpose({ updateGate })
                         <VCol cols="12">
                             <VRow>
                                 <!-- 👉 Name -->
-                                <VCol sm="6" cols="12">
-                                    <AppTextField v-model="gateData.nameFamily"
-                                        :rules="[requiredValidator(gateData.nameFamily, $t('validatorrequired'))]"
-                                        :label="$t('nameandfamily')" placeholder="" />
-                                </VCol>
-                                <!-- 👉 UserType -->
-                                <VCol sm="4" cols="12">
-                                    <AppSelect v-model="gateData.userType" :label="$t('usertype')"
-                                        placeholder="Select Role"
-                                        :rules="[requiredValidator(gateData.userType, $t('validatorrequired'))]"
-                                        :items="['Admin', 'Author', 'Editor', 'Maintainer', 'Subscriber']" />
-                                </VCol>
-                                <VCol sm="2" cols="12" align-self="end">
-                                    <VSwitch v-model="gateData.active" :label="$t('active')" />
+                                <VCol sm="10" cols="12">
+                                    <AppAutocomplete :items="rolesList" v-model="userData.role" item-title="title"
+                                        item-value="id" :label="$t('role.select')"
+                                        :rules="[requiredValidator(userData.role, $t('validatorrequired'))]" chips
+                                        closable-chips multiple>
 
+                                    </AppAutocomplete>
+                                    <!-- :rules="[requiredValidator(userData.role, $t('validatorrequired'))]"  -->
+
+                                </VCol>
+
+                                <VCol sm="2" cols="12" align-self="end">
+                                    <VSwitch v-model="userData.isActive" :label="$t('active')" />
                                 </VCol>
                             </VRow>
                         </VCol>
                         <VCol cols="12">
-                            <AppTextarea v-model="gateData.description" :label="$t('description')"
+                            <AppTextarea v-model="userData.description" :label="$t('description')"
                                 placeholder="Write note here..." :rows="4" />
                         </VCol>
 

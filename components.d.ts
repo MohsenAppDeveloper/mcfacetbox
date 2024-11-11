@@ -372,6 +372,7 @@ declare module 'vue' {
     I18n: typeof import('./src/@core/components/I18n.vue')['default']
     MCDataTable: typeof import('./src/components/MCDataTable.vue')['default']
     MCDialogGateAdd: typeof import('./src/components/dialogs/MCDialogGateAdd.vue')['default']
+    MCDialogUserAdd: typeof import('./src/components/dialogs/MCDialogUserAdd.vue')['default']
     MCInputDatePicker: typeof import('./src/components/MCInputDatePicker.vue')['default']
     MCNotify: typeof import('./src/components/notify/MCNotify.vue')['default']
     MCSnackBarGlobal: typeof import('./src/components/MCSnackBarGlobal.vue')['default']

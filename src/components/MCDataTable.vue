@@ -187,8 +187,8 @@ defineExpose({ refreshData })
                     { value: -1, title: '$vuetify.dataFooter.itemsPerPageAll' },
                 ]" :items="datatableItems" item-value="id"
                 :items-length="resultData?.totalItems == undefined ? 0 : resultData.totalItems" :headers="props.headers"
-                class="text-no-wrap" height="300" density="comfortable" show-select :loading="loadingdata"
-                @update:options="updateOptions" select-strategy="single">
+                class="text-no-wrap" height="300" density="compact" :fixed-header="true" show-select
+                :loading="loadingdata" @update:options="updateOptions" select-strategy="single">
 
                 <!-- <template v-for="slotName in Object.keys($slots)" #[slotName]="slotScope">
                     <slot :name="slotName" :item="slotScope" />

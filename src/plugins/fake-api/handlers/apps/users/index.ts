@@ -35,11 +35,10 @@ export const handlerAppsUsers = [
     const pageLocal = is.number(parsedPage) ? parsedPage : 1
 
     // filter users
-    let filteredUsers = db.users.filter(user => ((user.fullName.toLowerCase().includes(queryLower) || user.email.toLowerCase().includes(queryLower)) && user.role === (role || user.role) && user.currentPlan === (plan || user.currentPlan) && user.status === (status || user.status))).reverse()
+    let filteredUsers = db.users.filter(user => ((user.fullName.toLowerCase().includes(queryLower) || user.email.toLowerCase().includes(queryLower)) && user.role === (role || user.role) && user.createDate === (plan || user.createDate) && user.isActive === (status || user.isActive))).reverse()
 
     // sort users
     if (sortByLocal) {
-      console.log(sortByLocal)
       if (sortByLocal === 'user') {
         filteredUsers = filteredUsers.sort((a, b) => {
           if (orderByLocal === 'asc')
@@ -64,28 +63,21 @@ export const handlerAppsUsers = [
             return b.role.localeCompare(a.role)
         })
       }
-      if (sortByLocal === 'plan') {
+      if (sortByLocal === 'createDate') {
         filteredUsers = filteredUsers.sort((a, b) => {
           if (orderByLocal === 'asc')
-            return a.currentPlan.localeCompare(b.currentPlan)
+            return a.createDate.localeCompare(b.createDate)
           else
-            return b.currentPlan.localeCompare(a.currentPlan)
+            return b.createDate.localeCompare(a.createDate)
         })
       }
-      if (sortByLocal === 'status') {
+
+      if (sortByLocal === 'expireDate') {
         filteredUsers = filteredUsers.sort((a, b) => {
           if (orderByLocal === 'asc')
-            return a.status.localeCompare(b.status)
+            return a.expireDate.localeCompare(b.expireDate)
           else
-            return b.status.localeCompare(a.status)
-        })
-      }
-      if (sortByLocal === 'billing') {
-        filteredUsers = filteredUsers.sort((a, b) => {
-          if (orderByLocal === 'asc')
-            return a.billing.localeCompare(b.billing)
-          else
-            return b.billing.localeCompare(a.billing)
+            return b.expireDate.localeCompare(a.expireDate)
         })
       }
     }

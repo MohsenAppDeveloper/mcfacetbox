@@ -2,6 +2,7 @@ import { isEmpty, isEmptyArray, isNullOrUndefined } from './helpers';
 
 // 👉 Required Validator
 export const requiredValidator = (value: unknown, errormessage: string) => {
+  // console.log('mokse', value);
 
   if (isNullOrUndefined(value) || isEmptyArray(value) || value === false)
     return errormessage

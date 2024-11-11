@@ -6,13 +6,27 @@ import { VCol, VDialog } from 'vuetify/lib/components/index.mjs';
 
 
 const { t } = useI18n({ useScope: 'global' })
-const mcdatatable = ref(MCDataTable)
-const dialogGate = ref(VDialog)
+const mcdatatableUser = ref(MCDataTable)
+const mcdatatableUserRole = ref(MCDataTable)
+const dialogUser = ref(VDialog)
+const dialogUserRole = ref(VDialog)
 const isAddNewUserDialogVisible = ref(false)
 const isAddNewRoleDialogVisible = ref(false)
+const userApiUrl = '/apps/users'
+const userRoleApiUrl = '/apps/gates'
 
 const toast = useToast();
 // GateHeaders
+const userHeaders = [
+    { title: t('nameandfamily'), key: 'fullName' },
+    { title: t('mobilenumber'), key: 'contact' },
+    { title: t('roles'), key: 'role' },
+    { title: t('email'), key: 'email' },
+    { title: t('expireDate'), key: 'expireDate' },
+    { title: t('description'), key: 'description' },
+    { title: t('status'), key: 'isActive', sortable: false },
+    { title: t('actions'), key: 'actions', sortable: false },
+]
 const gateHeaders = [
     { title: t('gate.title'), key: 'gateTitle' },
     { title: t('mobilenumber'), key: 'contact' },
@@ -21,10 +35,9 @@ const gateHeaders = [
     { title: t('expireDate'), key: 'expireDate' },
     { title: t('status'), key: 'active', sortable: false },
     { title: t('users'), key: 'userType', sortable: false },
-    { title: '', key: 'actions', sortable: false },
+    { title: t('actions'), key: 'actions', sortable: false },
 ]
 
-const gateApiUrl = '/apps/gates'
 
 function clickbutton() {
     isAddNewUserDialogVisible.value = true;
@@ -56,19 +69,19 @@ const resolveUserRoleVariant = (role: string) => {
 }
 
 
-const gateEdit = (dataItem: Record<string, any>) => {
+const userEdit = (dataItem: Record<string, any>) => {
     isAddNewUserDialogVisible.value = true
     // gateUpdateActive.value = true
-    dialogGate.value.updateGate({ ...dataItem })
+    dialogUser.value.updateUser({ ...dataItem })
     // gateEditDataItem.value = { ...dataItem } ass GateModel
     // console.log('gateedititem', gateEditDataItem.value);
 
 }
 const userDataAdded = (gateDataId: number) => {
-    mcdatatable.value.refreshData()
+    mcdatatableUser.value.refreshData()
 }
 const roleDataAdded = (gateDataId: number) => {
-    mcdatatable.value.refreshData()
+    mcdatatableUserRole.value.refreshData()
 }
 
 </script>
@@ -83,7 +96,8 @@ const roleDataAdded = (gateDataId: number) => {
                     </VBtn>
                     <VDivider />
 
-                    <MCDataTable ref="mcdatatable" :headers="gateHeaders" :api-url="gateApiUrl" @edit-item="gateEdit">
+                    <MCDataTable ref="mcdatatableUser" :headers="userHeaders" :api-url="userApiUrl"
+                        @edit-item="userEdit">
 
                         <template #item.gateTitle="{ value }">
                             <div class="d-flex align-center gap-x-4">
@@ -95,6 +109,13 @@ const roleDataAdded = (gateDataId: number) => {
                                 {{ value.gateTitle }}
                             </div>
                             <!-- {{ value + "asdasdasd" }} -->
+                        </template>
+                        <template #item.isActive="{ value }">
+                            <VChip :color="resolveActiveColor(value.isActive)"
+                                :class="`text-${resolveActiveColor(value.isActive)}`" size="small"
+                                class="font-weight-medium">
+                                {{ $t(resolveActiveTitle(value.isActive)) }}
+                            </VChip>
                         </template>
                         <!-- <template #action="{ item }">
                     <span>{{ item.gateTitle }} </span>
@@ -113,7 +134,8 @@ const roleDataAdded = (gateDataId: number) => {
                     </VBtn>
                     <VDivider />
 
-                    <MCDataTable ref="mcdatatable" :headers="gateHeaders" :api-url="gateApiUrl" @edit-item="gateEdit">
+                    <MCDataTable ref="mcdatatableUserRole" :headers="userHeaders" :api-url="userRoleApiUrl"
+                        @edit-item="userEdit">
 
                         <template #item.gateTitle="{ value }">
                             <div class="d-flex align-center gap-x-4">
@@ -126,6 +148,14 @@ const roleDataAdded = (gateDataId: number) => {
                             </div>
                             <!-- {{ value + "asdasdasd" }} -->
                         </template>
+
+                        <template #item.active="{ value }">
+                            <VChip :color="resolveActiveColor(value.isActive)"
+                                :class="`text-${resolveActiveColor(value.isActive)}`" size="small"
+                                class="font-weight-medium">
+                                {{ $t(resolveActiveTitle(value.isActive)) }}
+                            </VChip>
+                        </template>
                         <!-- <template #action="{ item }">
                     <span>{{ item.gateTitle }} </span>
                 </template> -->
@@ -134,9 +164,9 @@ const roleDataAdded = (gateDataId: number) => {
             </VCol>
         </VRow>
         <!-- 👉 Add New User -->
-        <MCDialogGateAdd ref="dialogUser" v-model:is-dialog-visible="isAddNewUserDialogVisible"
-            @gate-data-added="userDataAdded" :gate-api-url="gateApiUrl" />
+        <MCDialogUserAdd ref="dialogUser" v-model:is-dialog-visible="isAddNewUserDialogVisible"
+            @gate-data-added="userDataAdded" :api-url="userApiUrl" />
         <MCDialogGateAdd ref="dialogRole" v-model:is-dialog-visible="isAddNewRoleDialogVisible"
-            @gate-data-added="roleDataAdded" :gate-api-url="gateApiUrl" />
+            @gate-data-added="roleDataAdded" :api-url="userRoleApiUrl" />
     </section>
 </template>

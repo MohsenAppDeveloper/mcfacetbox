@@ -2,11 +2,13 @@
     "validatorrequired": "*ورود اطلاعات این قسمت اجباری میباشد",
     "validatoremail": "آدرس ایمیل صحیح نمیباشد",
     "active": "فعال",
+    "deactive": "غیرفعال",
     "description": "توضیحات",
     "usertype": "نوع کاربری",
     "nameandfamily": "نام و نام خانوادگی",
     "email": "پست الکترونیک",
     "mobilenumber": "شماره همراه",
+    "actions": "امکانات",
     "gate": {
         "title": "عنوان درگاه",
         "addedit": "افزودن / ویرایش درگاه",
@@ -19,12 +21,15 @@
     "userManagement": "مدیریت کاربران",
     "user": {
         "add": "افزودن کاربر",
+        "addedit": "افزودن / ویرایش کاربر",
         "delete": "حذف کاربر",
-        "management": "مدیریت کاربران"
+        "management": "مدیریت کاربران",
+        "addeditsubtitle": "اطلاعات مورد نظر برای کاربر را وارد نمایید"
     },
     "role": {
         "add": "افزودن نقش",
-        "delete": "حذف نقش"
+        "delete": "حذف نقش",
+        "select": "انتخاب نقش"
     },
     "createDate": "تاریخ ایجاد",
     "expireDate": "تاریخ انقضاء",
@@ -97,7 +102,7 @@
     "Create Deal": "ایجاد معامله",
     "Property Listing": "فهرست املاک",
     "Roles & Permissions": "نقش‌ها و مجوزها",
-    "Roles": "نقش‌ها",
+    "roles": "نقش‌ها",
     "Permissions": "مجوزها",
     "Simple Table": "جدول ساده",
     "Tables": "جداول",
