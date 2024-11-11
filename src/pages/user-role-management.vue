@@ -87,13 +87,18 @@ const roleDataAdded = (gateDataId: number) => {
 </script>
 <template>
     <section>
+        <VRow no-gutters justify="space-between" align="center">
+            <div class="page-title"> {{ $t('user.pageTitle') }}</div>
+
+            <VBtn @click="clickbutton" prepend-icon="tabler-plus">
+                {{ $t('user.add') }}
+            </VBtn>
+        </VRow>
         <VRow id="apex-chart-wrapper">
 
             <VCol cols="12">
                 <VCard>
-                    <VBtn @click="clickbutton" prepend-icon="tabler-plus">
-                        {{ $t('user.add') }}
-                    </VBtn>
+
                     <VDivider />
 
                     <MCDataTable ref="mcdatatableUser" :headers="userHeaders" :api-url="userApiUrl"
@@ -126,13 +131,16 @@ const roleDataAdded = (gateDataId: number) => {
         </VRow>
 
         <!-- 👉 Statistics -->
+        <VRow no-gutters justify="space-between" align="center" class="mt-6">
+            <div class="page-title"> {{ $t('role.pageTitle') }}</div>
+            <VBtn @click="clickbutton" prepend-icon="tabler-plus">
+                {{ $t('role.add') }}
+            </VBtn>
+        </VRow>
         <VRow>
             <VCol cols="12">
+
                 <VCard>
-                    <VBtn @click="clickbutton" prepend-icon="tabler-plus">
-                        {{ $t('role.add') }}
-                    </VBtn>
-                    <VDivider />
 
                     <MCDataTable ref="mcdatatableUserRole" :headers="userHeaders" :api-url="userRoleApiUrl"
                         @edit-item="userEdit">

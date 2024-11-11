@@ -71,7 +71,16 @@ const gateDataAdded = (gateDataId: number) => {
 </script>
 <template>
     <section>
+        <VRow no-gutters justify="space-between" align="center">
+            <div class="page-title"> {{ $t('gate.pageTitle') }}</div>
+
+            <VBtn @click="clickbutton" prepend-icon="tabler-plus">
+                {{ $t('gate.add') }}
+            </VBtn>
+        </VRow>
+
         <VRow id="apex-chart-wrapper">
+
             <VCol cols="12" md="4">
                 <VCard title="Statistics">
                     <VCardText>
@@ -106,9 +115,7 @@ const gateDataAdded = (gateDataId: number) => {
         <VRow>
             <VCol cols="12">
                 <VCard>
-                    <VBtn @click="clickbutton" prepend-icon="tabler-plus">
-                        {{ $t('gate.add') }}
-                    </VBtn>
+
                     <VDivider />
 
                     <MCDataTable ref="mcdatatable" :headers="gateHeaders" :api-url="gateApiUrl" @edit-item="gateEdit">
