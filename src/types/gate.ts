@@ -1,4 +1,4 @@
-import { baseDataTableModel } from "./baseDataTable"
+import { baseDataTableModel } from "./baseModels"
 
 export interface GateProperties extends Record<string, any>, baseDataTableModel {
     id: number

@@ -1,13 +1,11 @@
 <script setup lang="ts">
-//!SECTION این دیالوگ برای افزودن و یا ویرایش یک نقش میباشد
+//!SECTION این دیالوگ برای افزودن و یا ویرایش یک پنل یا درگاه کاربری میباشد
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import AppTextarea from '@/@core/components/app-form-elements/AppTextarea.vue';
 import { serviceAdd, serviceUpdate } from '@/services/genericServices';
-import { ISimpleTree } from '@/types/baseModels';
-import { IRole, RoleModel } from '@/types/rolePermission';
+import { IUser, UserModel } from '@/types/users';
 import { useToast } from "vue-toastification";
 import type { VForm } from 'vuetify/components/VForm';
-import { VTreeview } from 'vuetify/lib/labs/components.mjs';
 
 const { t } = useI18n({ useScope: 'global' })
 const toast = useToast();
@@ -15,8 +13,8 @@ const toast = useToast();
 
 interface Emit {
     (e: 'update:isDialogVisible', value: boolean): void
-    (e: 'roleDataAdded', value: number): void
-    (e: 'roleDataUpdated', value: number): void
+    (e: 'userDataAdded', value: number): void
+    (e: 'userDataUpdated', value: number): void
 
 }
 
@@ -30,10 +28,8 @@ const emit = defineEmits<Emit>()
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
 const isloading = ref(false)
-const roleData = reactive<IRole>(new RoleModel())
-const projectList = reactive<ISimpleTree[]>([{ id: 1, title: 'موسوعه یک', children: [{ id: 2, title: 'درخت یک', children: [] }, { id: 3, title: 'درخت دو', children: [] }] }, { id: 4, title: 'موسوعه دو', children: [{ id: 5, title: 'درخت سه', children: [] }, { id: 6, title: 'درخت چهار', children: [] }] }])
-const permissionList = reactive<ISimpleTree[]>([{ id: 1, title: 'ماژول درخت', children: [{ id: 2, title: 'افزودن نود', children: [] }, { id: 3, title: 'جابجایی نود', children: [] }] }, { id: 4, title: 'فیش نگار', children: [{ id: 5, title: 'افزودن فیش', children: [] }, { id: 6, title: 'اتصال فیش', children: [] }] }])
-
+const userData = reactive<IUser>(new UserModel())
+const rolesList = reactive([{ id: 1, title: 'پژوهشگر' }, { id: 2, title: 'مدیر کل' }, { id: 3, title: 'ناظر' }, { id: 4, title: 'ارزیاب یک' }, { id: 5, title: 'ارزیاب دو' }, { id: 6, title: 'مدیر نظارت' }, { id: 7, title: 'خواندنی' }])
 // const selectedRoles = ref([5, 1])
 
 // watch(() => props.isDialogVisible, (newvalue, oldvalue) => {
@@ -41,12 +37,12 @@ const permissionList = reactive<ISimpleTree[]>([{ id: 1, title: 'ماژول در
 //         userData.id = 0;
 //     }
 // })
-async function roleAdd() {
+async function userAdd() {
 
-    const { serviceData, serviceError } = await serviceAdd<IRole>(roleData, props.apiUrl == undefined ? '' : props.apiUrl)
+    const { serviceData, serviceError } = await serviceAdd<IUser>(userData, props.apiUrl == undefined ? '' : props.apiUrl)
     if (serviceData.value) {
         toast.success(t("alert.dataActionSuccess"));
-        emit('roleDataAdded', serviceData.value)
+        emit('userDataAdded', serviceData.value)
         emit('update:isDialogVisible', false)
         nextTick(() => {
             onReset()
@@ -57,13 +53,14 @@ async function roleAdd() {
     }
 }
 
-async function roleEdit() {
+async function userEdit() {
 
-    const { serviceData, serviceError } = await serviceUpdate<IRole>(roleData, roleData.id, props.apiUrl == undefined ? '' : props.apiUrl)
+    const { serviceData, serviceError } = await serviceUpdate<IUser>(userData, userData.id, props.apiUrl == undefined ? '' : props.apiUrl)
+    console.log('gateedit', serviceData.value, serviceError.value);
 
     if (serviceData.value) {
         toast.success(t("alert.dataActionSuccess"));
-        emit('roleDataUpdated', serviceData.value)
+        emit('userDataUpdated', serviceData.value)
         emit('update:isDialogVisible', false)
         nextTick(() => {
             onReset()
@@ -79,11 +76,11 @@ const onSubmit = () => {
             isloading.value = true
             setTimeout(() => {
                 isloading.value = false
-                if (roleData.id > 0) {
-                    roleEdit()
+                if (userData.id > 0) {
+                    userEdit()
                 }
                 else
-                    roleAdd()
+                    userAdd()
             }, 3000);
             return;
         }
@@ -93,14 +90,14 @@ const onSubmit = () => {
 //     console.log('watchuserdata', newdata, olddata);
 // })
 const onReset = () => {
-    roleData.id = 0;
+    userData.id = 0;
     emit('update:isDialogVisible', false)
     refForm.value?.reset()
     refForm.value?.resetValidation()
 }
 
-const updateUser = (roleDataItem: IRole) => {
-    objectMap(roleData, roleDataItem)
+const updateUser = (userDataItem: IUser) => {
+    objectMap(userData, userDataItem)
 }
 
 
@@ -113,40 +110,56 @@ defineExpose({ updateUser })
         <!-- 👉 Dialog close btn -->
         <DialogCloseBtn @click="onReset" :disabled="isloading" />
         <!-- <PerfectScrollbar :options="{ wheelPropagation: false }"> -->
-        <VCard flat :title="$t('role.addedit')" :subtitle="$t('role.addeditsubtitle')">
+        <VCard flat :title="$t('user.addedit')" :subtitle="$t('user.addeditsubtitle')">
             <VCardText>
                 <!-- 👉 Form -->
                 <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
                     <VRow>
                         <!-- 👉 Gate Title-->
                         <VCol cols="12">
-                            <AppTextField v-model="roleData.title"
-                                :rules="[requiredValidator(roleData.title, $t('validatorrequired'))]"
-                                :label="$t('role.title')" placeholder="" />
+                            <AppTextField v-model="userData.fullName"
+                                :rules="[requiredValidator(userData.fullName, $t('validatorrequired'))]"
+                                :label="$t('nameandfamily')" placeholder="" />
                         </VCol>
 
                         <VCol cols="12">
                             <VRow>
-                                <VCol cols="6" sm="6">
-                                    <VTreeview :items="projectList" item-value="id" item-title="title"
-                                        select-strategy="leaf" return-object selectable></VTreeview>
+                                <!-- 👉 Contact -->
+                                <VCol cols="12" sm="6">
+                                    <AppTextField v-model="userData.contact" type="number"
+                                        :rules="[requiredValidator(userData.contact, $t('validatorrequired'))]"
+                                        :label="$t('mobilenumber')" placeholder="09xx-xxx-xx-xx" />
                                 </VCol>
-                                <VCol cols="6" sm="6">
-                                    <VTreeview :items="permissionList" item-value="id" item-title="title"
-                                        select-strategy="classic" return-object selectable></VTreeview>
+                                <!-- 👉 Email -->
+                                <VCol cols="12" sm="6">
+                                    <AppTextField v-model="userData.email"
+                                        :rules="[requiredValidator(userData.email, $t('validatorrequired')), emailValidator(userData.email, $t('validatoremail'))]"
+                                        :label="$t('email')" placeholder="ٍE-mail" />
                                 </VCol>
                             </VRow>
 
                         </VCol>
                         <VCol cols="12">
                             <VRow>
-                                <VCol sm="12" cols="12" align-self="end">
-                                    <VSwitch v-model="roleData.isActive" :label="$t('active')" />
+                                <!-- 👉 Name -->
+                                <VCol sm="10" cols="12">
+                                    <AppAutocomplete :items="rolesList" v-model="userData.role" item-title="title"
+                                        item-value="id" :label="$t('role.select')"
+                                        :rules="[requiredValidator(userData.role, $t('validatorrequired'))]" chips
+                                        closable-chips multiple>
+
+                                    </AppAutocomplete>
+                                    <!-- :rules="[requiredValidator(userData.role, $t('validatorrequired'))]"  -->
+
+                                </VCol>
+
+                                <VCol sm="2" cols="12" align-self="end">
+                                    <VSwitch v-model="userData.isActive" :label="$t('active')" />
                                 </VCol>
                             </VRow>
                         </VCol>
                         <VCol cols="12">
-                            <AppTextarea v-model="roleData.description" :label="$t('description')"
+                            <AppTextarea v-model="userData.description" :label="$t('description')"
                                 placeholder="Write note here..." :rows="4" />
                         </VCol>
 

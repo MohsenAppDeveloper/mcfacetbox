@@ -6,18 +6,18 @@ import { VCol, VDialog } from 'vuetify/lib/components/index.mjs';
 
 
 const { t } = useI18n({ useScope: 'global' })
-const mcdatatableUser = ref(MCDataTable)
-const mcdatatableUserRole = ref(MCDataTable)
-const dialogUser = ref(VDialog)
-const dialogUserRole = ref(VDialog)
-const isAddNewUserDialogVisible = ref(false)
-const isAddNewRoleDialogVisible = ref(false)
-const userApiUrl = '/apps/users'
-const userRoleApiUrl = '/apps/gates'
+const mcdatatableProject = ref(MCDataTable)
+const mcdatatableTree = ref(MCDataTable)
+const dialogProject = ref(VDialog)
+const dialogTree = ref(VDialog)
+const isAddNewProjectDialogVisible = ref(false)
+const isAddNewTreeDialogVisible = ref(false)
+const userApiUrl = '/apps/Project'
+const userRoleApiUrl = '/apps/Tree'
 
 const toast = useToast();
 // GateHeaders
-const userHeaders = [
+const projectHeaders = [
     { title: t('nameandfamily'), key: 'fullName' },
     { title: t('mobilenumber'), key: 'contact' },
     { title: t('roles'), key: 'role' },
@@ -27,21 +27,14 @@ const userHeaders = [
     { title: t('status'), key: 'isActive', sortable: false },
     { title: t('actions'), key: 'actions', sortable: false },
 ]
-const gateHeaders = [
-    { title: t('gate.title'), key: 'gateTitle' },
-    { title: t('mobilenumber'), key: 'contact' },
-    { title: t('nameandfamily'), key: 'nameFamily' },
-    { title: t('email'), key: 'email' },
-    { title: t('expireDate'), key: 'expireDate' },
-    { title: t('status'), key: 'active', sortable: false },
-    { title: t('users'), key: 'userType', sortable: false },
+const treeHeaders = [
+    { title: t('role.title'), key: 'title' },
+    { title: t('permissions'), key: 'permissions' },
+    { title: t('createDate'), key: 'createDate' },
+    { title: t('status'), key: 'isActive', sortable: false },
+    // { title: t('users'), key: 'userType', sortable: false },
     { title: t('actions'), key: 'actions', sortable: false },
 ]
-
-
-function clickbutton() {
-    isAddNewUserDialogVisible.value = true;
-}
 
 // 👉 search filters
 const roles = [
@@ -69,19 +62,21 @@ const resolveUserRoleVariant = (role: string) => {
 }
 
 
-const userEdit = (dataItem: Record<string, any>) => {
-    isAddNewUserDialogVisible.value = true
-    // gateUpdateActive.value = true
-    dialogUser.value.updateUser({ ...dataItem })
-    // gateEditDataItem.value = { ...dataItem } ass GateModel
-    // console.log('gateedititem', gateEditDataItem.value);
+const projectEdit = (dataItem: Record<string, any>) => {
+    isAddNewProjectDialogVisible.value = true
+    dialogProject.value.updateUser({ ...dataItem })
+}
 
+const treeEdit = (dataItem: Record<string, any>) => {
+    isAddNewTreeDialogVisible.value = true
+    dialogTree.value.updateUser({ ...dataItem })
 }
-const userDataAdded = (gateDataId: number) => {
-    mcdatatableUser.value.refreshData()
+
+const projectDataAdded = (projectDataId: number) => {
+    mcdatatableProject.value.refreshData()
 }
-const roleDataAdded = (gateDataId: number) => {
-    mcdatatableUserRole.value.refreshData()
+const treeDataAdded = (gateDataId: number) => {
+    mcdatatableTree.value.refreshData()
 }
 
 </script>
@@ -90,19 +85,16 @@ const roleDataAdded = (gateDataId: number) => {
         <VRow no-gutters justify="space-between" align="center">
             <div class="page-title"> {{ $t('user.pageTitle') }}</div>
 
-            <VBtn @click="clickbutton" prepend-icon="tabler-plus">
+            <VBtn @click="isAddNewProjectDialogVisible = true" prepend-icon="tabler-plus">
                 {{ $t('user.add') }}
             </VBtn>
         </VRow>
-        <VRow id="apex-chart-wrapper">
-
+        <VRow>
             <VCol cols="12">
                 <VCard>
-
                     <VDivider />
-
-                    <MCDataTable ref="mcdatatableUser" :headers="userHeaders" :api-url="userApiUrl"
-                        @edit-item="userEdit">
+                    <MCDataTable ref="mcdatatableProject" :headers="projectHeaders" :api-url="userApiUrl"
+                        @edit-item="projectEdit">
 
                         <template #item.gateTitle="{ value }">
                             <div class="d-flex align-center gap-x-4">
@@ -130,10 +122,9 @@ const roleDataAdded = (gateDataId: number) => {
             </VCol>
         </VRow>
 
-        <!-- 👉 Statistics -->
         <VRow no-gutters justify="space-between" align="center" class="mt-6">
             <div class="page-title"> {{ $t('role.pageTitle') }}</div>
-            <VBtn @click="clickbutton" prepend-icon="tabler-plus">
+            <VBtn @click="isAddNewTreeDialogVisible = true" prepend-icon="tabler-plus">
                 {{ $t('role.add') }}
             </VBtn>
         </VRow>
@@ -142,8 +133,8 @@ const roleDataAdded = (gateDataId: number) => {
 
                 <VCard>
 
-                    <MCDataTable ref="mcdatatableUserRole" :headers="userHeaders" :api-url="userRoleApiUrl"
-                        @edit-item="userEdit">
+                    <MCDataTable ref="mcdatatableTree" :headers="treeHeaders" :api-url="userRoleApiUrl"
+                        @edit-item="treeEdit">
 
                         <template #item.gateTitle="{ value }">
                             <div class="d-flex align-center gap-x-4">
@@ -157,7 +148,7 @@ const roleDataAdded = (gateDataId: number) => {
                             <!-- {{ value + "asdasdasd" }} -->
                         </template>
 
-                        <template #item.active="{ value }">
+                        <template #item.isActive="{ value }">
                             <VChip :color="resolveActiveColor(value.isActive)"
                                 :class="`text-${resolveActiveColor(value.isActive)}`" size="small"
                                 class="font-weight-medium">
@@ -172,9 +163,9 @@ const roleDataAdded = (gateDataId: number) => {
             </VCol>
         </VRow>
         <!-- 👉 Add New User -->
-        <MCDialogUserAdd ref="dialogUser" v-model:is-dialog-visible="isAddNewUserDialogVisible"
-            @user-data-added="userDataAdded" :api-url="userApiUrl" />
-        <MCDialogGateAdd ref="dialogRole" v-model:is-dialog-visible="isAddNewRoleDialogVisible"
-            @role-data-added="roleDataAdded" :api-url="userRoleApiUrl" />
+        <MCDialogProjectAdd ref="dialogProject" v-model:is-dialog-visible="isAddNewProjectDialogVisible"
+            @user-data-added="projectDataAdded" :api-url="userApiUrl" />
+        <MCDialogGateAdd ref="dialogTree" v-model:is-dialog-visible="isAddNewTreeDialogVisible"
+            @role-data-added="treeDataAdded" :api-url="userRoleApiUrl" />
     </section>
 </template>

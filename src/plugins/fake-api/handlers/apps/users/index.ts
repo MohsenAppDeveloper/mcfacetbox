@@ -55,14 +55,6 @@ export const handlerAppsUsers = [
             return b.email.localeCompare(a.email)
         })
       }
-      if (sortByLocal === 'role') {
-        filteredUsers = filteredUsers.sort((a, b) => {
-          if (orderByLocal === 'asc')
-            return a.role.localeCompare(b.role)
-          else
-            return b.role.localeCompare(a.role)
-        })
-      }
       if (sortByLocal === 'createDate') {
         filteredUsers = filteredUsers.sort((a, b) => {
           if (orderByLocal === 'asc')

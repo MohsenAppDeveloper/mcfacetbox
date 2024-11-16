@@ -32,7 +32,10 @@
         "pageTitle": "نقش ها",
         "add": "افزودن نقش",
         "delete": "حذف نقش",
-        "select": "انتخاب نقش"
+        "addedit": "افزودن / ویرایش نقش",
+        "select": "انتخاب نقش",
+        "title": "نقش",
+        "addeditsubtitle": "اطلاعات مورد نظر برای نقش را وارد نمایید"
     },
     "createDate": "تاریخ ایجاد",
     "expireDate": "تاریخ انقضاء",
@@ -106,7 +109,7 @@
     "Property Listing": "فهرست املاک",
     "Roles & Permissions": "نقش‌ها و مجوزها",
     "roles": "نقش‌ها",
-    "Permissions": "مجوزها",
+    "permissions": "مجوزها",
     "Simple Table": "جدول ساده",
     "Tables": "جداول",
     "DataTable": "جدول داده‌ها",

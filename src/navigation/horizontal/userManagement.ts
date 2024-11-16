@@ -4,17 +4,17 @@ export default [
   {
     title: "gate.management",
     icon: { icon: "mdi-airplane-takeoff" },
-    to: "gate-management",
+    to: "um-gate-management",
   },
   {
     title: "user.management",
     icon: { icon: "mdi-account-outline" },
-    to: "user-role-management",
+    to: "um-user-role-management",
   },
   {
     title: "projectManagement",
     icon: { icon: "mdi-file-tree-outline" },
-    to: "forms-form-layouts",
+    to: "um-project-management",
   },
   {
     title: "workReport",

@@ -18,6 +18,8 @@ import { handlerPagesFaq } from '@db/pages/faq/index'
 import { handlerPagesHelpCenter } from '@db/pages/help-center/index'
 import { handlerPagesProfile } from '@db/pages/profile/index'
 import { handlerAppsgates } from './handlers/apps/gates'
+import { handlerAppsRoles } from './handlers/apps/roles'
+
 
 const worker = setupWorker(
   ...handlerAppsEcommerce,
@@ -36,7 +38,8 @@ const worker = setupWorker(
   ...handlerAppLogistics,
   ...handlerAuth,
   ...handlerDashboard,
-  ...handlerAppsgates
+  ...handlerAppsgates,
+  ...handlerAppsRoles
 )
 
 export default function () {
