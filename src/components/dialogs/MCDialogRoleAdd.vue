@@ -32,7 +32,7 @@ const refForm = ref<VForm>()
 const isloading = ref(false)
 const treeprojects = ref<ISimpleDTO[]>([])
 const roleData = reactive<IRole>(new RoleModel())
-const projectList = reactive<ISimpleTree[]>([{ id: 1, title: 'موسوعه یک', children: [{ id: 2, title: 'درخت یک' }, { id: 3, title: 'درخت دو' }] }, { id: 4, title: 'موسوعه دو', children: [{ id: 5, title: 'درخت سه' }, { id: 6, title: 'درخت چهار', children: [{ id: 7, title: 'درخت پنج' }, { id: 8, title: 'درخت شش' }] }] }])
+const projectList = reactive<ISimpleTree[]>([{ id: 1, title: 'موسوعه یک', children: [{ id: 2, title: 'درخت یک' }, { id: 3, title: 'درخت دو' }] }, { id: 4, title: 'موسوعه دو', children: [{ id: 5, title: 'درخت سه' }, { id: 6, title: 'درخت چهار', children: [{ id: 7, title: 'درخت پنج' }, { id: 8, title: 'درخت ثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثشش', children: [{ id: 51, title: "درخت 9", children: [{ id: 65, title: "درخت 9", children: [{ id: 21, title: "درخت 9", children: [{ id: 54, title: "درخت 9", children: [{ id: 80, title: "درخت 9", children: [{ id: 90, title: "درخت 9", children: [{ id: 19, title: "درخت 9", children: [{ id: 91, title: "درخت 9", }] }] }] }] }] }] }] }] }] }] }])
 const permissionList = reactive<ISimpleTree[]>([{ id: 1, title: 'ماژول درخت', children: [{ id: 2, title: 'افزودن نود' }, { id: 3, title: 'جابجایی نود' }] }, { id: 4, title: 'فیش نگار', children: [{ id: 5, title: 'افزودن فیش' }, { id: 6, title: 'اتصال فیش' }] }])
 // const selectionType = ref<SelectStrategyProp>('classic')
 // const selectedRoles = ref([5, 1])
@@ -126,8 +126,8 @@ defineExpose({ updateUser })
 
                         <VCol cols="12">
                             <VRow>
-                                <VCol cols="6" sm="6">
-                                    <VTreeview :items="projectList" v-model="roleData.projects"
+                                <VCol cols="6" sm="6" style="overflow-x: auto;">
+                                    <VTreeview :items="projectList" dir="rtl" v-model="roleData.projects"
                                         expand-icon="mdi-menu-left" item-value="id" item-title="title"
                                         select-strategy='classic' height="300px" lines="one" return-object selectable>
 
@@ -175,7 +175,16 @@ defineExpose({ updateUser })
                 </VForm>
             </VCardText>
         </VCard>
-        <!-- </PerfectScrollbar> -->
     </VDialog>
 
 </template>
+<!-- <style lang="css">
+.v-treeview-node__label {
+    overflow: initial;
+    text-overflow: initial;
+}
+
+.v-navigation-drawer__content {
+    overflow-x: auto;
+}
+</style> -->
