@@ -9,6 +9,7 @@ import { useToast } from "vue-toastification";
 import type { VForm } from 'vuetify/components/VForm';
 import { VTreeview } from 'vuetify/labs/VTreeview';
 
+
 const { t } = useI18n({ useScope: 'global' })
 const toast = useToast();
 
@@ -130,7 +131,13 @@ defineExpose({ updateUser })
                                     <VTreeview :items="projectList" dir="rtl" v-model="roleData.projects"
                                         expand-icon="mdi-menu-left" item-value="id" item-title="title"
                                         select-strategy='classic' height="300px" lines="one" return-object selectable>
-
+                                        <template v-slot:title="{ item }">
+                                            <VTooltip :text="item.title">
+                                                <template v-slot:activator="{ props }">
+                                                    <span v-bind="props"> {{ item.title }}</span>
+                                                </template>
+                                            </VTooltip>
+                                        </template>
                                     </VTreeview>
                                 </VCol>
                                 <VCol cols="6" sm="6">
@@ -139,6 +146,13 @@ defineExpose({ updateUser })
                                         select-strategy="classic" return-object selectable>
                                         <template v-slot:header="{ props }">
                                             <span>jsrs </span>
+                                        </template>
+                                        <template v-slot:title="{ item }">
+                                            <VTooltip :text="item.title">
+                                                <template v-slot:activator="{ props }">
+                                                    <span v-bind="props"> {{ item.title }}</span>
+                                                </template>
+                                            </VTooltip>
                                         </template>
                                     </VTreeview>
                                 </VCol>
