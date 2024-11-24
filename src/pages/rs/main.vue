@@ -7,9 +7,9 @@ const menu = ref(false);
 </script>
 
 <template>
-    <div>
-        <Splitpanes style="block-size: 400px;" :rtl="true" class="default-theme">
-            <Pane min-size="20" size="30">
+    <div class="main">
+        <Splitpanes style="height: calc(100vh - 157px);" :rtl="true" class="default-theme">
+            <Pane size="30">
                 <MCWindow title="درخت خانواده" @open="menu = true" />
             </Pane>
 

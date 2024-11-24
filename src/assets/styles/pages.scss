@@ -1,24 +1,30 @@
-.page-title{
+.page-title {
     font-weight: bold;
     font-size: 1.5em;
 }
 
-.v-treeview{
+.v-treeview {
     &::-webkit-scrollbar {
         width: 8px;
     }
-    
+
     &::-webkit-scrollbar-track {
         background: #f1f1f1;
         border-radius: 5px;
     }
-    
+
     &::-webkit-scrollbar-thumb {
         background: #c1c1c1;
         border-radius: 5px;
     }
-    
+
 }
 
-
-
+//rs main
+.main {
+    .splitpanes {
+        .splitpanes__splitter {
+            border: none !important;
+        }
+    }
+}
