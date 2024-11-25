@@ -5,9 +5,9 @@ import destr from 'destr'
 import type { PathParams } from 'msw'
 import { HttpResponse, http } from 'msw'
 
-export const handlerAppsRoles = [
+export const handlerAppsProjects = [
     // Get Users Details
-    http.get(('/api/apps/roles'), ({ request }) => {
+    http.get(('/api/apps/projects'), ({ request }) => {
         const url = new URL(request.url)
 
         const q = url.searchParams.get('q')
@@ -74,7 +74,7 @@ export const handlerAppsRoles = [
     }),
 
     // Get Single User Detail
-    http.get<PathParams>(('/api/apps/roles/:id'), ({ params }) => {
+    http.get<PathParams>(('/api/apps/projects/:id'), ({ params }) => {
         const roleId = Number(params.id)
 
         const role = db.roles.find(e => e.id === roleId)
@@ -99,7 +99,7 @@ export const handlerAppsRoles = [
     }),
 
     // Delete User
-    http.delete(('/api/apps/roles/:id'), ({ params }) => {
+    http.delete(('/api/apps/projects/:id'), ({ params }) => {
         const roleId = Number(params.id)
 
         const userIndex = db.roles.findIndex(e => e.id === roleId)
@@ -117,7 +117,7 @@ export const handlerAppsRoles = [
     }),
 
     // 👉 Add user
-    http.post(('/api/apps/roles'), async ({ request }) => {
+    http.post(('/api/apps/projects'), async ({ request }) => {
         const user = await request.json() as any
 
         db.roles.push({

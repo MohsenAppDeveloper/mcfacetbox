@@ -1,8 +1,21 @@
+import { ISimpleDTO, ISimpleTree } from "@/types/baseModels";
+import { UseClonedReturn } from "@vueuse/core";
+
 //👉 - مقادیر اعضاء یک شیء را به شیء دیگری شامل همان اعضاء انتقال میدهد
-export const objectMap = (newObject: Record<string, any>, oldObject: Record<string, any>) => {
-    for (const key in oldObject) {
-        if (oldObject.hasOwnProperty(key) && newObject.hasOwnProperty(key)) {
-            newObject[key] = oldObject[key]
+//NOTE - پارامتر دوم نوع مقدار بازگشت از تابع useclones میبشاد
+//NOTE - در کتابخانه useapi
+export const objectMap = (newObject: Record<string, any>, oldObject: UseClonedReturn<Record<string, any>>) => {
+    for (const key in oldObject.cloned.value) {
+        if (oldObject.cloned.value.hasOwnProperty(key) && newObject.hasOwnProperty(key)) {
+            newObject[key] = oldObject.cloned.value[key]
         }
     }
+}
+//👉 - Convert Array of SimplTree To Array of Simple Dto for Search
+export function convertSimpleTreeToSimpleDtoArray(tree: ISimpleTree[]): ISimpleDTO[] {
+    return tree.flatMap(node => {
+        const currentEntry = [{ id: node.id, title: node.title }];
+        const childrenEntries = node.children ? convertTreeToArray(node.children) : [];
+        return [...currentEntry, ...childrenEntries];
+    });
 }

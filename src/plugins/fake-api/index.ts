@@ -18,38 +18,41 @@ import { handlerPagesFaq } from '@db/pages/faq/index'
 import { handlerPagesHelpCenter } from '@db/pages/help-center/index'
 import { handlerPagesProfile } from '@db/pages/profile/index'
 import { handlerAppsgates } from './handlers/apps/gates'
+import { handlerAppsProjects } from './handlers/apps/projects'
 import { handlerAppsRoles } from './handlers/apps/roles'
 
 
+
 const worker = setupWorker(
-  ...handlerAppsEcommerce,
-  ...handlerAppsAcademy,
-  ...handlerAppsInvoice,
-  ...handlerAppsUsers,
-  ...handlerAppsEmail,
-  ...handlerAppsCalendar,
-  ...handlerAppsChat,
-  ...handlerAppsPermission,
-  ...handlerPagesHelpCenter,
-  ...handlerPagesProfile,
-  ...handlerPagesFaq,
-  ...handlerPagesDatatable,
-  ...handlerAppBarSearch,
-  ...handlerAppLogistics,
-  ...handlerAuth,
-  ...handlerDashboard,
-  ...handlerAppsgates,
-  ...handlerAppsRoles
+    ...handlerAppsEcommerce,
+    ...handlerAppsAcademy,
+    ...handlerAppsInvoice,
+    ...handlerAppsUsers,
+    ...handlerAppsEmail,
+    ...handlerAppsCalendar,
+    ...handlerAppsChat,
+    ...handlerAppsPermission,
+    ...handlerPagesHelpCenter,
+    ...handlerPagesProfile,
+    ...handlerPagesFaq,
+    ...handlerPagesDatatable,
+    ...handlerAppBarSearch,
+    ...handlerAppLogistics,
+    ...handlerAuth,
+    ...handlerDashboard,
+    ...handlerAppsgates,
+    ...handlerAppsRoles,
+    ...handlerAppsProjects
 )
 
 export default function () {
-  const workerUrl = `${import.meta.env.BASE_URL ?? '/'}mockServiceWorker.js`
+    const workerUrl = `${import.meta.env.BASE_URL ?? '/'}mockServiceWorker.js`
 
-  worker.start({
-    quiet: true,
-    serviceWorker: {
-      url: workerUrl,
-    },
-    onUnhandledRequest: 'bypass',
-  })
+    worker.start({
+        quiet: true,
+        serviceWorker: {
+            url: workerUrl,
+        },
+        onUnhandledRequest: 'bypass',
+    })
 }

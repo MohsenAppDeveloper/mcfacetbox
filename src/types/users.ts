@@ -1,9 +1,9 @@
-import { baseDataTableModel } from "./baseModels";
+import { baseDataTableModel, ISimpleDTO } from "./baseModels";
 
 export interface IUser extends baseDataTableModel {
     id: number;
     fullName: string;
-    role: Array<number>;
+    role: ISimpleDTO[];
     contact: string;
     email: string;
     createDate: string;
@@ -21,7 +21,7 @@ export class UserModel implements IUser {
     disabled: boolean = false;
     id: number = 0;
     fullName: string = '';
-    role: Array<number> = [];
+    role: ISimpleDTO[] = [];
     contact: string = '';
     email: string = '';
     createDate: string = '';
@@ -30,4 +30,4 @@ export class UserModel implements IUser {
     expireDate: string = '';
     description: string = '';
 
-} 
+}

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 //!SECTION این فرم برای مدیریت پنل ها در این سامانه میباشد
 import MCDataTable from '@/components/MCDataTable.vue';
+import { ISimpleDTO } from '@/types/baseModels';
 import { useToast } from "vue-toastification";
 import { VCol, VDialog } from 'vuetify/lib/components/index.mjs';
-
 
 const { t } = useI18n({ useScope: 'global' })
 const mcdatatableUser = ref(MCDataTable)
@@ -30,6 +30,7 @@ const userHeaders = [
 const roleHeaders = [
     { title: t('role.title'), key: 'title' },
     { title: t('permissions'), key: 'permissions' },
+    { title: t('role.trees'), key: 'projects' },
     { title: t('createDate'), key: 'createDate' },
     { title: t('status'), key: 'isActive', sortable: false },
     // { title: t('users'), key: 'userType', sortable: false },
@@ -73,7 +74,13 @@ const userEdit = (dataItem: Record<string, any>) => {
     dialogUser.value.updateUser({ ...dataItem })
     // gateEditDataItem.value = { ...dataItem } ass GateModel
     // console.log('gateedititem', gateEditDataItem.value);
-
+}
+const roleEdit = (dataItem: Record<string, any>) => {
+    isAddNewRoleDialogVisible.value = true
+    // gateUpdateActive.value = true
+    dialogUserRole.value.updateRole({ ...dataItem })
+    // gateEditDataItem.value = { ...dataItem } ass GateModel
+    // console.log('gateedititem', gateEditDataItem.value);
 }
 const userDataAdded = (gateDataId: number) => {
     mcdatatableUser.value.refreshData()
@@ -98,17 +105,17 @@ const roleDataAdded = (gateDataId: number) => {
 
                     <MCDataTable ref="mcdatatableUser" :headers="userHeaders" :api-url="userApiUrl"
                         @edit-item="userEdit">
-
-                        <template #item.gateTitle="{ value }">
+                        <!-- <template #item.role="{ value }">
                             <div class="d-flex align-center gap-x-4">
-                                <VAvatar size="34" :variant="!value.usersavatar ? 'tonal' : undefined"
-                                    :color="!value.usersavatar ? resolveUserRoleVariant(value.userType).color : undefined">
-                                    <VImg v-if="value.usersavatar" :src="value.usersavatar" />
-                                    <span v-else>{{ avatarText(value.gateTitle) }}</span>
-                                </VAvatar>
-                                {{ value.gateTitle }}
+
+                                {{ value.permissions.map((item: ISimpleDTO) => `${item.title}`).join(' ,') }}
                             </div>
-                            <!-- {{ value + "asdasdasd" }} -->
+                        </template> -->
+                        <template #item.role="{ value }">
+                            <div class="d-flex align-center gap-x-4">
+
+                                {{ value.role.map((item: ISimpleDTO) => `${item.title}`).join(' ,') }}
+                            </div>
                         </template>
                         <template #item.isActive="{ value }">
                             <VChip :color="resolveActiveColor(value.isActive)"
@@ -137,20 +144,22 @@ const roleDataAdded = (gateDataId: number) => {
                 <VCard variant="outlined">
 
                     <MCDataTable ref="mcdatatableUserRole" :headers="roleHeaders" :api-url="userRoleApiUrl"
-                        @edit-item="userEdit">
+                        @edit-item="roleEdit">
 
-                        <template #item.gateTitle="{ value }">
+                        <template #item.permissions="{ value }">
                             <div class="d-flex align-center gap-x-4">
-                                <VAvatar size="34" :variant="!value.usersavatar ? 'tonal' : undefined"
-                                    :color="!value.usersavatar ? resolveUserRoleVariant(value.userType).color : undefined">
-                                    <VImg v-if="value.usersavatar" :src="value.usersavatar" />
-                                    <span v-else>{{ avatarText(value.gateTitle) }}</span>
-                                </VAvatar>
-                                {{ value.gateTitle }}
+
+                                {{ value.permissions.map((item: ISimpleDTO) => `${item.title}`).join(' ,') }}
                             </div>
                             <!-- {{ value + "asdasdasd" }} -->
                         </template>
+                        <template #item.projects="{ value }">
+                            <div class="d-flex align-center gap-x-4">
 
+                                {{ value.projects.map((item: ISimpleDTO) => `${item.title}`).join(' ,') }}
+                            </div>
+                            <!-- {{ value + "asdasdasd" }} -->
+                        </template>
                         <template #item.isActive="{ value }">
                             <VChip :color="resolveActiveColor(value.isActive)"
                                 :class="`text-${resolveActiveColor(value.isActive)}`" size="small"
@@ -168,7 +177,7 @@ const roleDataAdded = (gateDataId: number) => {
         <!-- 👉 Add New User -->
         <MCDialogUserAdd ref="dialogUser" v-model:is-dialog-visible="isAddNewUserDialogVisible"
             @user-data-added="userDataAdded" :api-url="userApiUrl" />
-        <MCDialogRoleAdd ref="dialogRole" v-model:is-dialog-visible="isAddNewRoleDialogVisible"
+        <MCDialogRoleAdd ref="dialogUserRole" v-model:is-dialog-visible="isAddNewRoleDialogVisible"
             @role-data-added="roleDataAdded" :api-url="userRoleApiUrl" />
     </section>
 </template>

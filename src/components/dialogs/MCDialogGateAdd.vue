@@ -88,7 +88,7 @@ const onReset = () => {
 }
 
 const updateGate = (gateDataItem: GateProperties) => {
-    objectMap(gateData, gateDataItem)
+    objectMap(gateData, useCloned(gateDataItem))
 }
 
 

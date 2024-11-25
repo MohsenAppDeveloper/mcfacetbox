@@ -1,9 +1,8 @@
 <script setup lang="ts">
-//!SECTION این دیالوگ برای افزودن و یا ویرایش یک پنل یا درگاه کاربری میباشد
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+//!SECTION این دیالوگ برای افزودن و یا ویرایش یک پروژه میباشد
 import AppTextarea from '@/@core/components/app-form-elements/AppTextarea.vue';
 import { serviceAdd, serviceUpdate } from '@/services/genericServices';
-import { IUser, UserModel } from '@/types/users';
+import { IProject, ProjectModel } from '@/types/project';
 import { useToast } from "vue-toastification";
 import type { VForm } from 'vuetify/components/VForm';
 
@@ -13,8 +12,8 @@ const toast = useToast();
 
 interface Emit {
     (e: 'update:isDialogVisible', value: boolean): void
-    (e: 'userDataAdded', value: number): void
-    (e: 'userDataUpdated', value: number): void
+    (e: 'projectDataAdded', value: number): void
+    (e: 'projectDataUpdated', value: number): void
 
 }
 
@@ -28,8 +27,7 @@ const emit = defineEmits<Emit>()
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
 const isloading = ref(false)
-const userData = reactive<IUser>(new UserModel())
-const rolesList = reactive([{ id: 1, title: 'پژوهشگر' }, { id: 2, title: 'مدیر کل' }, { id: 3, title: 'ناظر' }, { id: 4, title: 'ارزیاب یک' }, { id: 5, title: 'ارزیاب دو' }, { id: 6, title: 'مدیر نظارت' }, { id: 7, title: 'خواندنی' }])
+const projectData = reactive<IProject>(new ProjectModel())
 // const selectedRoles = ref([5, 1])
 
 // watch(() => props.isDialogVisible, (newvalue, oldvalue) => {
@@ -37,12 +35,12 @@ const rolesList = reactive([{ id: 1, title: 'پژوهشگر' }, { id: 2, title: 
 //         userData.id = 0;
 //     }
 // })
-async function userAdd() {
+async function projectAdd() {
 
-    const { serviceData, serviceError } = await serviceAdd<IUser>(userData, props.apiUrl == undefined ? '' : props.apiUrl)
+    const { serviceData, serviceError } = await serviceAdd<IProject>(projectData, props.apiUrl == undefined ? '' : props.apiUrl)
     if (serviceData.value) {
         toast.success(t("alert.dataActionSuccess"));
-        emit('userDataAdded', serviceData.value)
+        emit('projectDataAdded', serviceData.value)
         emit('update:isDialogVisible', false)
         nextTick(() => {
             onReset()
@@ -53,14 +51,14 @@ async function userAdd() {
     }
 }
 
-async function userEdit() {
+async function projectEdit() {
 
-    const { serviceData, serviceError } = await serviceUpdate<IUser>(userData, userData.id, props.apiUrl == undefined ? '' : props.apiUrl)
+    const { serviceData, serviceError } = await serviceUpdate<IProject>(projectData, projectData.id, props.apiUrl == undefined ? '' : props.apiUrl)
     console.log('gateedit', serviceData.value, serviceError.value);
 
     if (serviceData.value) {
         toast.success(t("alert.dataActionSuccess"));
-        emit('userDataUpdated', serviceData.value)
+        emit('projectDataUpdated', serviceData.value)
         emit('update:isDialogVisible', false)
         nextTick(() => {
             onReset()
@@ -74,14 +72,11 @@ const onSubmit = () => {
     refForm.value?.validate().then(({ valid }) => {
         if (valid) {
             isloading.value = true
-            setTimeout(() => {
-                isloading.value = false
-                if (userData.id > 0) {
-                    userEdit()
-                }
-                else
-                    userAdd()
-            }, 3000);
+            if (projectData.id > 0) {
+                projectEdit()
+            }
+            else
+                projectAdd()
             return;
         }
     })
@@ -90,81 +85,45 @@ const onSubmit = () => {
 //     console.log('watchuserdata', newdata, olddata);
 // })
 const onReset = () => {
-    userData.id = 0;
+    projectData.id = 0;
     emit('update:isDialogVisible', false)
     refForm.value?.reset()
     refForm.value?.resetValidation()
 }
 
-const updateUser = (userDataItem: IUser) => {
-    objectMap(userData, userDataItem)
+const updateProject = (projectDataItem: IProject) => {
+    objectMap(projectData, useCloned(projectDataItem))
 }
 
 
-defineExpose({ updateUser })
+defineExpose({ updateProject })
 </script>
 
 <template>
     <VDialog :width="$vuetify.display.smAndDown ? 'auto' : 900" :model-value="props.isDialogVisible"
         @update:model-value="onReset" persistent>
-        <!-- 👉 Dialog close btn -->
         <DialogCloseBtn @click="onReset" :disabled="isloading" />
-        <!-- <PerfectScrollbar :options="{ wheelPropagation: false }"> -->
-        <VCard flat :title="$t('user.addedit')" :subtitle="$t('user.addeditsubtitle')">
+        <VCard flat :title="$t('project.addedit')" :subtitle="$t('project.addeditsubtitle')">
             <VCardText>
                 <!-- 👉 Form -->
                 <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
                     <VRow>
-                        <!-- 👉 Gate Title-->
                         <VCol cols="12">
-                            <AppTextField v-model="userData.fullName"
-                                :rules="[requiredValidator(userData.fullName, $t('validatorrequired'))]"
-                                :label="$t('nameandfamily')" placeholder="" />
-                        </VCol>
-
-                        <VCol cols="12">
-                            <VRow>
-                                <!-- 👉 Contact -->
-                                <VCol cols="12" sm="6">
-                                    <AppTextField v-model="userData.contact" type="number"
-                                        :rules="[requiredValidator(userData.contact, $t('validatorrequired'))]"
-                                        :label="$t('mobilenumber')" placeholder="09xx-xxx-xx-xx" />
-                                </VCol>
-                                <!-- 👉 Email -->
-                                <VCol cols="12" sm="6">
-                                    <AppTextField v-model="userData.email"
-                                        :rules="[requiredValidator(userData.email, $t('validatorrequired')), emailValidator(userData.email, $t('validatoremail'))]"
-                                        :label="$t('email')" placeholder="ٍE-mail" />
-                                </VCol>
-                            </VRow>
-
+                            <AppTextField v-model="projectData.title"
+                                :rules="[requiredValidator(projectData.title, $t('validatorrequired'))]"
+                                :label="$t('project.title')" placeholder="" />
                         </VCol>
                         <VCol cols="12">
                             <VRow>
-                                <!-- 👉 Name -->
-                                <VCol sm="10" cols="12">
-                                    <AppAutocomplete :items="rolesList" v-model="userData.role" item-title="title"
-                                        item-value="id" :label="$t('role.select')"
-                                        :rules="[requiredValidator(userData.role, $t('validatorrequired'))]" chips
-                                        closable-chips multiple>
-
-                                    </AppAutocomplete>
-                                    <!-- :rules="[requiredValidator(userData.role, $t('validatorrequired'))]"  -->
-
-                                </VCol>
-
                                 <VCol sm="2" cols="12" align-self="end">
-                                    <VSwitch v-model="userData.isActive" :label="$t('active')" />
+                                    <VSwitch v-model="projectData.isActive" :label="$t('active')" />
                                 </VCol>
                             </VRow>
                         </VCol>
                         <VCol cols="12">
-                            <AppTextarea v-model="userData.description" :label="$t('description')"
+                            <AppTextarea v-model="projectData.description" :label="$t('description')"
                                 placeholder="Write note here..." :rows="4" />
                         </VCol>
-
-
-                        <!-- 👉 Submit and Cancel -->
                         <VCol cols="12">
                             <VBtn type="submit" class="me-3">
                                 <VProgressCircular size="20" width="3" v-if="isloading" indeterminate>

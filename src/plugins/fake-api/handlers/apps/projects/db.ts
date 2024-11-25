@@ -1,7 +1,7 @@
-import { IRole } from '@/types/rolePermission'
+import { IProject } from '@/types/project'
 
 interface DB {
-    roles: IRole[]
+    roles: IProject[]
 }
 
 export const db: DB = {
@@ -16,8 +16,8 @@ export const db: DB = {
             selectable: false,
             disabled: true,
             title: "مدیر",
-            permissions: [{ id: 1, title: "درخت" }, { id: 0, title: "افزودن درخت" }],
-            projects: []
+
+
         },
         {
             id: 2,
@@ -29,8 +29,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "کاربر",
-            permissions: [{ id: 2, title: "محتوا" }, { id: 1, title: "مشاهده محتوا" }],
-            projects: []
+
+
         },
         {
             id: 3,
@@ -42,8 +42,8 @@ export const db: DB = {
             selectable: true,
             disabled: true,
             title: "مهمان",
-            permissions: [],
-            projects: []
+
+
         },
         {
             id: 4,
@@ -55,8 +55,8 @@ export const db: DB = {
             selectable: false,
             disabled: false,
             title: "مدیر سیستم",
-            permissions: [{ id: 3, title: "کاربران" }],
-            projects: []
+
+
         },
         {
             id: 5,
@@ -68,8 +68,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "توسعه‌دهنده",
-            permissions: [{ id: 4, title: "کد" }, { id: 2, title: "نوشتن کد" }],
-            projects: []
+
+
         }
         ,
         {
@@ -82,8 +82,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "طراح",
-            permissions: [{ id: 5, title: "طراحی" }, { id: 3, title: "طراحی UI" }],
-            projects: []
+
+
         },
         {
             id: 7,
@@ -95,8 +95,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "تحلیل‌گر",
-            permissions: [{ id: 6, title: "تحلیل" }],
-            projects: []
+
+
         },
         {
             id: 8,
@@ -108,8 +108,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "بازاریاب",
-            permissions: [{ id: 7, title: "بازاریابی" }],
-            projects: []
+
+
         },
         {
             id: 9,
@@ -121,8 +121,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "پشتیبان",
-            permissions: [{ id: 8, title: "پشتیبانی" }],
-            projects: []
+
+
         },
         {
             id: 10,
@@ -134,8 +134,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "مدیر پروژه",
-            permissions: [{ id: 9, title: "مدیریت پروژه" }],
-            projects: []
+
+
         },
         {
             id: 11,
@@ -147,8 +147,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "حسابدار",
-            permissions: [{ id: 10, title: "حسابداری" }],
-            projects: []
+
+
         },
         {
             id: 12,
@@ -160,8 +160,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "مسئول منابع انسانی",
-            permissions: [{ id: 11, title: "مدیریت منابع انسانی" }],
-            projects: []
+
+
         },
         {
             id: 13,
@@ -173,8 +173,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "مدیر محصول",
-            permissions: [{ id: 12, title: "مدیریت محصول" }],
-            projects: []
+
+
         },
         {
             id: 14,
@@ -186,8 +186,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "مدیر فروش",
-            permissions: [{ id: 13, title: "فروش" }],
-            projects: []
+
+
         },
         {
             id: 15,
@@ -199,8 +199,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "مدیر بازاریابی",
-            permissions: [{ id: 14, title: "بازاریابی" }],
-            projects: []
+
+
         },
         {
             id: 16,
@@ -212,8 +212,8 @@ export const db: DB = {
             selectable: false,
             disabled: false,
             title: "مدیر فناوری اطلاعات",
-            permissions: [{ id: 15, title: "فناوری اطلاعات" }],
-            projects: []
+
+
         },
         {
             id: 17,
@@ -225,8 +225,8 @@ export const db: DB = {
             selectable: true,
             disabled: true,
             title: "مدیر امنیت",
-            permissions: [{ id: 16, title: "امنیت" }],
-            projects: []
+
+
         },
         {
             id: 18,
@@ -238,8 +238,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "مدیر شبکه",
-            permissions: [{ id: 17, title: "شبکه" }],
-            projects: []
+
+
         },
         {
             id: 19,
@@ -251,8 +251,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "تحلیل‌گر داده",
-            permissions: [{ id: 18, title: "تحلیل داده" }],
-            projects: []
+
+
         },
         {
             id: 20,
@@ -264,8 +264,8 @@ export const db: DB = {
             selectable: true,
             disabled: false,
             title: "سرپرست",
-            permissions: [{ id: 19, title: "مدیریت" }],
-            projects: []
+
+
         }
     ]
 }

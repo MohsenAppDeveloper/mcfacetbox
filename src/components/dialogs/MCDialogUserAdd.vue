@@ -30,13 +30,11 @@ const refForm = ref<VForm>()
 const isloading = ref(false)
 const userData = reactive<IUser>(new UserModel())
 const rolesList = reactive([{ id: 1, title: 'پژوهشگر' }, { id: 2, title: 'مدیر کل' }, { id: 3, title: 'ناظر' }, { id: 4, title: 'ارزیاب یک' }, { id: 5, title: 'ارزیاب دو' }, { id: 6, title: 'مدیر نظارت' }, { id: 7, title: 'خواندنی' }])
-// const selectedRoles = ref([5, 1])
+const selectedRoles = ref<Number[]>([])
 
-// watch(() => props.isDialogVisible, (newvalue, oldvalue) => {
-//     if (!newvalue) {
-//         userData.id = 0;
-//     }
-// })
+watch(selectedRoles, (newvalue, oldvalue) => {
+    userData.role = rolesList.filter((item) => selectedRoles.value.includes(item.id))
+})
 async function userAdd() {
 
     const { serviceData, serviceError } = await serviceAdd<IUser>(userData, props.apiUrl == undefined ? '' : props.apiUrl)
@@ -74,14 +72,13 @@ const onSubmit = () => {
     refForm.value?.validate().then(({ valid }) => {
         if (valid) {
             isloading.value = true
-            setTimeout(() => {
-                isloading.value = false
-                if (userData.id > 0) {
-                    userEdit()
-                }
-                else
-                    userAdd()
-            }, 3000);
+            isloading.value = false
+            if (userData.id > 0) {
+                userEdit()
+            }
+            else
+                userAdd()
+
             return;
         }
     })
@@ -97,7 +94,9 @@ const onReset = () => {
 }
 
 const updateUser = (userDataItem: IUser) => {
-    objectMap(userData, userDataItem)
+    objectMap(userData, useCloned(userDataItem))
+    selectedRoles.value = userData.role.map(item => item.id)
+
 }
 
 
@@ -143,7 +142,7 @@ defineExpose({ updateUser })
                             <VRow>
                                 <!-- 👉 Name -->
                                 <VCol sm="10" cols="12">
-                                    <AppAutocomplete :items="rolesList" v-model="userData.role" item-title="title"
+                                    <AppAutocomplete :items="rolesList" v-model="selectedRoles" item-title="title"
                                         item-value="id" :label="$t('role.select')"
                                         :rules="[requiredValidator(userData.role, $t('validatorrequired'))]" chips
                                         closable-chips multiple>
