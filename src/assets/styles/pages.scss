@@ -3,7 +3,7 @@
     font-size: 1.5em;
 }
 
-div{
+div {
     &::-webkit-scrollbar {
         width: 8px;
     }
@@ -16,7 +16,7 @@ div{
     &::-webkit-scrollbar-thumb {
         background: #c1c1c1;
         border-radius: 5px;
-    } 
+    }
 }
 
 //rs main
@@ -24,6 +24,16 @@ div{
     .splitpanes {
         .splitpanes__splitter {
             border: none !important;
+        }
+    }
+}
+
+.v-treeview {
+    .v-list-item {
+        &:not(.v-list-group__header) {
+            .v-list-item__prepend {
+                padding-right: 30px;
+            }
         }
     }
 }
