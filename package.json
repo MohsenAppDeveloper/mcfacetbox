@@ -29,6 +29,7 @@
     "@tiptap/starter-kit": "2.2.4",
     "@tiptap/vue-3": "2.2.4",
     "@types/moment-jalaali": "^0.7.9",
+    "@types/splitpanes": "^2.2.6",
     "@vueuse/core": "10.9.0",
     "@vueuse/math": "10.9.0",
     "apexcharts": "3.46.0",
