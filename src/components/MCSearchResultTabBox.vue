@@ -24,7 +24,7 @@ const emit = defineEmits<Emit>();
 </script>
 
 <template>
-    <VCard>
+    <VCard class="mc-search-result">
 
         <VTabsWindow v-model="tabdatamodel">
             <VTabsWindowItem v-for="item in dataitems.content" :key="item.id" :value="item.id">

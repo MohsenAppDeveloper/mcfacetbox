@@ -1,0 +1,27 @@
+//rs main
+.main {
+    .splitpanes {
+        .splitpanes__splitter {
+            border: none !important;
+        }
+    }
+
+    .mc-search-result {
+        .v-tabs {
+            .v-tab {
+                &:not(.v-tab--selected) {
+                    opacity: 0;
+                }
+
+            }
+        }
+
+        &:hover {
+            .v-tabs {
+                .v-tab {
+                    opacity: 1;
+                }
+            }
+        }
+    }
+}
