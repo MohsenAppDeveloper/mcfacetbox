@@ -73,8 +73,8 @@ const selectedProjects = ref<Number[]>([])
             </Pane>
         </Splitpanes>
 
-        <VMenu v-model="menu">
+        <!-- <VMenu v-model="menu">
             <VList :items="items" />
-        </VMenu>
+        </VMenu> -->
     </div>
 </template>
