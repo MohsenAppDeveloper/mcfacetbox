@@ -36,3 +36,32 @@ div {
         }
     }
 }
+
+.v-selection-control {
+    .v-selection-control__input {
+        svg {
+            display: none;
+        }
+
+        input[type="checkbox"] {
+            display: block !important;
+            opacity: 1;
+            width: 15px;
+            height: 15px;
+            background-color: white;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            // border: 1px solid;
+            // border-color: inherit !important;
+            appearance: none;
+            -webkit-appearance: none;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+
+            &:checked {
+                background-color: rgb(var(--v-theme-primary));
+            }
+        }
+    }
+}
