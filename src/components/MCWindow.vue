@@ -54,26 +54,4 @@ interface Emit {
   </div>
 </template>
 
-<style lang="scss">
-.tool-bar {
-  border-block-end: 1px solid #7f56d9;
-}
-
-.title {
-  font-weight: bold;
-  margin-inline-end: 10px;
-}
-
-.content-box {
-  padding: 10px;
-  background-color: #f8f7fa;
-  block-size: 100%;
-}
-
-.content {
-  border-radius: 6px;
-  background-color: white;
-  block-size: 100%;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 7.5%);
-}
-</style>
+<style lang="scss"></style>
