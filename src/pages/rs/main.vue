@@ -57,6 +57,7 @@ function getInfoSearch() { }
                 </VContainer>
                 //TODO - تست کامپوننت تب بار، این کد موقتی است
                 <MCSearchResultTabBox :dataitems="collectingdataitems" />
+                <MCSearchResultTabBox :dataitems="collectingdataitems" />
               </template>
             </MCWindow>
           </Pane>
