@@ -364,6 +364,7 @@ declare module 'vue' {
     MCDialogTreeAdd: typeof import('./src/components/dialogs/MCDialogTreeAdd.vue')['default']
     MCDialogUserAdd: typeof import('./src/components/dialogs/MCDialogUserAdd.vue')['default']
     MCInputDatePicker: typeof import('./src/components/MCInputDatePicker.vue')['default']
+    MCMainTree: typeof import('./src/components/MCMainTree.vue')['default']
     MCNotify: typeof import('./src/components/notify/MCNotify.vue')['default']
     MCSearchResultTabBox: typeof import('./src/components/MCSearchResultTabBox.vue')['default']
     MCWindow: typeof import('./src/components/MCWindow.vue')['default']

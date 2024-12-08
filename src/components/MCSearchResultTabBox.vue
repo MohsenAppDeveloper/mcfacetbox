@@ -53,6 +53,7 @@ const onContextMenu = (e: MouseEvent) => {
   <VCard
     v-if="props.dataitems.content.length > 0"
     v-no-context-menu
+    class="mc-search-result"
   >
     <VTabsWindow v-model="tabdatamodel">
       <VTabsWindowItem
