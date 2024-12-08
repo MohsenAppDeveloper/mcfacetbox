@@ -16,36 +16,56 @@ function getInfoSearch() { }
                 </MCWindow>
             </Pane>
 
-            <Pane>
-                <Splitpanes horizontal :rtl="true" class="default-theme">
-                    <Pane>
-                        <MCWindow title="گردآوری اطلاعات" @open="menu = true">
-                            <template #default>
-                                <VContainer>
-                                    <VRow>
-                                        <VCol cols="12" md="6" class="mx-auto">
-                                            <VTextField v-model="infoSearch" placeholder="جستجو"
-                                                append-inner-icon="mdi-magnify" class="search-bar"
-                                                @click:append-inner="getInfoSearch" single-line>
-                                            </VTextField>
-                                        </VCol>
-                                    </VRow>
-                                </VContainer>
-                                //TODO - تست کامپوننت تب بار، این کد موقتی است
-                                <MCSearchResultTabBox></MCSearchResultTabBox>
-                            </template>
-                        </MCWindow>
-                    </Pane>
+      <Pane>
+        <Splitpanes
+          horizontal
+          rtl
+          class="default-theme"
+        >
+          <Pane>
+            <MCWindow
+              title="گردآوری اطلاعات"
+              @open="menu = true"
+            >
+              <template #default>
+                <VContainer>
+                  <VRow>
+                    <VCol
+                      cols="12"
+                      md="6"
+                      class="mx-auto"
+                    >
+                      <VTextField
+                        v-model="infoSearch"
+                        placeholder="جستجو"
+                        append-inner-icon="mdi-magnify"
+                        class="search-bar"
+                        single-line
+                        @click:append-inner="getInfoSearch"
+                      />
+                    </VCol>
+                  </VRow>
+                </VContainer>
+                //TODO - تست کامپوننت تب بار، این کد موقتی است
+                <MCSearchResultTabBox :dataitems="collectingdataitems" />
+              </template>
+            </MCWindow>
+          </Pane>
 
-                    <Pane>
-                        <MCWindow title="قفسه داده" @open="menu = true" />
-                    </Pane>
-                </Splitpanes>
-            </Pane>
+          <Pane>
+            <MCWindow
+              title="قفسه داده"
+              @open="menu = true"
+            />
+          </Pane>
         </Splitpanes>
+      </Pane>
+    </Splitpanes>
 
-        <!-- <VMenu v-model="menu">
-            <VList :items="items" />
-        </VMenu> -->
-    </div>
+    <!--
+      <VMenu v-model="menu">
+      <VList :items="items" />
+      </VMenu>
+    -->
+  </div>
 </template>

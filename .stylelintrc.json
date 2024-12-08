@@ -41,6 +41,10 @@
                 ]
             }
         ],
-        "media-feature-range-notation": null
+        "media-feature-range-notation": null,
+        "no-descending-specificity": null,
+        "no-duplicate-selectors": null,
+        "font-family-name-quotes": null,
+        "font-family-no-missing-generic-family-keyword": null
     }
 }

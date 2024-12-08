@@ -2,6 +2,7 @@ import App from '@/App.vue';
 import { registerPlugins } from '@core/utils/plugins';
 import { createApp } from 'vue';
 import Toast, { PluginOptions, POSITION } from "vue-toastification";
+import noContextMenu from './utils/directives';
 
 // Styles
 import "@/assets/fonts/Vazir/vazirfont.css";
@@ -22,6 +23,7 @@ const options: PluginOptions = {
 // Create vue app
 const app = createApp(App)
 // Register plugins
+app.directive('no-context-menu', noContextMenu);
 app.use(Toast, options)
 registerPlugins(app)
 

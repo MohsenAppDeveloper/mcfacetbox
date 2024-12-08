@@ -1,7 +1,6 @@
 import { ISimpleDTO, ISimpleSelectableDTO } from "./baseModels";
 
 
-
 export interface ISearchResult {
     id: number;
     title: string;
@@ -20,4 +19,15 @@ export interface ISearchResultTabBoxItem {
 export interface ISearchResultTabBox {
     id: number;
     content: ISearchResultTabBoxItem[]
+}
+
+export class SearchResultTabBoxModel implements ISearchResultTabBox {
+    id: number = 0;
+    content: SearchResultTabBoxItemModel[] = [];
+}
+export class SearchResultTabBoxItemModel implements ISearchResultTabBoxItem {
+    id: number = 0;
+    title: string = '';
+    content: ISimpleSelectableDTO[] = [];
+
 }

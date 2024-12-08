@@ -1,274 +1,274 @@
-
 $info-color: #3195a5;
 $success-color: #3e884f;
 $warning-color: #b69329;
 $error-color: #c43d4b;
-$foreground-color : white;
-$theme-color-1 : #0056b3;
-$border-radius : .3125rem;
-$theme-color-2:#fff;
-$secondary-color : #808390;
-$primary-color:#0056b3;
-
+$foreground-color: white;
+$theme-color-1: #0056b3;
+$border-radius: 0.3125rem;
+$theme-color-2: #fff;
+$secondary-color: #808390;
+$primary-color: #0056b3;
 
 .notification-container {
-    box-sizing: border-box;
-    position: fixed;
-    top: 0;
-    right: 0;
-    z-index: 999999;
-    width: 320px;
-    padding: 0px 15px;
-    max-height: calc(100% - 30px);
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-  
-  .notification {
-    box-sizing: border-box;
-    padding: 15px 15px 15px 58px;
-    border-radius: 2px;
-    cursor: pointer;
-    font-size: 1em;
-    line-height: 1.2em;
-    position: relative;
-    opacity: 0.9;
-    margin-top: 15px;
-  }
-  
-  .notification .title {
-    font-size: 1em;
-    line-height: 1.2em;
-    font-weight: bold;
-    margin: 0 0 5px 0;
-  }
-  
-  .notification:hover,
-  .notification:focus {
-    opacity: 1;
-  }
-  
-  .notification-enter {
-    visibility: hidden;
-    transform: translate3d(100%, 0, 0);
-  }
-  
-  .notification-enter.notification-enter-active {
-    visibility: visible;
-    transform: translate3d(0, 0, 0);
-    transition: all 0.4s;
-  }
-  
-  .notification-leave {
-    visibility: visible;
-    transform: translate3d(0, 0, 0);
-  }
-  
-  .notification-leave.notification-leave-active {
-    visibility: hidden;
-    transform: translate3d(100%, 0, 0);
-    transition: all 0.4s;
+  position: fixed;
+  z-index: 999999;
+  overflow: hidden auto;
+  box-sizing: border-box;
+  inline-size: 320px;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  max-block-size: calc(100% - 30px);
+  padding-block: 0;
+  padding-inline: 15px;
+}
+
+.notification {
+  position: relative;
+  box-sizing: border-box;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 1em;
+  line-height: 1.2em;
+  margin-block-start: 15px;
+  opacity: 0.9;
+  padding-block: 15px;
+  padding-inline: 58px 15px;
+}
+
+.notification .title {
+  font-size: 1em;
+  font-weight: bold;
+  line-height: 1.2em;
+  margin-block: 0 5px;
+  margin-inline: 0;
+}
+
+.notification:hover,
+.notification:focus {
+  opacity: 1;
+}
+
+.notification-enter {
+  transform: translate3d(100%, 0, 0);
+  visibility: hidden;
+}
+
+.notification-enter.notification-enter-active {
+  transform: translate3d(0, 0, 0);
+  transition: all 0.4s;
+  visibility: visible;
+}
+
+.notification-leave {
+  transform: translate3d(0, 0, 0);
+  visibility: visible;
+}
+
+.notification-leave.notification-leave-active {
+  transform: translate3d(100%, 0, 0);
+  transition: all 0.4s;
+  visibility: hidden;
+}
+
+.notification {
+  border-radius: $border-radius;
+  padding-block: 25px;
+  padding-inline: 25px;
+}
+
+.notification::before {
+  display: none;
+  content: "";
+}
+
+.notification-primary {
+  border: 1px solid $theme-color-1;
+  background-color: $foreground-color;
+  color: $theme-color-1;
+  opacity: 1;
+
+  .notification-message {
+    .title {
+      color: $theme-color-1;
+    }
+
+    .message {
+      color: $primary-color;
+    }
   }
 
-  .notification {
-    border-radius: $border-radius;
-    padding: 25px 25px 25px 25px;
-  }
-  
-  .notification:before {
-    content: "";
-    display: none;
-  }
-  
-  .notification-primary {
-    color: $theme-color-1;
-    background-color: $foreground-color;
-    border: 1px solid $theme-color-1;
-    opacity: 1;
-  
+  &.filled {
+    background-color: $theme-color-1;
+    color: $foreground-color;
+
     .notification-message {
       .title {
-        color: $theme-color-1;
+        color: $foreground-color;
       }
-  
+
       .message {
-        color: $primary-color;
-      }
-    }
-  
-    &.filled {
-      color: $foreground-color;
-      background-color: $theme-color-1;
-  
-      .notification-message {
-        .title {
-          color: $foreground-color;
-        }
-  
-        .message {
-          color: $foreground-color;
-        }
+        color: $foreground-color;
       }
     }
   }
-  
-  .notification-secondary {
-    color: $theme-color-2;
-    background-color: $foreground-color;
-    border: 1px solid $theme-color-2;
-    opacity: 1;
-  
+}
+
+.notification-secondary {
+  border: 1px solid $theme-color-2;
+  background-color: $foreground-color;
+  color: $theme-color-2;
+  opacity: 1;
+
+  .notification-message {
+    .title {
+      color: $theme-color-2;
+    }
+
+    .message {
+      color: $secondary-color;
+    }
+  }
+
+  &.filled {
+    background-color: $theme-color-2;
+    color: $foreground-color;
+
     .notification-message {
       .title {
-        color: $theme-color-2;
+        color: $foreground-color;
       }
-  
+
       .message {
-        color: $secondary-color;
-      }
-    }
-  
-    &.filled {
-      color: $foreground-color;
-      background-color: $theme-color-2;
-  
-      .notification-message {
-        .title {
-          color: $foreground-color;
-        }
-  
-        .message {
-          color: $foreground-color;
-        }
+        color: $foreground-color;
       }
     }
   }
-  
-  .notification-info {
-    color: $info-color;
-    background-color: $foreground-color;
-    border: 1px solid $info-color;
-    opacity: 1;
-  
+}
+
+.notification-info {
+  border: 1px solid $info-color;
+  background-color: $foreground-color;
+  color: $info-color;
+  opacity: 1;
+
+  .notification-message {
+    .title {
+      color: $info-color;
+    }
+
+    .message {
+      color: $secondary-color;
+    }
+  }
+
+  &.filled {
+    background-color: $info-color;
+    color: $foreground-color;
+
     .notification-message {
       .title {
-        color: $info-color;
+        color: $foreground-color;
       }
-  
+
       .message {
-        color: $secondary-color;
-      }
-    }
-  
-    &.filled {
-      color: $foreground-color;
-      background-color: $info-color;
-  
-      .notification-message {
-        .title {
-          color: $foreground-color;
-        }
-  
-        .message {
-          color: $foreground-color;
-        }
+        color: $foreground-color;
       }
     }
   }
-  
-  .notification-success {
-    color: $success-color;
-    background-color: $foreground-color;
-    border: 1px solid $success-color;
-    opacity: 1;
-  
+}
+
+.notification-success {
+  border: 1px solid $success-color;
+  background-color: $foreground-color;
+  color: $success-color;
+  opacity: 1;
+
+  .notification-message {
+    .title {
+      color: $success-color;
+    }
+
+    .message {
+      color: $secondary-color;
+    }
+  }
+
+  &.filled {
+    background-color: $success-color;
+    color: $foreground-color;
+
     .notification-message {
       .title {
-        color: $success-color;
+        color: $foreground-color;
       }
-  
+
       .message {
-        color: $secondary-color;
-      }
-    }
-  
-    &.filled {
-      color: $foreground-color;
-      background-color: $success-color;
-  
-      .notification-message {
-        .title {
-          color: $foreground-color;
-        }
-  
-        .message {
-          color: $foreground-color;
-        }
+        color: $foreground-color;
       }
     }
   }
-  
-  .notification-warning {
-    color: $warning-color;
-    background-color: $foreground-color;
-    border: 1px solid $warning-color;
-    opacity: 1;
-  
+}
+
+.notification-warning {
+  border: 1px solid $warning-color;
+  background-color: $foreground-color;
+  color: $warning-color;
+  opacity: 1;
+
+  .notification-message {
+    .title {
+      color: $warning-color;
+    }
+
+    .message {
+      color: $secondary-color;
+    }
+  }
+
+  &.filled {
+    background-color: $warning-color;
+    color: $foreground-color;
+
     .notification-message {
       .title {
-        color: $warning-color;
+        color: $foreground-color;
       }
-  
+
       .message {
-        color: $secondary-color;
-      }
-    }
-  
-    &.filled {
-      color: $foreground-color;
-      background-color: $warning-color;
-  
-      .notification-message {
-        .title {
-          color: $foreground-color;
-        }
-  
-        .message {
-          color: $foreground-color;
-        }
+        color: $foreground-color;
       }
     }
   }
-  
-  .notification-error {
-    color: $error-color;
-    background-color: $foreground-color;
-    border: 1px solid $error-color;
-    opacity: 1;
-  
+}
+
+.notification-error {
+  border: 1px solid $error-color;
+  background-color: $foreground-color;
+  color: $error-color;
+  opacity: 1;
+
+  .notification-message {
+    .title {
+      color: $error-color;
+    }
+
+    .message {
+      color: $secondary-color;
+    }
+  }
+
+  &.filled {
+    background-color: $error-color;
+    color: $foreground-color;
+
     .notification-message {
       .title {
-        color: $error-color;
+        color: $foreground-color;
       }
-  
+
       .message {
-        color: $secondary-color;
-      }
-    }
-  
-    &.filled {
-      color: $foreground-color;
-      background-color: $error-color;
-  
-      .notification-message {
-        .title {
-          color: $foreground-color;
-        }
-  
-        .message {
-          color: $foreground-color;
-        }
+        color: $foreground-color;
       }
     }
   }
-  
+}
