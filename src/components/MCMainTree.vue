@@ -35,8 +35,8 @@ const emit = defineEmits<Emit>();
         </VRow>
 
         <VTreeview :items="projectList" v-model:selected="selectedProjects" expand-icon="mdi-menu-left" item-value="id"
-            item-title="title" select-strategy='classic' style="block-size: calc(100vh - 267px);" lines="one"
-            selectable>
+            item-title="title" select-strategy='classic' style="block-size: calc(100vh - 267px);" lines="one" selectable
+            density="compact">
             <template v-slot:title="{ item }">
                 <VTooltip :text="item.title">
                     <template v-slot:activator="{ props }">
