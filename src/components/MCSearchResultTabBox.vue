@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { isUndefined } from '@sindresorhus/is'
-import { SearchResultTabBoxModel } from '@/types/SearchResult'
-import type { ISimpleSelectableDTO } from '@/types/baseModels'
+import { SearchResultTabBoxModel } from '@/types/SearchResult';
+import type { ISimpleSelectableDTO } from '@/types/baseModels';
+import { isUndefined } from '@sindresorhus/is';
 
 const props = defineProps({
   dataitems: { type: SearchResultTabBoxModel, default: new SearchResultTabBoxModel() },
@@ -26,6 +26,7 @@ const selecteText = (e: MouseEvent, resultItem: ISimpleSelectableDTO) => {
   <VCard
     v-if="props.dataitems.content.length > 0"
     v-no-context-menu
+    class="mc-search-result"
   >
     <VTabsWindow v-model="tabdatamodel">
       <VTabsWindowItem
