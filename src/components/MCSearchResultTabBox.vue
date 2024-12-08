@@ -1,15 +1,19 @@
 <script setup lang="ts">
+import ContextMenu from '@imengyu/vue3-context-menu'
 import { isUndefined } from '@sindresorhus/is'
 import { SearchResultTabBoxModel } from '@/types/SearchResult'
-import type { ISimpleSelectableDTO } from '@/types/baseModels'
 
 const props = defineProps({
   dataitems: { type: SearchResultTabBoxModel, default: new SearchResultTabBoxModel() },
 })
 
 const tabdatamodel = ref()
-const showcontextmenu = ref(false)
-const contextmenuItems = [{ title: 'اتصال به نود ...', value: 'Option 1' }, { title: 'اتصال به نود چک نویس', value: 'Option 2' }, { title: 'کپی', value: 'Option 3' }]
+
+// const menusearchResultBox = ref(VMenu)
+// const showcontextmenu = ref(false)
+// const contextmenuItems = [{ title: 'اتصال به نود ...', value: 'Option 1' }, { title: 'اتصال به نود چک نویس', value: 'Option 2' }, { title: 'کپی', value: 'Option 3' }]
+// const xpos = ref(0)
+// const ypos = ref(0)
 
 // const emit = defineEmits<Emit>()
 
@@ -17,8 +21,31 @@ const contextmenuItems = [{ title: 'اتصال به نود ...', value: 'Option 
 //   (e: 'close'): void // ایونت جدید close اضافه شد
 //   (e: 'open'): void // ایونت جدید close اضافه شد
 // }
-const selecteText = (e: MouseEvent, resultItem: ISimpleSelectableDTO) => {
-  showcontextmenu.value = true
+const onContextMenu = (e: MouseEvent) => {
+  // prevent the browser's default menu
+  e.preventDefault()
+
+  // show your menu
+  ContextMenu.showContextMenu({
+    x: e.x,
+    y: e.y,
+    items: [
+      {
+        label: 'A menu item',
+        onClick: () => {
+          alert('You click a menu item')
+        },
+      },
+      {
+        label: 'A submenu',
+        children: [
+          { label: 'Item1' },
+          { label: 'Item2' },
+          { label: 'Item3' },
+        ],
+      },
+    ],
+  })
 }
 </script>
 
@@ -43,25 +70,17 @@ const selecteText = (e: MouseEvent, resultItem: ISimpleSelectableDTO) => {
                 <div
                   v-for="(textData, j) in items"
                   :key="j"
-                  class="d-flex justify-start align-start"
+                  class="d-flex justify-start align-start box"
+                  @contextmenu="onContextMenu($event)"
                 >
                   <VCheckbox
                     v-if="(isUndefined(textData.raw.selectable) && item.content.length > 1) || (textData.raw.selectable)"
                     v-model="textData.raw.selected"
                   />
-                  <p
-                    class="pr-5"
-                    @auxclick="selecteText($event, textData.raw)"
-                  >
+
+                  <p class="pr-5">
                     {{ textData.raw.text }}
                   </p>
-                  <VMenu
-                    v-model="showcontextmenu"
-                    target="cursor"
-                    :offset="[100, 200]"
-                  >
-                    <VList :items="contextmenuItems" />
-                  </VMenu>
                 </div>
               </template>
 
@@ -102,41 +121,4 @@ const selecteText = (e: MouseEvent, resultItem: ISimpleSelectableDTO) => {
       />
     </VTabs>
   </VCard>
-  <!--
-    <VCard class="mc-search-result">
-    <VTabsWindow v-model="tabdatamodel">
-    <VTabsWindowItem
-    v-for="item in dataitems.content"
-    :key="item.id"
-    :value="item.id"
-    >
-    <VCard>
-    <VCardText class="pa-2 border-sm rounded-lg">
-    <VDataIterator
-    :items="item.content"
-    :items-per-page="1"
-    >
-    <template #default="{ items }">
-    <div
-    v-for="(textData, j) in items"
-    :key="j"
-    class="d-flex justify-start align-start"
-    >
-    <VCheckbox
-    v-if="(isUndefined(textData.raw.selectable) && item.content.length > 1) || (textData.raw.selectable)"
-    v-model="textData.raw.selected"
-    />
-    <p class="pr-5">
-    {{ textData.raw.text }}
-    </p>
-    </div>
-    </template>
-
-    </vdataiterator>
-    </vcardtext>
-    </vcard>
-    </vtabswindowitem>
-    </vtabswindow>
-    </vcard>
-  -->
 </template>

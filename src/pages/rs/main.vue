@@ -3,8 +3,7 @@ import { Pane, Splitpanes } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import { VTreeview } from 'vuetify/labs/VTreeview'
 import type { ISimpleTree } from '@/types/baseModels'
-
-const items = [{ title: 'Option 1', value: 'Option 1' }, { title: 'Option 2', value: 'Option 2' }, { title: 'Option 3', value: 'Option 3' }]
+import type { SearchResultTabBoxModel } from '@/types/SearchResult'
 
 const collectingdataitems = reactive<SearchResultTabBoxModel>({
   id: 0,
@@ -139,11 +138,5 @@ function getInfoSearch() { }
         </Splitpanes>
       </Pane>
     </Splitpanes>
-
-    <!--
-      <VMenu v-model="menu">
-      <VList :items="items" />
-      </VMenu>
-    -->
   </div>
 </template>
