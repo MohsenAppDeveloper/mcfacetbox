@@ -72,6 +72,7 @@ const onContextMenu = (e: MouseEvent) => {
                   v-for="(textData, j) in items"
                   :key="j"
                   class="d-flex justify-start align-start box"
+                  style="min-block-size: 50px;"
                   @contextmenu="onContextMenu($event)"
                 >
                   <VCheckbox

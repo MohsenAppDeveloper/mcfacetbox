@@ -1,5 +1,5 @@
+import { db } from '@/plugins/fake-api/handlers/apps/collectingData/db'
 import { paginateArray } from '@api-utils/paginateArray'
-import { db } from '@db/apps/users/db'
 import is from '@sindresorhus/is'
 import destr from 'destr'
 import type { PathParams } from 'msw'

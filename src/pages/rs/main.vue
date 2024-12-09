@@ -1,82 +1,52 @@
 <script setup lang="ts">
-import { Pane, Splitpanes } from 'splitpanes'
-import type { SearchResultTabBoxModel } from '@/types/SearchResult'
-import 'splitpanes/dist/splitpanes.css'
+    import { Pane, Splitpanes } from 'splitpanes';
+    import 'splitpanes/dist/splitpanes.css';
 
-const collectingdataitems = reactive<SearchResultTabBoxModel>({
-  id: 0,
-  content: [
-    { id: 0, title: 'حدیث', content: [{ id: 0, text: 'عَلِيُّ بْنُ مُحَمَّدٍ عَنْ سَهْلِ بْنِ زِيَادٍ عَنْ عَمْرِو بْنِ عُثْمَانَ عَنْ مُفَضَّلِ بْنِ صَالِحٍ عَنْ سَعْدِ بْنِ طَرِيفٍ عَنِ اَلْأَصْبَغِ بْنِ نُبَاتَةَ عَنْ عَلِيٍّ عَلَيْهِ اَلسَّلاَمُ قَالَ: هَبَطَ جَبْرَئِيلُ عَلَى آدَمَ عَلَيْهِ اَلسَّلاَمُ فَقَالَ يَا آدَمُ إِنِّي أُمِرْتُ أَنْ أُخَيِّرَكَ وَاحِدَةً مِنْ ثَلاَثٍ فَاخْتَرْهَا وَ دَعِ اِثْنَتَيْنِ فَقَالَ لَهُ آدَمُ يَا جَبْرَئِيلُ وَ مَا اَلثَّلاَثُ فَقَالَ اَلْعَقْلُ وَ اَلْحَيَاءُ وَ اَلدِّينُ فَقَالَ آدَمُ إِنِّي قَدِ اِخْتَرْتُ اَلْعَقْلَ فَقَالَ جَبْرَئِيلُ لِلْحَيَاءِ وَ اَلدِّينِ اِنْصَرِفَا وَ دَعَاهُ - فَقَالاَ يَا جَبْرَئِيلُ إِنَّا أُمِرْنَا أَنْ نَكُونَ مَعَ اَلْعَقْلِ حَيْثُ كَانَ قَالَ فَشَأْنَكُمَا وَ عَرَجَ .' }, { id: 0, text: 'این یک متن تستی شماره دو حدیث است' }, { id: 0, text: 'این یک متن تستی شماره سه  حدیث است' }] },
-    { id: 1, title: 'قران', content: [{ id: 0, text: 'این یک متن تستی شماره دو +-قران است' }, { id: 0, text: 'این یک متن تستی شماره یک قرآناست' }] },
-    { id: 2, title: 'ترجمه', content: [{ id: 0, text: 'این یک متن تستی  ترجمه است' }] },
-  ],
-})
-
-const infoSearch = ref()
-function getInfoSearch() { }
+    const menu = ref(false)
+    const isComponentSwitch = ref(true)
+    function changeWindowTitle(status: boolean) {
+        return status ? 'گردآوری اطلاعات' : 'قفسه داده'
+    }
 </script>
 
 <template>
-  <div class="main">
-    <Splitpanes
-      style="block-size: calc(100vh - 157px);"
-      :rtl="true"
-      class="default-theme"
-    >
-      <Pane size="30">
-        <MCWindow
-          title="درخت خانواده"
-          class="family-tree"
-          @open="menu = true"
-        >
-          <MCMainTree />
-        </MCWindow>
-      </Pane>
+    <div class="main">
+        <Splitpanes style="block-size: calc(100vh - 157px);" :rtl="true" class="default-theme">
+            <Pane size="30">
+                <MCWindow title="درخت خانواده" class="family-tree" @close="menu = true">
+                    <MCMainTree />
+                </MCWindow>
+            </Pane>
 
-      <Pane>
-        <Splitpanes
-          horizontal
-          rtl
-          class="default-theme"
-        >
-          <Pane>
-            <MCWindow
-              title="گردآوری اطلاعات"
-              @open="menu = true"
-            >
-              <template #default>
-                <VContainer>
-                  <VRow>
-                    <VCol
-                      cols="12"
-                      md="6"
-                      class="mx-auto"
-                    >
-                      <VTextField
-                        v-model="infoSearch"
-                        placeholder="جستجو"
-                        append-inner-icon="mdi-magnify"
-                        class="search-bar"
-                        single-line
-                        @click:append-inner="getInfoSearch"
-                      />
-                    </VCol>
-                  </VRow>
-                </VContainer>
-                //TODO - تست کامپوننت تب بار، این کد موقتی است
-                <MCSearchResultTabBox :dataitems="collectingdataitems" />
-              </template>
-            </MCWindow>
-          </Pane>
+            <Pane>
+                <Splitpanes horizontal rtl class="default-theme">
+                    <Pane>
+                        <MCWindow :title="changeWindowTitle(isComponentSwitch)"
+                            @move="isComponentSwitch = !isComponentSwitch">
+                            <template #default>
+                                <MCMainSearchInfo v-show="isComponentSwitch" />
+                                <MCMainDataShelf v-show="isComponentSwitch == false" />
+                            </template>
+                        </MCWindow>
+                    </Pane>
 
-          <Pane>
-            <MCWindow
-              title="قفسه داده"
-              @open="menu = true"
-            />
-          </Pane>
+                    <Pane>
+                        <MCWindow :title="changeWindowTitle(isComponentSwitch == false)"
+                            @move="isComponentSwitch = !isComponentSwitch">
+                            <template #default>
+                                <MCMainSearchInfo v-show="isComponentSwitch == false" />
+                                <MCMainDataShelf v-show="isComponentSwitch" />
+                            </template>
+                        </MCWindow>
+                    </Pane>
+                </Splitpanes>
+            </Pane>
         </Splitpanes>
-      </Pane>
-    </Splitpanes>
-  </div>
+
+        <!--
+      <VMenu v-model="menu">
+      <VList :items="items" />
+      </VMenu>
+    -->
+    </div>
 </template>

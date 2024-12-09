@@ -1,64 +1,63 @@
 //rs main
 .main {
-    .splitpanes {
-        &.default-theme {
-            .splitpanes__splitter {
-                border: none !important;
-                background-color: transparent !important;
-            }
+  .splitpanes {
+    &.default-theme {
+      .splitpanes__splitter {
+        border: none !important;
+        background-color: transparent !important;
+      }
 
-            .splitpanes__pane {
-                background-color: transparent;
-            }
-        }
+      .splitpanes__pane {
+        background-color: transparent;
+      }
+    }
+  }
 
+  .tool-bar {
+    border-block-end: 1px solid rgb(var(--v-theme-primary));
+    margin-inline: -12px !important;
+  }
+
+  .title {
+    font-weight: bold;
+    margin-inline-end: 10px;
+  }
+
+  .content-box {
+    padding: 6px;
+    background-color: #f8f7fa;
+    block-size: 100%;
+  }
+
+  .content {
+    border-radius: 6px;
+    background-color: white;
+    block-size: 100%;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 7.5%);
+    padding-block: 0;
+    padding-inline: 12px;
+  }
+
+  .family-tree {
+    .family-tree-toolbar {
+      border-radius: 6px;
+      background-color: rgba(var(--v-theme-primary), 0.1);
+      margin-block-start: 10px !important;
+    }
+  }
+
+  .mc-search-result {
+    .v-tabs {
+      block-size: 0;
+      opacity: 0;
+      transition: all ease 0.3s;
     }
 
-    .tool-bar {
-        border-block-end: 1px solid rgb(var(--v-theme-primary));
-        margin-left: -12px !important;
-        margin-right: -12px !important;
+    &:hover {
+      .v-tabs {
+        block-size: 38px;
+        opacity: 1;
+      }
     }
-
-    .title {
-        font-weight: bold;
-        margin-right: 10px;
-    }
-
-    .content-box {
-        padding: 6px;
-        background-color: #f8f7fa;
-        block-size: 100%;
-    }
-
-    .content {
-        border-radius: 6px;
-        background-color: white;
-        block-size: 100%;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 7.5%);
-        padding: 0 12px;
-    }
-
-    .family-tree {
-        .family-tree-toolbar {
-            background-color: rgba(var(--v-theme-primary), 0.1);
-            border-radius: 6px;
-            margin-top: 10px !important;
-        }
-    }
-
-    .mc-search-result {
-        .v-tabs {
-            opacity: 0;
-            height: 0;
-            transition: all ease 0.3s;
-        }
-
-        &:hover {
-            .v-tabs {
-                opacity: 1;
-                height: 38px;
-            }
-        }
-    }
+  }
 }
