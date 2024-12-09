@@ -2,7 +2,7 @@
 import Swal from 'sweetalert2'
 import { useToast } from 'vue-toastification'
 import { VDataTableServer } from 'vuetify/lib/components/index.mjs'
-import type { baseDataTableModel } from '@/types/baseModels'
+import type { GridResult, baseDataTableModel } from '@/types/baseModels'
 import { serviceDelete } from '@/services/genericServices'
 
 // const currentdate = ref('');
@@ -24,20 +24,12 @@ interface Emit {
 
 // import {useTemplateRef} from vue
 
-class GridResult<T extends baseDataTableModel> {
-  page = 0
-  totalPages = 0
-  totalItems = 0
-  items: Array<T> = []
-}
-
 const { t } = useI18n({ useScope: 'global' })
 const searchQuery = ref('')
 const selectedItem = ref<Array<number>>([])
 const selectedPlan = ref()
 const selectedStatus = ref()
 const highlightedItemIndex = ref(0)
-const loadingItemIndex = ref(-1)
 const datatableItems = ref<Array<baseDataTableModel>>([])
 
 const itemsPerPage = ref(10)

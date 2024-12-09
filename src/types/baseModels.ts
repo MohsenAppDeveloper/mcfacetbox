@@ -1,3 +1,10 @@
+export class GridResult<T> {
+    page = 0
+    totalPages = 0
+    totalItems = 0
+    items: T[] = []
+}
+
 export interface ISimpleDTO {
     id: number;
     title: string
