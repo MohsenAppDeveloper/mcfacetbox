@@ -6,6 +6,10 @@
     }
 }
 
+.layout-wrapper.layout-nav-type-horizontal .layout-page-content {
+    padding: 6px;
+}
+
 div {
     &::-webkit-scrollbar {
         inline-size: 8px;
