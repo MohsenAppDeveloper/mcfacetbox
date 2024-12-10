@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { GridResult } from '@/types/baseModels'
-import type { ISearchResultTabBox } from '@/types/SearchResult'
+import type { GridResult } from '@/types/baseModels';
+import type { ISearchResultTabBox } from '@/types/SearchResult';
 
 const itemsPerPage = ref(5)
 const page = ref(1)
@@ -45,40 +45,21 @@ function getInfoSearch() { }
 </script>
 
 <template>
-  <div>
-    <VContainer>
-      <VRow>
-        <VCol
-          cols="12"
-          md="6"
-          class="mx-auto"
-        >
-          <VTextField
-            v-model="infoSearch"
-            placeholder="جستجو"
-            append-inner-icon="mdi-magnify"
-            class="search-bar"
-            single-line
-            @click:append-inner="getInfoSearch"
-          />
-        </VCol>
-      </VRow>
-      <VRow>
-        <VCol>
-          <VDataIterator
-            v-if="!loadingdata"
-            :items="resultdataItems"
-            :items-per-page="itemsPerPage"
-          >
-            <template #default="{ items }">
-              <MCSearchResultTabBox
-                v-for="(item, i) in items"
-                :key="i"
-                :dataitems="item.raw"
-              />
-            </template>
+  <VContainer class="mc-data-container">
+    <VRow>
+      <VCol cols="12" md="6" class="mx-auto">
+        <VTextField v-model="infoSearch" placeholder="جستجو" append-inner-icon="mdi-magnify" class="search-bar"
+          single-line @click:append-inner="getInfoSearch" />
+      </VCol>
+    </VRow>
+    <VRow>
+      <VCol>
+        <VDataIterator v-if="!loadingdata" :items="resultdataItems" :items-per-page="itemsPerPage">
+          <template #default="{ items }">
+            <MCSearchResultTabBox v-for="(item, i) in items" :key="i" :dataitems="item.raw" />
+          </template>
 
-            <!--
+          <!--
               <template #footer="{ page, pageCount, prevPage, nextPage }">
               <VFooter v-if="item.content.length > 1">
               <div class="d-flex justify-end w-100">
@@ -100,15 +81,9 @@ function getInfoSearch() { }
               </VFooter>
               </template>
             -->
-          </VDataIterator>
-          <VProgressCircular
-            v-else
-            size="20"
-            width="5"
-            indeterminate
-          />
-        </VCol>
-      </VRow>
-    </VContainer>
-  </div>
+        </VDataIterator>
+        <VProgressCircular v-else size="20" width="5" indeterminate />
+      </VCol>
+    </VRow>
+  </VContainer>
 </template>

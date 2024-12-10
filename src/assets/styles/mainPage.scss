@@ -36,6 +36,17 @@
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 7.5%);
     padding-block: 0;
     padding-inline: 12px;
+
+    .mc-data-container {
+      block-size: 100%;
+
+      .v-row {
+        &:nth-child(2) {
+          block-size: calc(100% - 78px);
+          overflow-y: scroll;
+        }
+      }
+    }
   }
 
   .family-tree {
