@@ -25,7 +25,7 @@
     },
     // Vue
     "[vue]": {
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "editor.defaultFormatter": "Vue.volar",
     },
     // Extension: ESLint
     "eslint.options": {

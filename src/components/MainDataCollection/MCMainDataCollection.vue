@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { GridResult } from '@/types/baseModels'
-import type { ISearchResultTabBox } from '@/types/SearchResult'
+import type { GridResult } from '@/types/baseModels';
+import type { ISearchResultTabBox } from '@/types/SearchResult';
 
 const itemsPerPage = ref(5)
 const page = ref(1)
@@ -70,39 +70,17 @@ function getInfoSearch() { }
 <template>
   <VContainer class="mc-data-container">
     <VRow>
-      <VCol
-        cols="12"
-        md="6"
-        class="mx-auto"
-      >
-        <VTextField
-          v-model="infoSearch"
-          placeholder="جستجو"
-          append-inner-icon="mdi-magnify"
-          class="search-bar"
-          single-line
-          @click:append-inner="getInfoSearch"
-        />
+      <VCol cols="12" md="6" class="mx-auto">
+        <VTextField v-model="infoSearch" placeholder="جستجو" append-inner-icon="mdi-magnify" class="search-bar"
+          single-line @click:append-inner="getInfoSearch" />
       </VCol>
     </VRow>
-    <VRow>
+
+    <VRow class="mc-data-scroll">
       <VCol>
         <div>
-          <div v-show="loading">
-            <VProgressCircular
-              size="40"
-              indeterminate
-            />
-          </div>
-          <MCSearchResultTabBox
-            v-for="(item, i) in resultdataItems"
-            :key="i"
-            :dataitems="item"
-          />
-          <div
-            v-show="!loadingdata"
-            ref="loadmore"
-          />
+          <MCSearchResultTabBox v-for="(item, i) in resultdataItems" :key="i" :dataitems="item" />
+          <div v-show="!loadingdata" ref="loadmore" />
         </div>
 
         <!--
@@ -124,15 +102,20 @@ function getInfoSearch() { }
           ref="loadmore"
           />
           </template>
-          <template #loader>
+<template #loader>
           <VProgressCircular
           size="40"
           indeterminate
           />
           </template>
-        -->
+-->
         <!-- </VDataIterator> -->
       </VCol>
+    </VRow>
+    <VRow>
+      <div v-show="loading" class="loading-container">
+        <VProgressCircular size="40" indeterminate />
+      </div>
     </VRow>
   </VContainer>
 </template>
