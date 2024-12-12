@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import ContextMenu from '@imengyu/vue3-context-menu'
-import { isUndefined } from '@sindresorhus/is'
-import { SearchResultTabBoxModel } from '@/types/SearchResult'
+import { SearchResultTabBoxModel } from '@/types/SearchResult';
+import ContextMenu from '@imengyu/vue3-context-menu';
+import { isUndefined } from '@sindresorhus/is';
 
 const props = defineProps({
   dataitems: { type: SearchResultTabBoxModel, default: new SearchResultTabBoxModel() },
@@ -50,37 +50,20 @@ const onContextMenu = (e: MouseEvent) => {
 </script>
 
 <template>
-  <VCard
-    v-if="props.dataitems.content.length > 0"
-    v-no-context-menu
-    class="mc-search-result"
-  >
+  <VCard v-if="props.dataitems.content.length > 0" v-no-context-menu class="mc-search-result">
     <VTabsWindow v-model="tabdatamodel">
-      <VTabsWindowItem
-        v-for="item in props.dataitems.content"
-        :key="item.id"
-        :value="item.id"
-      >
-        <VCard>
-          <VCardText class="pa-2 border-sm rounded-lg">
-            <VDataIterator
-              :items="item.content"
-              :items-per-page="1"
-            >
+      <VTabsWindowItem v-for="item in props.dataitems.content" :key="item.id" :value="item.id">
+        <VCard variant='text'>
+          <VCardText>
+            <VDataIterator :items="item.content" :items-per-page="1">
               <template #default="{ items }">
-                <div
-                  v-for="(textData, j) in items"
-                  :key="j"
-                  class="d-flex justify-start align-start box"
-                  style="min-block-size: 50px;"
-                  @contextmenu="onContextMenu($event)"
-                >
+                <div v-for="(textData, j) in items" :key="j" class="d-flex justify-start align-start box"
+                  @contextmenu="onContextMenu($event)">
                   <VCheckbox
                     v-if="(isUndefined(textData.raw.selectable) && item.content.length > 1) || (textData.raw.selectable)"
-                    v-model="textData.raw.selected"
-                  />
+                    v-model="textData.raw.selected" density='compact' />
 
-                  <p class="pr-5">
+                  <p>
                     {{ textData.raw.text }}
                   </p>
                 </div>
@@ -90,19 +73,9 @@ const onContextMenu = (e: MouseEvent) => {
                 <VFooter v-if="item.content.length > 1">
                   <div class="d-flex justify-end w-100">
                     <span class="ml-2">Page {{ page }} of {{ pageCount }}</span>
-                    <VBtn
-                      :disabled="page === 1"
-                      class="me-2"
-                      icon="tabler-arrow-right"
-                      size="xsmall"
-                      @click="prevPage"
-                    />
-                    <VBtn
-                      :disabled="page === pageCount"
-                      icon="tabler-arrow-left"
-                      size="xsmall"
-                      @click="nextPage"
-                    />
+                    <VBtn :disabled="page === 1" class="me-2" icon="tabler-arrow-right" size="xsmall"
+                      @click="prevPage" />
+                    <VBtn :disabled="page === pageCount" icon="tabler-arrow-left" size="xsmall" @click="nextPage" />
                   </div>
                 </VFooter>
               </template>
@@ -111,16 +84,9 @@ const onContextMenu = (e: MouseEvent) => {
         </VCard>
       </VTabsWindowItem>
     </VTabsWindow>
-    <VTabs
-      v-model="tabdatamodel"
-      align-tabs="start"
-    >
-      <VTab
-        v-for="item in props.dataitems.content"
-        :key="item.id"
-        :text="item.title"
-        :value="item.id"
-      />
+    <VTabs v-model="tabdatamodel" align-tabs="start" density='compact' class="border-t-sm">
+      <VTab v-for="item in props.dataitems.content" :key="item.id" :text="item.title" :value="item.id"
+        variant='elevated' size="small" />
     </VTabs>
   </VCard>
 </template>
