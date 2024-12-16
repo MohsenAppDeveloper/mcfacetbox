@@ -74,7 +74,7 @@ function getInfoSearch() { }
 
 <template>
   <VContainer class="mc-data-container">
-    <VRow>
+    <VRow :dense="true">
       <VCol cols="12" md="6" class="mx-auto">
         <VTextField v-model="infoSearch" placeholder="جستجو" class="search-bar" single-line>
           <template #append-inner>
@@ -113,7 +113,7 @@ function getInfoSearch() { }
         </div>
       </VCol>
     </VRow>
-    <VRow>
+    <VRow :dense="true">
       <div v-show="loadingdata" class="loading-container">
         <VProgressCircular size="20" width="2" indeterminate />
       </div>
