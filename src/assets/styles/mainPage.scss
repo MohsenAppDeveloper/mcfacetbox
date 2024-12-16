@@ -30,6 +30,12 @@
         block-size: 100%;
     }
 
+    .mc-data-scroll {
+        block-size: calc(100% - 78px);
+        overflow-y: scroll;
+    }
+
+
     .content {
         position: relative;
         border-radius: 6px;
@@ -114,11 +120,6 @@
 
         .mc-data-container {
             block-size: 100%;
-
-            .mc-data-scroll {
-                block-size: calc(100% - 78px);
-                overflow-y: scroll;
-            }
 
             .loading-container {
                 position: absolute;

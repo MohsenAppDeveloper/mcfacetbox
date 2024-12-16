@@ -1,4 +1,5 @@
 import { ISimpleDTO, ISimpleTree } from "@/types/baseModels";
+import { isNull, isUndefined } from "@sindresorhus/is";
 import { UseClonedReturn } from "@vueuse/core";
 
 //👉 - مقادیر اعضاء یک شیء را به شیء دیگری شامل همان اعضاء انتقال میدهد
@@ -22,11 +23,13 @@ export function convertSimpleTreeToSimpleDtoArray(tree: ISimpleTree[]): ISimpleD
 
 //👉 -  تابع نرمالسازی متن
 export function normalizeText(text: string): string {
-    return text.toLowerCase().replace(/[^\w\s]/g, '').trim();
+    return text.toLowerCase().trim();
 }
 
 //👉 - جستجو در فیلد دلخواه متنی از یک شیء
 export function searchItems<T>(items: T[], searchText: string, field: keyof T): T[] {
+    if (isUndefined(searchText) || isNull(searchText))
+        searchText = ""
     const normalizedSearchText = normalizeText(searchText);
     console.log('searchtext', normalizedSearchText, searchText);
 

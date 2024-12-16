@@ -48,20 +48,20 @@ div {
         }
 
         input[type="checkbox"] {
+            position: relative;
             display: block !important;
-            opacity: 1;
-            width: 15px;
-            height: 15px;
-            background-color: white;
-            border-radius: 50%;
             border: 1px solid #ddd;
+            border-radius: 50%;
+
             // border: 1px solid;
             // border-color: inherit !important;
             appearance: none;
-            -webkit-appearance: none;
-            outline: none;
+            background-color: white;
+            block-size: 10px;
             cursor: pointer;
-            position: relative;
+            inline-size: 10px;
+            opacity: 1;
+            outline: none;
 
             &:checked {
                 background-color: rgb(var(--v-theme-primary));

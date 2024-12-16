@@ -10,6 +10,10 @@ export interface ISearchResult {
     description: string;
 }
 
+export interface IFacetResult {
+    key: string,
+    facetGroups: ISimpleSelectableDTO[]
+}
 export interface ISearchResultTabBoxItem {
     id: number;
     title: string;

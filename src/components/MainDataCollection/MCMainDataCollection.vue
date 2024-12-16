@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { GridResult, ISimpleSelectableDTO } from '@/types/baseModels'
-import type { ISearchResultTabBox } from '@/types/SearchResult'
+import type { IFacetResult, ISearchResultTabBox } from '@/types/SearchResult'
 
 const itemsPerPage = ref(5)
 const page = ref(1)
@@ -32,7 +32,8 @@ setTimeout(async () => {
 const loadmore = ref(null)
 const infoSearch = ref()
 const loading = ref(false)
-const testfacetlist = ref<ISimpleSelectableDTO[][]>([[{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }], [{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }]])
+const selectedFacetItems = reactive<Record<string, number[]>>({})
+const testfacetlist = ref<IFacetResult[]>([{ key: 'book', facetGroups: [{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }] }, { key: 'book1', facetGroups: [{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }] }])
 
 const { stop } = useIntersectionObserver(
   loadmore,
@@ -51,9 +52,12 @@ const { stop } = useIntersectionObserver(
 //   view.value?.scrollIntoView()
 // }
 
-// watch(loadingdata, (newval, oldval) => {
-//   console.log('loading', newval, oldval)
-// })
+watch(selectedFacetItems, newval => {
+  const result = Object.keys(newval).map(key => ({
+    titleKey: key,
+    items: newval[key],
+  }))
+})
 
 onFetchResponse(response => {
   response.json().then(value => {
@@ -93,11 +97,12 @@ function getInfoSearch() { }
         </VTextField>
       </VCol>
     </VRow>
-
-    <VRow class="mc-data-scroll" :dense="true">
+    <!-- v-for="(item, i) in testfacetlist" :key="i"  -->
+    <VRow>
       <VCol md="3">
         <div>
-          <MCFacetBox v-for="(item, i) in testfacetlist" :key="i" searchable :dataitems="item"
+          <MCFacetBox v-for="item in testfacetlist" :key="item.key"
+            v-model:selected-items="selectedFacetItems[item.key]" searchable :dataitems="item.facetGroups"
             :facettitle="$t('tree.autorizedbook')" class="mb-2" />
         </div>
       </VCol>

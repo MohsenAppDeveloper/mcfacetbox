@@ -1,40 +1,52 @@
 <script setup lang="ts">
 import type { ISimpleSelectableDTO } from '@/types/baseModels';
+import { isNull, isUndefined } from '@sindresorhus/is';
 
 interface Props {
   dataitems: ISimpleSelectableDTO[]
   searchable: boolean
   facettitle: string
+  selectedItems?: number[]
 }
+interface Emit {
+  (e: 'update:selectedItems', selectdItems: number[]): void
+}
+
 const props = defineProps<Props>()
-
-const selectedItems = ref<number[]>([])
+const emit = defineEmits<Emit>()
+const selectedFacetItems = ref<number[]>([])
 const searchText = ref('')
-const facetDateItem = ref()
+const filteredItems = ref<ISimpleSelectableDTO[]>(props.dataitems)
 
-// const facetDateItem = computed(() => (
-//   searchItems<ISimpleSelectableDTO>(props.dataitems, searchText.value, 'text')
-// ))
+watch((selectedFacetItems), newval => {
+  emit('update:selectedItems', newval)
+})
 
-// watch((searchText), newval => {
-//   facetDateItem.value = searchItems<ISimpleSelectableDTO>(props.dataitems, newval, 'text')
-// })
+// فیلتر کردن آیتم‌ها بر اساس متن جستجو
+function filterItems() {
+  if (searchText.value.trim() === '') {
+    // اگر ورودی خالی است، نمایش همه آیتم‌ها
+    filteredItems.value = props.dataitems
+  }
+  else {
+    // در غیر اینصورت، فیلتر کردن آرایه بر اساس متن
+    filteredItems.value = searchItems<ISimpleSelectableDTO>(props.dataitems, searchText.value, 'text')
+  }
+}
 
 function searchinfacet(e: any) {
-  searchText.value = e
+  searchText.value = (isNull(e) || isUndefined(e)) ? '' : e
+  filterItems()
 }
 </script>
 
 <template>
-  <VCard class="mc-facet-box" variant="flat">
-    <VCardTitle>{{ props.facettitle }}</VCardTitle>
-    <div class="search-container">
-      <VTextField v-show="props.searchable" :placeholder="$t('search')" prepend-inner-icon="tabler-search" clearable
-        :model-value="facetDateItem" @update:model-value="searchinfacet" density='compact' />
-    </div>
-    <VList v-model:selected="selectedItems" lines="one" select-strategy="leaf">
-
-      <VListItem v-for="item in props.dataitems" :key="item.id" :title="item.text" :value="item.text">
+  <VCard>
+    <VList v-model:selected="selectedFacetItems" lines="one" select-strategy="leaf" :return-object="false">
+      <VListSubheader>{{ props.facettitle }}</VListSubheader>
+      <VTextField v-show="props.searchable" :placeholder="$t('search')" append-inner-icon="tabler-search" clearable
+        variant="solo-filled" @update:model-value="searchinfacet" />
+      <VListItem v-for="item in filteredItems" :key="item.id" :title="item.text" :value="item.id">
         <template #prepend="{ isSelected }">
           <VListItemAction start>
             <VCheckbox :model-value="isSelected" density='compact' />
