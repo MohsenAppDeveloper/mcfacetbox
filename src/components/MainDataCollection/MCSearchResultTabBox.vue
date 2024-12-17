@@ -87,12 +87,16 @@ const onContextMenu = (e: MouseEvent) => {
               <template #footer="{ page, pageCount, prevPage, nextPage }">
                 <VFooter v-if="item.content.length > 1">
                   <div class="d-flex justify-end w-100">
-                    <span class="ml-2">Page {{ page }} of {{ pageCount }}</span>
+                    <span class="ml-2">{{ page }} {{ $t('of') }} {{ pageCount }}</span>
                     <VBtn
-                      :disabled="page === 1" class="me-2" icon="tabler-arrow-right" size="xsmall"
+                      variant="plain"
+                      :disabled="page === 1" class="me-2" icon="mdi-chevron-right" size="xsmall"
                       @click="prevPage"
                     />
-                    <VBtn :disabled="page === pageCount" icon="tabler-arrow-left" size="xsmall" @click="nextPage" />
+                    <VBtn
+                      variant="plain" :disabled="page === pageCount" icon="mdi-chevron-left" size="xsmall"
+                      @click="nextPage"
+                    />
                   </div>
                 </VFooter>
               </template>
@@ -109,3 +113,9 @@ const onContextMenu = (e: MouseEvent) => {
     </VTabs>
   </VCard>
 </template>
+
+<style lang="css" scoped>
+.v-btn--disabled {
+  opacity: 0.25;
+}
+</style>

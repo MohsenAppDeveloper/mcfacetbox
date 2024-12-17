@@ -48,8 +48,7 @@ interface Emit {
 
     <VTreeview
       v-model:selected="selectedProjects" :items="projectList" expand-icon="mdi-menu-left" item-value="id"
-      item-title="title" style="block-size: calc(100vh - 267px);" lines="one"
-      activatable
+      item-title="title" style="block-size: calc(100vh - 267px);" lines="one" activatable
       density="compact"
     >
       <template #title="{ item }">
@@ -62,5 +61,3 @@ interface Emit {
     </VTreeview>
   </div>
 </template>
-
-<style lang="scss"></style>

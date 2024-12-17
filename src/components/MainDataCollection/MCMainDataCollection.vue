@@ -74,7 +74,7 @@ function getInfoSearch() { }
 
 <template>
   <VContainer class="mc-data-container">
-    <VRow :dense="true">
+    <VRow dense>
       <VCol cols="12" md="6" class="mx-auto">
         <VTextField v-model="infoSearch" placeholder="جستجو" class="search-bar" single-line>
           <template #append-inner>
@@ -98,12 +98,14 @@ function getInfoSearch() { }
       </VCol>
     </VRow>
     <!-- v-for="(item, i) in testfacetlist" :key="i"  -->
-    <VRow class="mc-data-scroll" :dense="true">
+    <VRow class="mc-data-scroll" dense>
       <VCol md="3">
         <div>
-          <MCFacetBox v-for="item in testfacetlist" :key="item.key"
+          <MCFacetBox
+            v-for="item in testfacetlist" :key="item.key"
             v-model:selected-items="selectedFacetItems[item.key]" searchable :dataitems="item.facetGroups"
-            :facettitle="$t('tree.autorizedbook')" class="mb-2" />
+            :facettitle="$t('tree.autorizedbook')" class="mb-2"
+          />
         </div>
       </VCol>
       <VCol md="9">
@@ -113,7 +115,7 @@ function getInfoSearch() { }
         </div>
       </VCol>
     </VRow>
-    <VRow :dense="true">
+    <VRow dense>
       <div v-show="loadingdata" class="loading-container">
         <VProgressCircular size="20" width="2" indeterminate />
       </div>
