@@ -45,8 +45,82 @@
         padding-block: 0;
         padding-inline: 12px;
 
+        .mc-facet-box {
+            &:not(.v-theme--dark) {
+                background-color: rgba(var(--v-theme-primary), 0.1);
+            }
+
+            .v-card-title {
+                font-size: 1em;
+                margin: 3px 0;
+                padding: 0 10px;
+            }
+
+            .v-text-field {
+                padding: 0 10px;
+
+                &:not(.v-theme--dark) {
+                    .v-field {
+                        background-color: white;
+
+                        .v-field__outline {
+                            display: none;
+                        }
+                    }
+                }
+            }
+
+            .v-list {
+                overflow-y: auto;
+                max-height: 148px;
+                background-color: transparent;
+                padding: 4px 0;
+                border-radius: 0;
+
+                &::-webkit-scrollbar {
+                    inline-size: 4px;
+                }
+
+                &::-webkit-scrollbar-track {
+                    border-radius: 2.5px;
+                    background: #ccd0dc;
+                }
+
+                &::-webkit-scrollbar-thumb {
+                    border-radius: 2.5px;
+                    background: #576363;
+                }
+
+                .v-input {
+                    .v-selection-control {
+                        margin-inline-end: 0;
+
+                        input {
+                            width: 13px;
+                            height: 13px;
+                        }
+                    }
+                }
+
+                .v-list-item {
+                    min-height: 28px;
+
+                    .v-list-item-title {
+                        font-size: 0.9em;
+                    }
+
+                    .v-list-item__prepend {
+                        .v-list-item__spacer {
+                            width: 0;
+                        }
+                    }
+                }
+            }
+        }
+
         .mc-data-container {
             block-size: 100%;
+            padding: 4px 0;
 
             .loading-container {
                 position: absolute;
