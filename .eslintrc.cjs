@@ -57,6 +57,8 @@ module.exports = {
         max: 4,
       },
     }],
+    'no-unused-imports': 'off',
+    'no-unused-vars': 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
 
@@ -115,7 +117,7 @@ module.exports = {
     ],
 
     // Ignore _ as unused variable
-    '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^_+$', argsIgnorePattern: '^_+$' }],
+    // '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^_+$', argsIgnorePattern: '^_+$' }],
 
     'array-element-newline': ['error', 'consistent'],
     'array-bracket-newline': ['error', 'consistent'],

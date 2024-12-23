@@ -1,15 +1,33 @@
 <script setup lang="ts">
-import MCMainDataCollection from '@/components/MainDataCollection/MCMainDataCollection.vue';
-import MCMainDataShelf from '@/components/MainDataShelf/MCMainDataShelf.vue';
-import { Pane, Splitpanes } from 'splitpanes';
+import { Pane, Splitpanes } from 'splitpanes'
+import MCMainDataCollection from '@/components/MainDataCollection/MCMainDataCollection.vue'
+import MCMainDataShelf from '@/components/MainDataShelf/MCMainDataShelf.vue'
 
-import 'splitpanes/dist/splitpanes.css';
+import 'splitpanes/dist/splitpanes.css'
 
 const menu = ref(false)
-const isComponentSwitch = ref(true)
-const MainDataCollection = ref(MCMainDataCollection)
-const mainDataShelf = ref(MCMainDataShelf)
+const isComponentSwitch = ref(false)
+const topComponentOrder = ref(2)
+const bottomComponentOrder = ref(2)
 
+const resolveTopComponent = (order: number) => {
+  if (order === 1)
+    return MCMainDataShelf
+  else
+    return MCMainDataCollection
+}
+
+const resolveBottomComponent = (order: number) => {
+  if (order === 1)
+    return MCMainDataCollection
+  else
+    return MCMainDataShelf
+}
+
+function changeComponent() {
+  topComponentOrder.value = (topComponentOrder.value === 1 ? 2 : 1)
+  bottomComponentOrder.value = (bottomComponentOrder.value === 1 ? 2 : 1)
+}
 function changeWindowTitle(status: boolean) {
   return status ? 'گردآوری اطلاعات' : 'قفسه داده'
 }
@@ -27,20 +45,26 @@ function changeWindowTitle(status: boolean) {
       <Pane>
         <Splitpanes horizontal rtl class="default-theme">
           <Pane>
-            <MCWindow :title="changeWindowTitle(isComponentSwitch)" @move="isComponentSwitch = !isComponentSwitch">
+            <MCWindow :title="changeWindowTitle(isComponentSwitch)" @move="changeComponent">
               <template #default>
-                <!-- <component :is="MCMainDataCollection" /> -->
-                <MCMainDataCollection />
+                <KeepAlive>
+                  <component :is="resolveTopComponent(topComponentOrder)" />
+                </KeepAlive>
+                <!-- <MCMainDataCollection /> -->
               </template>
             </MCWindow>
           </Pane>
 
           <Pane>
-            <MCWindow :title="changeWindowTitle(isComponentSwitch === false)"
-              @move="isComponentSwitch = !isComponentSwitch">
+            <MCWindow
+              :title="changeWindowTitle(isComponentSwitch === false)"
+              @move="changeComponent"
+            >
               <template #default>
-                <!-- <component :is="MCMainDataShelf" /> -->
-                <MCMainDataShelf />
+                <KeepAlive>
+                  <component :is="resolveBottomComponent(bottomComponentOrder)" />
+                </KeepAlive>
+                <!-- <MCMainDataShelf /> -->
               </template>
             </MCWindow>
           </Pane>

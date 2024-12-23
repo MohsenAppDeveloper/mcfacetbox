@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { VTreeview } from 'vuetify/labs/VTreeview'
 import type { ISimpleTree } from '@/types/baseModels'
+import { useSelectedNode } from '@/store/treeStore'
 
 // watch(selectedProjects, (newvalue, oldvalue) => {
 //     roleData.projects = convertSimpleTreeToSimpleDtoArray(projectList).filter((item) => selectedProjects.value.includes(item.id))
@@ -19,9 +20,12 @@ interface Emit {
   (e: 'open'): void // ایونت جدید close اضافه شد
 }
 
+const selectenode = useSelectedNode()
+
 const selectTreeNode = (item: ISimpleTree) => {
   treeNodeDeselectAll(projectList)
-  item.selected = !item.selected
+  item.selected = true
+  selectenode.value = item
 }
 </script>
 
@@ -53,7 +57,7 @@ const selectTreeNode = (item: ISimpleTree) => {
 
     <VTreeview
       v-model:selected="selectedProjects" :items="projectList" expand-icon="mdi-menu-left" item-value="id"
-      item-title="title" style="block-size: calc(100vh - 267px);cursor: default;" lines="one" activatable
+      item-title="title" style="block-size: calc(100vh - 267px);cursor: default;"
       density="compact"
     >
       <template #title="{ item }">
@@ -68,3 +72,9 @@ const selectTreeNode = (item: ISimpleTree) => {
     </VTreeview>
   </div>
 </template>
+
+<style lang="css" scoped>
+.v-list-item--link {
+  cursor: default !important;
+}
+</style>

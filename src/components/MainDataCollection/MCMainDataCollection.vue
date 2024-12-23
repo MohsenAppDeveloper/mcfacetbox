@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { GridResult, ISimpleSelectableDTO } from '@/types/baseModels'
+import { useSelectedNode } from '@/store/treeStore'
+import type { GridResult } from '@/types/baseModels'
 import type { IFacetResult, ISearchResultTabBox } from '@/types/SearchResult'
 
 const itemsPerPage = ref(5)
@@ -33,7 +34,9 @@ const loadmore = ref(null)
 const infoSearch = ref()
 const loading = ref(false)
 const selectedFacetItems = reactive<Record<string, number[]>>({})
-const testfacetlist = ref<IFacetResult[]>([{ key: 'book', facetGroups: [{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }, { id: 5, text: 'ارزیاب دو' }, { id: 5, text: 'ارزیاب دو' }, { id: 5, text: 'ارزیاب دو' }] }, { key: 'book1', facetGroups: [{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }] }])
+const testfacetlist = ref<IFacetResult[]>([{ key: 'book', facetGroups: [{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }] }, { key: 'book1', facetGroups: [{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }] }])
+
+const selectenode = useSelectedNode()
 
 const { stop } = useIntersectionObserver(
   loadmore,
@@ -52,6 +55,9 @@ const { stop } = useIntersectionObserver(
 //   view.value?.scrollIntoView()
 // }
 
+watch(selectenode, newval => {
+  console.log('selectednode', newval)
+})
 watch(selectedFacetItems, newval => {
   const result = Object.keys(newval).map(key => ({
     titleKey: key,
@@ -78,7 +84,7 @@ const dataTabValue = ref(null);
   <VContainer class="mc-data-container">
     <VRow dense>
       <VCol cols="12" md="6" class="mx-auto">
-        <VTextField v-model="infoSearch" placeholder="جستجو" class="search-bar" single-line>
+        <VTextField v-model="infoSearch" :placeholder="$t('search')" class="search-bar" single-line>
           <template #append-inner>
             <VBtn icon size="small" variant="text" @click="getInfoSearch">
               <VIcon icon="tabler-search" size="22" />

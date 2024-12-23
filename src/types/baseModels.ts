@@ -40,3 +40,11 @@ export class SimpleSelectableDTOModel implements ISimpleSelectableDTO {
     selectable?: boolean | undefined = false;
     selected?: boolean | undefined = false;
 }
+
+export class SimpleTreeModel implements ISimpleTree {
+    [x: string]: any;
+    title: string = '';
+    children?: ISimpleTree[] | undefined;
+    id: number = 0;
+    selected?: boolean | undefined = false;
+}
