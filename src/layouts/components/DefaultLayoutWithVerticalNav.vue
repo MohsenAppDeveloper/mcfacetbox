@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import navItems from '@/navigation/vertical'
+import { researchSoftwareItems } from '@/navigation/vertical'
 import { themeConfig } from '@themeConfig'
 
 // Components
@@ -29,7 +29,7 @@ watch([isFallbackStateActive, refLoadingIndicator], () => {
 </script>
 
 <template>
-  <VerticalNavLayout :nav-items="navItems">
+  <VerticalNavLayout :nav-items="researchSoftwareItems">
     <!-- 👉 navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">
@@ -48,7 +48,7 @@ watch([isFallbackStateActive, refLoadingIndicator], () => {
 
         <VSpacer />
 
-        <N  avBarI18n
+        <NavBarI18n
           v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
           :languages="themeConfig.app.i18n.langConfig"
         />

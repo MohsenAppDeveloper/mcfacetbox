@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import navItems from '@/navigation/horizontal'
+import { researchSoftwareItems } from '@/navigation/horizontal'
 
 import { themeConfig } from '@themeConfig'
 
@@ -29,7 +29,7 @@ watch([isFallbackStateActive, refLoadingIndicator], () => {
 </script>
 
 <template>
-  <HorizontalNavLayout :nav-items="navItems" :app-logo="themeConfig.app.logo" :app-title="themeConfig.app.title">
+  <HorizontalNavLayout :nav-items="researchSoftwareItems" :app-logo="themeConfig.app.logo" :app-title="themeConfig.app.title">
     <!-- 👉 navbar -->
     <template #navbar>
       <RouterLink to="/" class="app-logo d-flex align-center gap-x-3">
@@ -43,8 +43,10 @@ watch([isFallbackStateActive, refLoadingIndicator], () => {
 
       <NavSearchBar trigger-btn-class="ms-lg-n3" />
 
-      <NavBarI18n v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
-        :languages="themeConfig.app.i18n.langConfig" />
+      <NavBarI18n
+        v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
+        :languages="themeConfig.app.i18n.langConfig"
+      />
 
       <NavbarThemeSwitcher />
       <NavbarShortcuts />
@@ -62,9 +64,11 @@ watch([isFallbackStateActive, refLoadingIndicator], () => {
     </RouterView>
 
     <!-- 👉 Footer -->
-    <!-- <template #footer>
+    <!--
+      <template #footer>
       <Footer />
-    </template> -->
+      </template>
+    -->
 
     <!-- 👉 Customizer -->
     <TheCustomizer />

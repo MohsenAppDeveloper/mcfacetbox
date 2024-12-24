@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { HorizontalNav } from '@layouts/components';
-import type { HorizontalNavItems } from '@layouts/types';
+import { HorizontalNav } from '@layouts/components'
+import type { HorizontalNavItems } from '@layouts/types'
+
 // ℹ️ Using import from `@layouts` causing build to hangup
 // import { useLayouts } from '@layouts'
-import { useLayoutConfigStore } from '@layouts/stores/config';
+import { useLayoutConfigStore } from '@layouts/stores/config'
 
 defineProps<{
   navItems: HorizontalNavItems
@@ -22,26 +23,29 @@ const configStore = useLayoutConfigStore()
         <div class="navbar-content-container">
           <!-- 👉 Navigation -->
           <div class="layout-horizontal-nav">
-            <!-- <RouterLink to="/" class="app-logo d-flex align-center gap-x-3">
-          <VNodeRenderer :nodes="appLogo" />
+            <!--
+              <RouterLink to="/" class="app-logo d-flex align-center gap-x-3">
+              <VNodeRenderer :nodes="appLogo" />
 
-          <h1 class="app-title font-weight-bold leading-normal text-xl text-capitalize">
-            {{ appTitle }}
-          </h1>
-        </RouterLink> -->
+              <h1 class="app-title font-weight-bold leading-normal text-xl text-capitalize">
+              {{ appTitle }}
+              </h1>
+              </RouterLink>
+            -->
 
             <div class="horizontal-nav-content-container">
               <HorizontalNav :nav-items="navItems" />
             </div>
             <!-- <VSpacer /> -->
-            <!-- <div class="navbar-content-container">
-          <slot name="navbar" />
-        </div> -->
+            <!--
+              <div class="navbar-content-container">
+              <slot name="navbar" />
+              </div>
+            -->
           </div>
           <slot name="navbar" />
         </div>
       </div>
-
     </div>
 
     <main class="layout-page-content">
@@ -49,11 +53,13 @@ const configStore = useLayoutConfigStore()
     </main>
 
     <!-- 👉 Footer -->
-    <!-- <footer class="layout-footer">
+    <!--
+      <footer class="layout-footer">
       <div class="footer-content-container">
-        <slot name="footer" />
+      <slot name="footer" />
       </div>
-    </footer> -->
+      </footer>
+    -->
   </div>
 </template>
 

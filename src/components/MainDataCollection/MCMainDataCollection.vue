@@ -55,9 +55,6 @@ const { stop } = useIntersectionObserver(
 //   view.value?.scrollIntoView()
 // }
 
-watch(selectenode, newval => {
-  console.log('selectednode', newval)
-})
 watch(selectedFacetItems, newval => {
   const result = Object.keys(newval).map(key => ({
     titleKey: key,
@@ -77,7 +74,7 @@ onFetchResponse(response => {
 
 function getInfoSearch() { }
 
-const dataTabValue = ref(null);
+const dataTabValue = ref(null)
 </script>
 
 <template>
@@ -96,32 +93,40 @@ const dataTabValue = ref(null);
               <VIcon icon="tabler-history" size="22" />
             </VBtn>
           </template>
-          <template #append>
+          <!--
+            <template #append>
             <VBtn icon size="small" @click="">
-              <!-- <VIcon icon="tabler-brand-openai" size="22" /> -->
-              ai
+            ai
             </VBtn>
-          </template>
+            </template>
+          -->
         </VTextField>
       </VCol>
     </VRow>
     <!-- v-for="(item, i) in testfacetlist" :key="i"  -->
 
-    <v-tabs v-model="dataTabValue" density="compact" :hide-slider="true" class="data-collection-tabs">
-      <v-tab :value="1" variant="elevated" rounded="sm">حدیث</v-tab>
-      <v-tab :value="2" variant="elevated" rounded="sm">قرآن</v-tab>
-      <v-tab :value="3" variant="elevated" rounded="sm">لغت</v-tab>
-      <v-tab :value="4" variant="elevated" rounded="sm">موضوع</v-tab>
-    </v-tabs>
+    <VTabs v-model="dataTabValue" density="compact" hide-slider class="data-collection-tabs">
+      <VTab :value="1" variant="elevated" rounded="sm">
+        {{ $t('hadith') }}
+      </VTab>
+      <VTab :value="2" variant="elevated" rounded="sm">
+        {{ $t('ayah') }}
+      </VTab>
+      <VTab :value="3" variant="elevated" rounded="sm">
+        {{ $t('word') }}
+      </VTab>
+    </VTabs>
 
-    <v-tabs-window v-model="dataTabValue" class="mc-data-scroll">
-      <v-tabs-window-item :value="1">
+    <VTabsWindow v-model="dataTabValue" class="mc-data-scroll">
+      <VTabsWindowItem :value="1" :transition="false">
         <VRow dense>
           <VCol md="3">
             <div>
-              <MCFacetBox v-for="item in testfacetlist" :key="item.key"
-                v-model:selected-items="selectedFacetItems[item.key]" searchable :dataitems="item.facetGroups"
-                :facettitle="$t('tree.autorizedbook')" class="mb-2" />
+              <MCFacetBox
+                v-for="item in testfacetlist" :key="item.key"
+                v-model:selected-items="selectedFacetItems[item.key]" searchable
+                :dataitems="item.facetGroups" :facettitle="$t('tree.autorizedbook')" class="mb-2"
+              />
             </div>
           </VCol>
           <VCol md="9">
@@ -131,8 +136,10 @@ const dataTabValue = ref(null);
             </div>
           </VCol>
         </VRow>
-      </v-tabs-window-item>
-    </v-tabs-window>
+      </VTabsWindowItem>
+      <VTabsWindowItem :value="2" :transition="false" />
+      <VTabsWindowItem :value="2" :transition="false" />
+    </VTabsWindow>
 
     <VRow dense>
       <div v-show="loadingdata" class="loading-container">
