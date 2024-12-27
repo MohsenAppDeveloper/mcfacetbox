@@ -346,6 +346,7 @@ declare module 'vue' {
     DropZone: typeof import('./src/@core/components/DropZone.vue')['default']
     ErrorHeader: typeof import('./src/components/ErrorHeader.vue')['default']
     I18n: typeof import('./src/@core/components/I18n.vue')['default']
+    MCDataShelfBox: typeof import('./src/components/MainDataShelf/MCDataShelfBox.vue')['default']
     MCDataTable: typeof import('./src/components/MCDataTable.vue')['default']
     MCDialogGateAdd: typeof import('./src/components/dialogs/MCDialogGateAdd.vue')['default']
     MCDialogProjectAdd: typeof import('./src/components/dialogs/MCDialogProjectAdd.vue')['default']

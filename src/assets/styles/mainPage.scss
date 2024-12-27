@@ -154,7 +154,8 @@
         }
     }
 
-    .mc-search-result {
+    .mc-search-result,
+    .mc-data-shelf-box {
         box-shadow: 0 0 5px rgba(var(--v-shadow-key-umbra-color), 0.15), 0 0 transparent, 0 0 transparent !important;
         margin-block-end: 10px;
 
@@ -166,10 +167,17 @@
                 overflow: hidden;
                 block-size: 66px;
                 margin-block-end: 0;
-                padding-inline-start: 20px;
                 text-align: justify;
             }
 
+            .v-footer {
+                padding: 0;
+            }
+        }
+    }
+
+    .mc-search-result {
+        .v-card-text {
             .v-footer {
                 padding: 0;
             }
@@ -238,5 +246,16 @@
                 // }
             }
         }
+
+        .foot-note {
+            color: rgb(var(--v-theme-primary));
+            margin-block-start: 5px;
+        }
+
+        .data-box-toolbar {
+            padding: 5px 0 !important;
+        }
+
+
     }
 }
