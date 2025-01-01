@@ -69,6 +69,11 @@
         "addeditsubtitle": "اطلاعات مورد نظر برای درخت را وارد نمایید",
         "autorizedbook": "کتب مجاز"
     },
+    "book": {
+        "title": "عنوان کتاب",
+        "select": "انتخاب کتاب",
+        "selectrequiredbook": "انتخاب کتب مورد نیاز"
+    },
     "createDate": "تاریخ ایجاد",
     "expireDate": "تاریخ انقضاء",
     "status": "وضعیت",
@@ -187,7 +192,8 @@
         "dataActionFailed": "عملیات مورد نظر با مشکل مواجه شد",
         "deleteDataSuccess": "حذف مورد نظر انجام شد",
         "deleteDataFailed": "مشکل در حذف بوجود آمد",
-        "deleteSelectedItem?": "مورد انتخاب شده حذف گردد؟"
+        "deleteSelectedItem?": "مورد انتخاب شده حذف گردد؟",
+        "resultNotFound": "نتیجه یافت نشد"
     },
     "$vuetify": {
         "badge": "نشان",

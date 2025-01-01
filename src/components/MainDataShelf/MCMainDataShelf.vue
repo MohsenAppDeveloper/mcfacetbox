@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useSelectedNode } from '@/store/treeStore'
 import type { GridResult } from '@/types/baseModels'
-import type { IFacetResult, ISearchResultTabBox } from '@/types/SearchResult'
+import type { ISearchResultTabBox } from '@/types/SearchResult'
 
 const itemsPerPage = ref(5)
 const page = ref(1)
@@ -34,7 +34,8 @@ const loadmore = ref(null)
 const infoSearch = ref()
 const loading = ref(false)
 const selectedFacetItems = reactive<Record<string, number[]>>({})
-const testfacetlist = ref<IFacetResult[]>([{ key: 'book', facetGroups: [{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }] }, { key: 'book1', facetGroups: [{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }] }])
+
+// const testfacetlist = ref<IFacetResult[]>([{ key: 'book', facetGroups: [{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }] }, { key: 'book1', facetGroups: [{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }] }])
 
 const selectenode = useSelectedNode()
 
@@ -82,11 +83,11 @@ const dataTabValue = ref(null)
     <VRow no-gutters>
       <VCol class="">
         <!--
-        <VToolbar
-        no-gutters class="btn-box data-shelf-toolbar" :title="selectenode.title" height="40"
-        dir="rtl"
-        >
-      -->
+          <VToolbar
+          no-gutters class="btn-box data-shelf-toolbar" :title="selectenode.title" height="40"
+          dir="rtl"
+          >
+        -->
         <VRow no-gutters class="btn-box data-shelf-toolbar d-flex">
           <div>
             <VBtn icon size="small" variant="tonal" @click="">
@@ -128,9 +129,11 @@ const dataTabValue = ref(null)
     <VRow dense class="mc-data-scroll">
       <VCol md="3">
         <div>
-          <MCFacetBox v-for="item in testfacetlist" :key="item.key"
+          <!--
+            <MCFacetBox v-for="item in testfacetlist" :key="item.key"
             v-model:selected-items="selectedFacetItems[item.key]" searchable :dataitems="item.facetGroups"
             :facettitle="$t('tree.autorizedbook')" class="mb-2" />
+          -->
         </div>
       </VCol>
       <VCol md="9">

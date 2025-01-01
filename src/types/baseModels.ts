@@ -5,6 +5,11 @@ export class GridResult<T> {
     items: T[] = []
 }
 
+export interface ISelectable {
+    selectable?: boolean,
+    selected?: boolean
+}
+
 export interface ISimpleDTO {
     id: number;
     title: string

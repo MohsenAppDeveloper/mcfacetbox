@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import ContextMenu from '@imengyu/vue3-context-menu';
+import ContextMenu from '@imengyu/vue3-context-menu'
 import { useSelectedNode } from '@/store/treeStore'
+
 const selectenode = useSelectedNode()
 
 const onContextMenu = (e: MouseEvent) => {
@@ -34,7 +35,6 @@ const onContextMenu = (e: MouseEvent) => {
 <template>
   <VCard class="mc-data-shelf-box">
     <VCardText>
-
       <VRow no-gutters class="justify-start align-start box" @contextmenu="onContextMenu($event)">
         <VCheckbox density="compact" />
         <VCol class="data-box-content">
@@ -50,16 +50,16 @@ const onContextMenu = (e: MouseEvent) => {
             مَعَ
             اَلْعَقْلِ حَيْثُ كَانَ قَالَ فَشَأْنَكُمَا وَ عَرَجَ .
           </p>
-          <div class="foot-note">این قسمت محل پاورقی</div>
+          <div class="foot-note">
+            این قسمت محل پاورقی
+          </div>
         </VCol>
-
       </VRow>
     </VCardText>
 
     <VRow no-gutters class="border-t-sm" justify="space-between">
       <div>
         <VRow no-gutters class="btn-box data-box-toolbar">
-
           <VBtn icon size="25" variant="text" @click="">
             <VIcon icon="tabler-pin" size="22" />
           </VBtn>
@@ -99,25 +99,16 @@ const onContextMenu = (e: MouseEvent) => {
             <VIcon icon="tabler-history" size="22" />
           </VBtn>
         </VRow>
-
       </div>
       <div>
         <VRow no-gutters class="btn-box data-box-toolbar d-flex justify-content-between">
-
-          <VBtn icon size="25" variant="text" @click="">
-            <VIcon icon="tabler-plug-connected-x" size="22" />
-          </VBtn>
-          <VBtn icon size="25" variant="text" @click="">
-            <VIcon icon="tabler-message" size="22" />
-          </VBtn>
-          <VBtn icon size="25" variant="text" @click="">
-            <VIcon icon="tabler-tag" size="22" />
-          </VBtn>
+          <VIcon icon="tabler-plug-connected-x" size="12" />
+          <VIcon icon="tabler-message" size="12" />
+          <VIcon icon="tabler-tag" size="12" />
         </VRow>
       </div>
     </VRow>
   </VCard>
-
 </template>
 
 <style lang="css" scoped>

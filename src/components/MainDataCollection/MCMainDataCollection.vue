@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import MCDialogBookSelect from '../dialogs/MCDialogBookSelect.vue'
 import { useSelectedNode } from '@/store/treeStore'
 import type { GridResult } from '@/types/baseModels'
-import type { IFacetResult, ISearchResultTabBox } from '@/types/SearchResult'
+import type { IFacetBox, ISearchResultTabBox } from '@/types/SearchResult'
 
 const itemsPerPage = ref(5)
 const page = ref(1)
@@ -31,10 +32,11 @@ setTimeout(async () => {
 }, 1000)
 
 const loadmore = ref(null)
+const isDialogSelectBookVisible = ref(false)
 const infoSearch = ref()
 const loading = ref(false)
-const selectedFacetItems = reactive<Record<string, number[]>>({})
-const testfacetlist = ref<IFacetResult[]>([{ key: 'book', facetGroups: [{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }] }, { key: 'book1', facetGroups: [{ id: 1, text: 'پژوهشگر' }, { id: 2, text: 'مدیر کل' }, { id: 3, text: 'ناظر' }, { id: 4, text: 'ارزیاب یک' }, { id: 5, text: 'ارزیاب دو' }] }])
+const selectedFacetItems = reactive<Record<string, string[]>>({})
+const testfacetlist = ref<IFacetBox[]>([{ facetboxKey: 'book', title: 'کتاب', hasSearchBox: true, scrollSize: 5, itemList: [{ facetKey: '1', title: 'پژوهشگر', facetCount: 10 }, { facetKey: '2', title: 'مدیر کل', facetCount: 11 }, { facetKey: '3', title: 'ناظر', facetCount: 5 }, { facetKey: '4', title: 'ارزیاب یک', facetCount: 7 }, { facetKey: '5', title: 'ارزیاب دو', facetCount: 7 }] }, { facetboxKey: 'book1', title: 'قرن', isTree: true, hasSearchBox: false, scrollSize: 5, itemList: [{ facetKey: '1', title: 'پژوهشگر', facetCount: 13 }, { facetKey: '2', parent: '1', title: 'مدیر کل', facetCount: 18 }, { facetKey: '3', title: 'ناظر', facetCount: 16 }, { facetKey: '4', parent: '3', title: 'ارزیاب یک', facetCount: 13 }, { facetKey: '5', parent: '4', title: 'ارزیاب دو', facetCount: 1 }] }])
 
 const selectenode = useSelectedNode()
 
@@ -60,6 +62,8 @@ watch(selectedFacetItems, newval => {
     titleKey: key,
     items: newval[key],
   }))
+
+  console.log('result', result)
 })
 
 onFetchResponse(response => {
@@ -80,8 +84,8 @@ const dataTabValue = ref(null)
 <template>
   <VContainer class="mc-data-container">
     <VRow dense class="align-center">
-      <VCol cols="12" md="3">
-      </VCol>
+      <MCDialogBookSelect v-model:is-dialog-visible="isDialogSelectBookVisible" />
+      <VCol cols="12" md="3" />
       <VCol cols="12" md="6" class="mx-auto">
         <VTextField v-model="infoSearch" :placeholder="$t('search')" class="search-bar" single-line>
           <template #append-inner>
@@ -121,6 +125,11 @@ const dataTabValue = ref(null)
       <VTab :value="3" variant="elevated" rounded="sm">
         {{ $t('word') }}
       </VTab>
+      <div>
+        <VBtn icon size="small" variant="text" @click="isDialogSelectBookVisible = true">
+          <VIcon icon="tabler-book" size="22" />
+        </VBtn>
+      </div>
     </VTabs>
 
     <VTabsWindow v-model="dataTabValue" class="mc-data-scroll">
@@ -128,9 +137,11 @@ const dataTabValue = ref(null)
         <VRow dense>
           <VCol md="3">
             <div>
-              <MCFacetBox v-for="item in testfacetlist" :key="item.key"
-                v-model:selected-items="selectedFacetItems[item.key]" searchable :dataitems="item.facetGroups"
-                :facettitle="$t('tree.autorizedbook')" class="mb-2" />
+              <MCFacetBox
+                v-for="item in testfacetlist" :key="item.facetboxKey" v-model:selected-items="selectedFacetItems[item.facetboxKey]" :istree="item.isTree"
+                :scroll-item-count="item.scrollSize" :searchable="item.hasSearchBox"
+                :dataitems="item.itemList" :facettitle="item.title" class="mb-2"
+              />
             </div>
           </VCol>
           <VCol md="9">
