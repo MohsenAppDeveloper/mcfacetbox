@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 // !SECTION این دیالوگ برای افزودن و یا ویرایش یک پروژه میباشد
-import { useToast } from 'vue-toastification'
 import type { IBookSearchResult } from '@/types/book'
 import { BookSearchRequestModel } from '@/types/book'
 import type { IProject } from '@/types/project'
 import { ProjectModel } from '@/types/project'
 import type { IFacetBox, IFacetItem } from '@/types/SearchResult'
+import { useToast } from 'vue-toastification'
 
 const props = defineProps({
   isDialogVisible: { type: Boolean, default: false },
@@ -124,7 +124,9 @@ const isTree = (items: IFacetBox) => {
 }
 
 const searchinBook = async () => {
-  bookSearchModel.query = searchbooktitle.value
+  if(searchbooktitle.value.length>2){
+    bookSearchModel.query = searchbooktitle.value
+  }
 }
 </script>
 
@@ -149,12 +151,12 @@ const searchinBook = async () => {
               :dataitems="item.itemList" :facettitle="item.title" class="mb-2"
             />
           </VCol>
-          <VCol md="6">
+          <VCol md="8">
             <VRow>
               <VCol md="12">
                 <VTextField
                   v-model:model-value="searchbooktitle" :placeholder="$t('search')"
-                  clearable density="compact"
+                  clearable density="compact" @keyup.enter="searchinBook"  
                 >
                   <template #append-inner>
                     <VBtn icon size="small" variant="text" @click="searchinBook">
