@@ -115,22 +115,23 @@ const dataTabValue = ref(null)
     </VRow>
     <!-- v-for="(item, i) in testfacetlist" :key="i"  -->
 
-    <VTabs v-model="dataTabValue" density="compact" hide-slider class="data-collection-tabs">
-      <VTab :value="1" variant="elevated" rounded="sm">
-        {{ $t('hadith') }}
-      </VTab>
-      <VTab :value="2" variant="elevated" rounded="sm">
-        {{ $t('ayah') }}
-      </VTab>
-      <VTab :value="3" variant="elevated" rounded="sm">
-        {{ $t('word') }}
-      </VTab>
-      <div>
-        <VBtn icon size="small" variant="text" @click="isDialogSelectBookVisible = true">
-          <VIcon icon="tabler-book" size="22" />
-        </VBtn>
-      </div>
-    </VTabs>
+    <VRow no-gutters dense class="align-center" justify="space-between">
+      <VTabs v-model="dataTabValue" density="compact" hide-slider class="data-collection-tabs">
+        <VTab :value="1" variant="elevated" rounded="sm">
+          {{ $t('hadith') }}
+        </VTab>
+        <VTab :value="2" variant="elevated" rounded="sm">
+          {{ $t('ayah') }}
+        </VTab>
+        <VTab :value="3" variant="elevated" rounded="sm">
+          {{ $t('word') }}
+        </VTab>
+      </VTabs>
+      <VBtn icon size="26" variant="text" @click="isDialogSelectBookVisible = true">
+        <VIcon icon="tabler-book" size="22" />
+      </VBtn>
+    </VRow>
+    <VDivider />
 
     <VTabsWindow v-model="dataTabValue" class="mc-data-scroll">
       <VTabsWindowItem :value="1" :transition="false">
