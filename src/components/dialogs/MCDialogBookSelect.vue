@@ -29,6 +29,7 @@ const selectedFacetItems = reactive<Record<string, string[]>>({})
 const searchbooktitle = ref('')
 const selectedBooks = ref<number[]>([])
 const resultStateMessage = ref('')
+const resultAlertVisible = ref(false)
 const bookSearchModel = reactive<BookSearchRequestModel>(new BookSearchRequestModel())
 
 const { execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useFetch(createUrl('https://noorlib.ir/presentation/api/v2/library/getLibraryBookList', {
@@ -61,15 +62,18 @@ const totalPageNumber = computed(() => {
 onFetchResponse(response => {
   response.json().then(value => {
     resultbookItems.value = value.data
-    if ((resultbookItems.value?.resultList.length ?? 0) === 0)
-      resultStateMessage.value = t('resultNotFound')
+    if ((resultbookItems.value?.resultList.length ?? 0) === 0) {
+      resultAlertVisible.value = true
+      resultStateMessage.value = t('alert.resultNotFound')
+    }
 
     console.log('resultbookitems', resultbookItems.value)
   })
 })
 
 onFetchError(() => {
-  resultStateMessage.value = t('dataActionFailed')
+  resultAlertVisible.value = true
+  resultStateMessage.value = t('alert.dataActionFailed')
 })
 
 const onReset = () => {
@@ -260,4 +264,12 @@ const formattedField = (list, fieldName) => {
     </VCard>
     <!-- </PerfectScrollbar> -->
   </VDialog>
+
+  <VSnackbar
+    v-model="resultAlertVisible"
+    location="bottom center"
+    color="error"
+  >
+    {{ resultStateMessage }}
+  </VSnackbar>
 </template>
