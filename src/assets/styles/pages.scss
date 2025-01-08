@@ -46,6 +46,12 @@ div {
         .v-list-item-title {
             letter-spacing: normal;
             font-size: 1em;
+
+            &>div {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
 
         .v-list-item-action {
@@ -54,8 +60,6 @@ div {
                 height: auto;
             }
         }
-
-
     }
 }
 
