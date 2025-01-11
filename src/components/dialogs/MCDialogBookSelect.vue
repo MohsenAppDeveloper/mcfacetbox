@@ -1,12 +1,10 @@
 <script lang="ts" setup>
 // !SECTION این دیالوگ برای افزودن و یا ویرایش یک پروژه میباشد
+import type { IBookSearchResult, ISelectableBookInfo } from '@/types/book'
+import { BookSearchRequestModel } from '@/types/book'
+import type { IFacetBox, IFacetItem } from '@/types/SearchResult'
 import { isUndefined } from '@sindresorhus/is'
 import { useToast } from 'vue-toastification'
-import type { IBookSearchResult } from '@/types/book'
-import { BookSearchRequestModel } from '@/types/book'
-import type { IProject } from '@/types/project'
-import { ProjectModel } from '@/types/project'
-import type { IFacetBox, IFacetItem } from '@/types/SearchResult'
 
 const props = defineProps({
   isDialogVisible: { type: Boolean, default: false },
@@ -19,25 +17,37 @@ const toast = useToast()
 const resultbookItems = ref<IBookSearchResult>()
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'projectDataAdded', value: number): void
-  (e: 'projectDataUpdated', value: number): void
+  (e: 'selectedBookChanged', value: number): void
 
 }
 
-const isloading = ref(false)
-const projectData = reactive<IProject>(new ProjectModel())
 const selectedFacetItems = reactive<Record<string, string[]>>({})
 const searchbooktitle = ref('')
 const selectedBooks = ref<number[]>([])
 const resultStateMessage = ref('')
-const resultAlertVisible = ref(false)
 const bookSearchModel = reactive<BookSearchRequestModel>(new BookSearchRequestModel())
+
+const resetBookSearchModel = () => {
+  // Reset all predefined properties
+  bookSearchModel.language = 'fa'
+  bookSearchModel.page_size = 20
+  bookSearchModel.page_number = 1
+  bookSearchModel.sort = 'title-asc'
+  bookSearchModel.origin = 'noorlib.web.app'
+  bookSearchModel.query = ''
+
+  // Clear dynamic properties
+  for (const key in bookSearchModel) {
+    // Check if it's a property added to the instance
+    if (!['language', 'page_size', 'page_number', 'sort', 'origin', 'query'].includes(key))
+      delete bookSearchModel[key]
+  }
+}
 
 const { execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useFetch(createUrl('https://noorlib.ir/presentation/api/v2/library/getLibraryBookList', {
   query: bookSearchModel,
 }), {
   immediate: false,
-
 }).get()
 
 const totalPageNumber = computed(() => {
@@ -62,19 +72,28 @@ const totalPageNumber = computed(() => {
 
 onFetchResponse(response => {
   response.json().then(value => {
+    resultbookItems.value = { facetList: [], pageNumber: 0, pageSize: 0, resultList: [], resultListTotalCount: 0 }
+
+    // setTimeout(() => {
     resultbookItems.value = value.data
     if ((resultbookItems.value?.resultList.length ?? 0) === 0) {
-      resultAlertVisible.value = true
-      resultStateMessage.value = t('alert.resultNotFound')
+      toast.error(t('alert.resultNotFound'))
     }
+    else {
+      resultbookItems.value?.resultList.forEach(resultitem => {
+        if (selectedBooks.value.includes(resultitem.bookId))
+          resultitem.selected = true
+      })
+    }
+
+    // }, 1000)
 
     // console.log('resultbookitems', resultbookItems.value)
   })
 })
 
 onFetchError(() => {
-  resultAlertVisible.value = true
-  resultStateMessage.value = t('alert.dataActionFailed')
+  toast.error(t('alert.dataActionFailed'))
 })
 
 const onReset = (closedialog: boolean = false) => {
@@ -83,16 +102,13 @@ const onReset = (closedialog: boolean = false) => {
   bookSearchModel.query = ''
   searchbooktitle.value = ''
   resultbookItems.value = { facetList: [], pageNumber: 0, pageSize: 0, resultList: [], resultListTotalCount: 0 }
-
-  //   bookSearchModel.query = ''
-  //   bookSearchModel.page_number = 1
+  selectedBooks.value.splice(0)
+  resetBookSearchModel()
 }
 
 const prevPage = async () => {
   if (bookSearchModel.page_number > 1)
     bookSearchModel.page_number -= 1
-
-  // await fetchData(false)
 }
 
 const nextPage = async () => {
@@ -104,9 +120,19 @@ const nextPage = async () => {
 
 watch(bookSearchModel, () => {
   resultStateMessage.value = ''
-  resultAlertVisible.value = false
   if (bookSearchModel.query.length >= 2)
     fetchData(false)
+})
+watch(selectedFacetItems, newval => {
+  const result = Object.keys(newval).map(key => ({
+    titleKey: key,
+    items: newval[key],
+  }))
+
+  result.forEach(item => {
+    bookSearchModel[item.titleKey] = item.items
+  })
+  console.log('result', bookSearchModel)
 })
 
 const isTree = (items: IFacetBox) => {
@@ -137,6 +163,15 @@ const searchinBook = async () => {
   bookSearchModel.query = searchbooktitle.value
 }
 
+const selectBook = (item: ISelectableBookInfo) => {
+  item.selected = !(item.selected ?? false)
+  if (item.selected)
+    selectedBooks.value.push(item.bookId)
+  else
+    selectedBooks.value.splice(selectedBooks.value.indexOf(item.bookId), 1)
+  console.log('selectbook', selectedBooks.value)
+}
+
 const formattedField = (list: Record<string, any>[], fieldName: string) => {
   if (list?.length > 0)
     return list.filter(element => element[fieldName] !== '').map(element => element[fieldName]).join(',')
@@ -146,7 +181,7 @@ const formattedField = (list: Record<string, any>[], fieldName: string) => {
 <template>
   <VDialog
     :width="$vuetify.display.smAndDown ? 'auto' : 900" :model-value="props.isDialogVisible"
-    class="mc-dialog-bookselect" @update:model-value="onReset(true)"
+    class="mc-dialog-bookselect" persistent @update:model-value="onReset(true)"
   >
     <DialogCloseBtn :disabled="loadingdata" @click="onReset(true)" />
     <VCard flat :title="$t('book.select')" :subtitle="$t('book.selectrequiredbook')">
@@ -159,8 +194,9 @@ const formattedField = (list: Record<string, any>[], fieldName: string) => {
         <VRow dense>
           <VCol md="4">
             <MCFacetBox
-              v-for="item in resultbookItems?.facetList" :key="item.facetboxKey"
-              v-model:selected-items="selectedFacetItems[item.facetboxKey]" :istree="isTree(item)"
+              v-for="item in resultbookItems?.facetList"
+              v-show="!loadingdata" :key="item.key"
+              v-model:selected-items="selectedFacetItems[item.key]" :istree="isTree(item)"
               :scroll-item-count="item.scrollSize" :searchable="item.hasSearchBox" :dataitems="item.itemList"
               :facettitle="item.title" class="mb-2"
             />
@@ -203,7 +239,12 @@ const formattedField = (list: Record<string, any>[], fieldName: string) => {
                                   <span class="book-title" v-html="item.raw.title" />
                                 </VCol>
                                 <VCol cols="auto" class="check-box">
-                                  <VCheckbox v-model="item.raw.selected" density="compact" />
+                                  <VBtn
+                                    icon size="small" variant="tonal"
+                                    @click="selectBook(item.raw)"
+                                  >
+                                    <VCheckbox v-model="item.raw.selected" density="compact" />
+                                  </VBtn>
                                 </VCol>
                               </VRow>
 
@@ -212,16 +253,18 @@ const formattedField = (list: Record<string, any>[], fieldName: string) => {
                                   نویسنده : {{
                                     formattedField(item.raw.creatorList, 'name') }}
                                 </p>
-                                <p v-if="formattedField(item.raw.publisherList, 'place')">
+                                <p v-if="formattedField(item.raw.publisherList, 'title')">
                                   ناشر : {{
-                                    formattedField(item.raw.publisherList, 'place') }}
+                                    formattedField(item.raw.publisherList, 'title') }}
                                 </p>
                               </div>
                               <div>
-                                <p v-if="formattedField(item.raw.languageList, 'name')">
+                                <!--
+                                  <p v-if="formattedField(item.raw.languageList, 'name')">
                                   زبان : {{
-                                    formattedField(item.raw.languageList, 'name') }}
-                                </p>
+                                  formattedField(item.raw.languageList, 'name') }}
+                                  </p>
+                                -->
                                 <p v-if="formattedField(item.raw.publishYearList, 'year')">
                                   سال نشر : {{
                                     formattedField(item.raw.publishYearList, 'year') }}
@@ -236,20 +279,29 @@ const formattedField = (list: Record<string, any>[], fieldName: string) => {
                   <template #footer="">
                     <VFooter>
                       <div class="d-flex align-center justify-center pa-4">
-                        <VBtn
-                          :disabled="isUndefined(resultbookItems?.pageNumber) || resultbookItems?.pageNumber <= 1" density="comfortable" icon="tabler-arrow-right"
-                          variant="tonal" rounded @click="prevPage"
-                        />
-
-                        <div class="mx-2 text-caption">
-                          {{ $t('$vuetify.pagination.ariaLabel.page') }} {{ resultbookItems?.pageNumber }} {{ $t('of')
-                          }} {{ totalPageNumber }}
+                        <div>
+                          <VBtn type="" class="me-3">
+                            <span >
+                              {{ $t('accept') }}
+                            </span>
+                          </VBtn>
                         </div>
+                        <div>
+                          <VBtn
+                            :disabled="isUndefined(resultbookItems?.pageNumber) || resultbookItems?.pageNumber <= 1" density="comfortable" icon="tabler-arrow-right"
+                            variant="tonal" rounded @click="prevPage"
+                          />
 
-                        <VBtn
-                          :disabled="isUndefined(resultbookItems?.pageNumber) || resultbookItems?.pageNumber >= totalPageNumber" density="comfortable"
-                          icon="tabler-arrow-left" variant="tonal" rounded @click="nextPage"
-                        />
+                          <div class="mx-2 text-caption">
+                            {{ $t('$vuetify.pagination.ariaLabel.page') }} {{ resultbookItems?.pageNumber }} {{ $t('of')
+                            }} {{ totalPageNumber }}
+                          </div>
+
+                          <VBtn
+                            :disabled="isUndefined(resultbookItems?.pageNumber) || resultbookItems?.pageNumber >= totalPageNumber" density="comfortable"
+                            icon="tabler-arrow-left" variant="tonal" rounded @click="nextPage"
+                          />
+                        </div>
                       </div>
                     </VFooter>
                   </template>
@@ -269,12 +321,4 @@ const formattedField = (list: Record<string, any>[], fieldName: string) => {
     </VCard>
     <!-- </PerfectScrollbar> -->
   </VDialog>
-
-  <VSnackbar
-    v-model="resultAlertVisible"
-    location="bottom center"
-    color="error"
-  >
-    {{ resultStateMessage }}
-  </VSnackbar>
 </template>

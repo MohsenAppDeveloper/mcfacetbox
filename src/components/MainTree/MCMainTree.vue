@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { VTreeview } from 'vuetify/labs/VTreeview'
 import type { ISimpleTree } from '@/types/baseModels'
+import { createTreeIndex } from '@/types/tree'
+
 import { useSelectedNode } from '@/store/treeStore'
 
 // watch(selectedProjects, (newvalue, oldvalue) => {
@@ -14,6 +16,7 @@ const emit = defineEmits<Emit>()
 const items = [{ title: 'Option 1', value: 'Option 1' }, { title: 'Option 2', value: 'Option 2' }, { title: 'Option 3', value: 'Option 3' }]
 const projectList = reactive<ISimpleTree[]>([{ id: 1, title: 'موسوعه یک', children: [{ id: 2, title: 'درخت یک' }, { id: 3, title: 'درخت دو' }] }, { id: 4, title: 'موسوعه دو', children: [{ id: 5, title: 'درخت سه' }, { id: 6, title: 'درخت چهار', children: [{ id: 7, title: 'درخت پنج' }, { id: 8, title: 'درخت ثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثشش', children: [{ id: 51, title: 'درخت 9', children: [{ id: 65, title: 'درخت 9', children: [{ id: 21, title: 'درخت 9', children: [{ id: 54, title: 'درخت 9', children: [{ id: 80, title: 'درخت 9', children: [{ id: 90, title: 'درخت 9', children: [{ id: 19, title: 'درخت 9', children: [{ id: 91, title: 'درخت 9' }] }] }] }] }] }] }] }] }] }] }])
 const selectedProjects = ref<number[]>([])
+const treeIndex = reactive<Record<number, ISimpleTree>>({})
 
 interface Emit {
   (e: 'close'): void // ایونت جدید close اضافه شد
@@ -22,11 +25,35 @@ interface Emit {
 
 const selectenode = useSelectedNode()
 
-const selectTreeNode = (item: ISimpleTree) => {
-  treeNodeDeselectAll(projectList)
-  item.selected = true
-  selectenode.value = item
+function updateTreeIndex(treeData: ISimpleTree[]) {
+  // اینجا فرض می‌شود که createTreeIndex(tree) یک شیء جدید برمی‌گرداند
+  const newTreeIndex = createTreeIndex(treeData)
+
+  // به‌روزرسانی مقادیر در treeIndex
+  Object.assign(treeIndex, { ...newTreeIndex })
 }
+
+const selectTreeNode = (item: ISimpleTree) => {
+  if (selectenode.simpleTreeModelStored.id > 0) {
+    treeIndex[selectenode.simpleTreeModelStored.id].selected = false
+    console.log(treeIndex[item.id])
+  }
+
+  //   treeNodeDeselectAll(projectList)
+  item.selected = true
+  selectenode.simpleTreeModelStored.id = item.id
+  selectenode.simpleTreeModelStored.title = item.title
+  selectenode.simpleTreeModelStored.selected = item.selected
+  selectenode.simpleTreeModelStored.children = item.children
+}
+
+onMounted(() => {
+  updateTreeIndex(projectList)
+})
+
+// watch(selectenode.simpleTreeModelStored, newval => {
+//   console.log('storechange', newval)
+// })
 </script>
 
 <template>

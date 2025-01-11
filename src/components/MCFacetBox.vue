@@ -2,7 +2,7 @@
 import { isNull, isUndefined } from '@sindresorhus/is'
 import { VTreeview } from 'vuetify/labs/VTreeview'
 
-import type { IFacetItem, IFacetTreeItem } from '@/types/SearchResult'
+import type { IFacetItem } from '@/types/SearchResult'
 import { convertFacetItemToFacetTree } from '@/types/SearchResult'
 
 interface Props {
@@ -24,29 +24,33 @@ const treeItems = computed(() =>
   convertFacetItemToFacetTree(props.dataitems),
 )
 
-const selectedTreeFacetItems = reactive<string[]>([])
+const selectedTreeFacetItems = ref<string[]>([])
 const selectedFacetItems = ref<string[]>([])
 
 const searchText = ref('')
 const filteredItems = ref<IFacetItem[]>(props.dataitems)
 
+watch(filteredItems, newValue => {
+  if ((props.selectedItems?.length ?? 0) > 0)
+    !(props.istree ?? false) ? selectedFacetItems.value.push(...(props.selectedItems ?? [])) : selectedTreeFacetItems.value.push(...(props.selectedItems ?? []))
+}, { immediate: true })
+
 watch((selectedTreeFacetItems), newval => {
   emit('update:selectedItems', newval)
 })
 watch((selectedFacetItems), newval => {
-  console.log('changevalue2', newval)
   emit('update:selectedItems', newval)
 })
 
 // if (selectedTreeFacetItems.find(element => element === item.facetKey))
 
-const selectTreeNode = (item: IFacetTreeItem) => {
-  if (selectedTreeFacetItems.includes(item.facetKey)) { selectedTreeFacetItems.splice(0) }
-  else {
-    selectedTreeFacetItems.splice(0)
-    selectedTreeFacetItems.push(item.facetKey)
-  }
-}
+// const selectTreeNode = (item: IFacetTreeItem) => {
+//   if (selectedTreeFacetItems.includes(item.facetKey)) { selectedTreeFacetItems.splice(0) }
+//   else {
+//     selectedTreeFacetItems.splice(0)
+//     selectedTreeFacetItems.push(item.facetKey)
+//   }
+// }
 
 // فیلتر کردن آیتم‌ها بر اساس متن جستجو
 function filterItems() {
@@ -77,9 +81,10 @@ function searchinfacet(e: any) {
     </div>
 
     <VList
-      v-if="!(props.istree ?? false)" v-model:selected="selectedFacetItems" item-value="facetKey" lines="one"
+      v-if="!(props.istree ?? false)" v-model:selected="selectedFacetItems" item-value="key" item-title="title"
+      lines="one"
       select-strategy="leaf"
-      :return-object="false" :height="(props.scrollItemCount ?? 10) * 25"
+      :return-object="false" :height="(filteredItems.length ?? 10) * 35" :max-height="(props.scrollItemCount ?? 10) * 35"
     >
       <!-- <VVirtualScroll :items="filteredItems" :height="(props.scrollItemCount ?? 10) * 20"> -->
       <VListItem v-for="item in filteredItems" :key="item.key" :title="item.title" :value="item.key">
@@ -93,19 +98,29 @@ function searchinfacet(e: any) {
 
     <VTreeview
       v-else
-      v-model:selected="selectedTreeFacetItems" :items="treeItems" expand-icon="mdi-menu-left" item-value="facetKey"
+      v-model:activated="selectedTreeFacetItems" :items="treeItems" expand-icon="mdi-menu-left" item-value="facetKey"
       item-title="title" min-height="300px" activatable
-      density="compact"
-    >
+      density="compact" active-strategy="single-independent"
+    />
+    <!--
       <template #title="{ item }">
-        <div @click="selectTreeNode(item)">
-          <!-- <VTooltip :text="item.title"> -->
-          <!-- <template #activator="{ props }"> -->
-          <span v-bind="props"> {{ item.title }}</span>
-          <!-- </template> -->
-          <!-- </VTooltip> -->
-        </div>
+      <VTreeviewItem>
+      <template #default="{ isActive, isSelected }">
+      <div @click="selectTreeNode(item)">
+      <span v-bind="props"> {{ item.title }}--{{ isSelected ?? 0 }}--{{ isActive ?? 0 }}</span>
+      </div>
       </template>
-    </VTreeview>
+      </VTreeviewItem>
+      </template>
+    -->
+
+    <!--
+      <template #title="{ item }">
+      <div @click="selectTreeNode(item)">
+      <span v-bind="props"> {{ item.title }}</span>
+      </div>
+      </template>
+    -->
+    <!-- </VTreeview> -->
   </VCard>
 </template>

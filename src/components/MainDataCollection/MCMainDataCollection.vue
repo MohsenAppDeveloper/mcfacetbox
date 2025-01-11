@@ -36,8 +36,9 @@ const loadmore = ref(null)
 const isDialogSelectBookVisible = ref(false)
 const infoSearch = ref()
 const loading = ref(false)
+const selectedBooks = ref<string[]>([])
 const selectedFacetItems = reactive<Record<string, string[]>>({})
-const testfacetlist = ref<IFacetBox[]>([{ facetboxKey: 'book', title: 'کتاب', hasSearchBox: true, scrollSize: 5, itemList: [{ key: '1', title: 'پژوهشگر', count: 10 }, { key: '2', title: 'مدیر کل', count: 11 }, { key: '3', title: 'ناظر', count: 5 }, { key: '4', title: 'ارزیاب یک', count: 7 }, { key: '5', title: 'ارزیاب دو', count: 7 }] }, { facetboxKey: 'book1', title: 'قرن', isTree: true, hasSearchBox: false, scrollSize: 5, itemList: [{ key: '1', title: 'پژوهشگر', count: 13 }, { key: '2', parent: 1, title: 'مدیر کل', count: 18 }, { key: '3', title: 'ناظر', count: 16 }, { key: '4', parent: 3, title: 'ارزیاب یک', count: 13 }, { key: '5', parent: 4, title: 'ارزیاب دو', count: 1 }] }])
+const testfacetlist = ref<IFacetBox[]>([{ key: 'book', title: 'کتاب', hasSearchBox: true, scrollSize: 5, itemList: [{ key: '1', title: 'پژوهشگر', count: 10 }, { key: '2', title: 'مدیر کل', count: 11 }, { key: '3', title: 'ناظر', count: 5 }, { key: '4', title: 'ارزیاب یک', count: 7 }, { key: '5', title: 'ارزیاب دو', count: 7 }] }, { key: 'book1', title: 'قرن', isTree: true, hasSearchBox: false, scrollSize: 5, itemList: [{ key: '1', title: 'پژوهشگر', count: 13 }, { key: '2', parent: 1, title: 'مدیر کل', count: 18 }, { key: '3', title: 'ناظر', count: 16 }, { key: '4', parent: 3, title: 'ارزیاب یک', count: 13 }, { key: '5', parent: 4, title: 'ارزیاب دو', count: 1 }] }])
 
 const selectenode = useSelectedNode()
 
@@ -64,7 +65,7 @@ watch(selectedFacetItems, newval => {
     items: newval[key],
   }))
 
-  console.log('result', result)
+  console.log('result', result, newval)
 })
 
 onFetchResponse(response => {
@@ -85,7 +86,7 @@ const dataTabValue = ref(null)
 <template>
   <VContainer class="mc-data-container">
     <VRow dense class="align-center">
-      <MCDialogBookSelect v-model:is-dialog-visible="isDialogSelectBookVisible" />
+      <MCDialogBookSelect v-if="isDialogSelectBookVisible" v-model:is-dialog-visible="isDialogSelectBookVisible" />
       <VCol cols="12" md="3" />
       <VCol cols="12" md="6" class="mx-auto">
         <VTextField v-model="infoSearch" :placeholder="$t('search')" class="search-bar" single-line>
@@ -139,7 +140,7 @@ const dataTabValue = ref(null)
           <VCol md="3">
             <div>
               <MCFacetBox
-                v-for="item in testfacetlist" :key="item.facetboxKey" v-model:selected-items="selectedFacetItems[item.facetboxKey]" :istree="item.isTree"
+                v-for="item in testfacetlist" :key="item.key" v-model:selected-items="selectedFacetItems[item.key]" :istree="item.isTree"
                 :scroll-item-count="item.scrollSize" :searchable="item.hasSearchBox"
                 :dataitems="item.itemList" :facettitle="item.title" class="mb-2"
               />

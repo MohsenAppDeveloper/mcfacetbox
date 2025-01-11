@@ -49,10 +49,10 @@ export interface IFacetTreeItem {
 }
 export interface IFacetBox {
     hasSearchBox: boolean,
-    facetboxKey: string,
+    key: string,
     scrollSize: number,
     title: string,
-    facetBoxType?: string,
+    type?: string,
     itemList: IFacetItem[],
     isTree?: boolean
 }

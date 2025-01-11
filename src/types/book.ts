@@ -32,7 +32,7 @@ export interface IBookInfo extends IBook {
 }
 
 export interface IBook {
-    id: number;
+    bookId: number;
     title: string;
 }
 export interface IBookSearchResult {

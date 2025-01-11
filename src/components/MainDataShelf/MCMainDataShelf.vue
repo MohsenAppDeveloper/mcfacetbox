@@ -120,7 +120,7 @@ const dataTabValue = ref(null)
             </VBtn>
           </div>
           <div class="ms-auto">
-            <span class="ma-2">{{ selectenode.title }}</span>
+            <span class="ma-2">{{ selectenode.simpleTreeModelStored.title }}</span>
           </div>
         </VRow>
         <!-- </VToolbar> -->

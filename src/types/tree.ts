@@ -1,6 +1,21 @@
-import { baseDataTableModel, ISimpleDTO } from "./baseModels";
+import { baseDataTableModel, ISimpleDTO, ISimpleTree } from "./baseModels";
 
 
+export function createTreeIndex(tree: ISimpleTree[]): Record<number, ISimpleTree> {
+    const index: Record<number, ISimpleTree> = {};
+
+    function populateIndex(nodes: ISimpleTree[]) {
+        for (const node of nodes) {
+            index[node.id] = node;  // ذخیره نود با id
+            if (node.children) {
+                populateIndex(node.children);  // جستجوی در فرزندان
+            }
+        }
+    }
+
+    populateIndex(tree);
+    return index;
+}
 
 export interface ITreeTitle extends baseDataTableModel {
     id: number;
