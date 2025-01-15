@@ -11,6 +11,7 @@ const totalItems = ref(0)
 const sortBy = ref()
 const orderBy = ref()
 const searchQuery = ref('')
+const idDialogDataShelfBoxEdit = ref(false)
 const resultdataItems = ref<IDataShelfBox[]>([])
 const { t } = useI18n({ useScope: 'global' })
 
@@ -84,6 +85,9 @@ onFetchError(() => {
 function dataBoxItemAddTag(databoxId: number) {
   console.log('addtag', databoxId)
 }
+function editdataboxcontent(datashelfboxitem: IDataShelfBox) {
+  idDialogDataShelfBoxEdit.value = true
+}
 function getInfoSearch() { }
 </script>
 
@@ -149,7 +153,10 @@ function getInfoSearch() { }
       </VCol>
       <VCol md="9">
         <div>
-          <MCDataShelfBox v-for="(item, i) in resultdataItems" :key="i" :databoxitem="item" @addtag="dataBoxItemAddTag" />
+          <MCDataShelfBox
+            v-for="(item, i) in resultdataItems" :key="i" :databoxitem="item" @addtag="dataBoxItemAddTag"
+            @editdataboxcontent="editdataboxcontent"
+          />
           <div v-show="!loadingdata" ref="loadmore" />
         </div>
       </VCol>
@@ -160,6 +167,7 @@ function getInfoSearch() { }
         <VProgressCircular size="20" width="2" indeterminate />
       </div>
     </VRow>
+    <MCDialogDataShelfBoxEdit :is-dialog-visible="idDialogDataShelfBoxEdit" />
   </VContainer>
 </template>
 

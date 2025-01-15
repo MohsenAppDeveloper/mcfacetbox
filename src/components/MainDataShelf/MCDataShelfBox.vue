@@ -11,6 +11,8 @@ interface Props {
 }
 interface Emits {
   (e: 'addtag', dataBoxId: number): void
+  (e: 'editdataboxcontent', dataBoxId: IDataShelfBox): void
+
 }
 
 const onContextMenu = (e: MouseEvent) => {
@@ -66,7 +68,7 @@ const onContextMenu = (e: MouseEvent) => {
           <VBtn icon size="25" variant="text" @click="">
             <VIcon icon="tabler-info-circle" size="22" />
           </VBtn>
-          <VBtn icon size="25" variant="text" @click="">
+          <VBtn icon size="25" variant="text" @click="$emit('editdataboxcontent', databoxitem)">
             <VIcon icon="tabler-edit" size="22" />
           </VBtn>
           <VBtn icon size="25" variant="text" @click="">
