@@ -82,16 +82,32 @@ onMounted(() => {
       </IconBtn>
     </VRow>
 
+    <VRow dense="3" class="header">
+      <VCol />
+      <VCol cols="auto">
+        نودها
+      </VCol>
+    </VRow>
+
     <VTreeview
       v-model:selected="selectedProjects" :items="projectList" expand-icon="mdi-menu-left" item-value="id"
       item-title="title" style="block-size: calc(100vh - 267px);"
       density="compact" :lines="false"
     >
       <template #title="{ item }">
-        <div @dblclick="selectTreeNode(item)">
+        <div :class="`no-select ${item.selected ? 'selected' : ''}`" :style="item.selected ? 'color:red' : 'color:black'" @dblclick="selectTreeNode(item)">
           <VTooltip :text="item.title">
             <template #activator="{ props }">
-              <span v-bind="props" class="no-select" :style="item.selected ? 'color:red' : 'color:black'"> {{ item.title }}</span>
+              <VRow v-bind="props" dense="3">
+                <VCol class="tree-title">
+                  {{ item.title }}
+                </VCol>
+                <VCol cols="auto" class="tree-node">
+                  <template v-if="item.children && item.children.length > 0">
+                    {{ item.children.length }}
+                  </template>
+                </VCol>
+              </VRow>
             </template>
           </VTooltip>
         </div>
