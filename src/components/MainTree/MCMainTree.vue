@@ -95,7 +95,7 @@ onMounted(() => {
       density="compact" :lines="false"
     >
       <template #title="{ item }">
-        <div :class="`no-select ${item.selected ? 'selected' : ''}`" :style="item.selected ? 'color:red' : 'color:black'" @dblclick="selectTreeNode(item)">
+        <div :class="`no-select ${item.selected ? 'selected' : ''}`" :style="item.selected ? 'color:red' : ''" @dblclick="selectTreeNode(item)">
           <VTooltip :text="item.title">
             <template #activator="{ props }">
               <VRow v-bind="props" dense>
