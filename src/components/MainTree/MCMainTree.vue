@@ -82,7 +82,7 @@ onMounted(() => {
       </IconBtn>
     </VRow>
 
-    <VRow dense="3" class="header">
+    <VRow dense class="header">
       <VCol />
       <VCol cols="auto">
         نودها
@@ -98,7 +98,7 @@ onMounted(() => {
         <div :class="`no-select ${item.selected ? 'selected' : ''}`" :style="item.selected ? 'color:red' : 'color:black'" @dblclick="selectTreeNode(item)">
           <VTooltip :text="item.title">
             <template #activator="{ props }">
-              <VRow v-bind="props" dense="3">
+              <VRow v-bind="props" dense>
                 <VCol class="tree-title">
                   {{ item.title }}
                 </VCol>
