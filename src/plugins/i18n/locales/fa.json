@@ -78,6 +78,10 @@
         "language": "زبان",
         "publishYear": "سال نشر"
     },
+    "datashelfbox": {
+        "addedit": "افزودن / ویرایش فیش",
+        "addfootnote": "افزودن پاورقی"
+    },
     "createDate": "تاریخ ایجاد",
     "expireDate": "تاریخ انقضاء",
     "status": "وضعیت",

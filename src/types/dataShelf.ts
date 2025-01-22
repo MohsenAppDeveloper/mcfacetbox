@@ -10,7 +10,7 @@ export interface IDataShelfBox {
     contentType: number,
     order: number,
     //NOTE - برای پاورقی یک تگ اچ تی ام ال با شناسه پاورقی در محتوای جعبه داده درج میشود و باید بررسی گردد که اگر در ویرایش کاربر این تگ حذف شد در پاورقی هم حذف شود
-    footnote?: ISimpleDTO[],
+    footnotes: IFootNote[],
     //NOTE - شناسه جعبه داده ای که به این جعبه داده وصل شده و باید با آن حرکت کند
     pinnedItem?: number,
     createdDate: string
@@ -21,4 +21,22 @@ export interface IDataShelfBox {
     refrenceId: number
 }
 
+export class DataShelfBoxModel implements IDataShelfBox {
+    id: number = 0;
+    text: string = '';
+    connectedTreeNode?: ISimpleDTO | undefined;
+    contentType: number = 0;
+    order: number = 0;
+    footnotes: IFootNote[] = [];
+    pinnedItem?: number | undefined;
+    createdDate: string = '';
+    creator?: ISimpleDTO | undefined;
+    tags?: ISimpleDTO[] | undefined;
+    comment?: string | undefined;
+    refrenceId: number = 0;
 
+}
+
+export interface IFootNote extends ISimpleDTO {
+    index: number
+}

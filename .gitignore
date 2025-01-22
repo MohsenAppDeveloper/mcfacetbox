@@ -41,3 +41,6 @@ public/mockServiceWorker.js
 # Env files
 .env*
 !.env.example
+distrs.rar
+distum.rar
+.vscode/settings.json

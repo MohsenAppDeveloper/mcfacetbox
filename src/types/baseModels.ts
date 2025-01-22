@@ -12,7 +12,8 @@ export interface ISelectable {
 
 export interface ISimpleDTO {
     id: number;
-    title: string
+    title: string;
+    isEditing?: boolean
 }
 
 export interface ISimpleSelectableDTO {

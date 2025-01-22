@@ -32,8 +32,8 @@
 
     .mc-data-scroll {
         block-size: calc(100% - 110px);
+        margin-block-start: 1.5px;
         overflow-y: scroll;
-        margin-top: 1.5px;
     }
 
     .no-select {
@@ -49,16 +49,15 @@
         padding-block: 0;
         padding-inline: 12px;
 
-
-
         .mc-data-container {
             block-size: 100%;
             padding-block: 4px;
             padding-inline: 0;
 
             .data-collection-tabs {
-                margin: 1.5px 0;
                 border: none;
+                margin-block: 1.5px;
+                margin-inline: 0;
             }
 
             .loading-container {
@@ -174,15 +173,36 @@
             }
         }
 
-        .foot-note {
-            color: rgb(var(--v-theme-primary));
-            margin-block-start: 5px;
-        }
-
         .data-box-toolbar {
-            padding: 5px 0 !important;
+            padding-block: 5px !important;
+            padding-inline: 0 !important;
         }
     }
+}
+
+.fish-editor {
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-block-end: 20px;
+    max-block-size: 400px;
+    min-block-size: 150px;
+    overflow-y: scroll;
+}
+
+.foot-note {
+    color: rgb(var(--v-theme-primary));
+    font-size: smaller;
+    margin-block-start: 5px;
+}
+
+.footenote-index {
+    color: #1a5cc0;
+    font-size: smaller;
+    padding-inline-end: 5px;
+}
+
+.no-select {
+    user-select: none;
 }
 
 .mc-facet-box {
@@ -264,7 +284,8 @@
 
 .mc-dialog-bookselect {
     .v-card-item {
-        padding: 12px 12px 0 !important;
+        padding-block: 12px 0 !important;
+        padding-inline: 12px !important;
     }
 
     .v-card-text {
@@ -272,7 +293,6 @@
     }
 
     .book-item {
-        margin-block-end: 5px;
         padding: 5px;
         box-shadow: 0 0 5px rgba(var(--v-shadow-key-umbra-color), 0.15), 0 0 transparent, 0 0 transparent !important;
         margin-block-end: 10px;
@@ -283,20 +303,20 @@
     }
 
     .book-title {
-        margin-block-end: 5px;
         display: block;
         color: rgb(var(--v-theme-primary));
+        margin-block-end: 5px;
 
         em {
-            font-style: normal;
             background-color: yellow;
-            font-weight: bold;
             color: black;
+            font-style: normal;
+            font-weight: bold;
         }
     }
 
     p {
-        margin-block-end: 3px;
         font-size: 0.9em;
+        margin-block-end: 3px;
     }
 }
