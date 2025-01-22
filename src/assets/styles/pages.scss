@@ -61,6 +61,22 @@ div {
             }
         }
     }
+
+    &.v-list--slim {
+        .v-treeview-group {
+            &.v-list-group {
+                --prepend-width: 0px !important;
+                --list-indent-size: 12px;
+
+                .v-list-group__items {
+                    .v-list-item {
+                        padding-inline-start: calc(0px + var(--indent-padding)) !important;
+                    }
+                }
+
+            }
+        }
+    }
 }
 
 .v-selection-control {

@@ -67,7 +67,8 @@
         "delete": "حذف درخت",
         "management": "مدیریت درخت ها",
         "addeditsubtitle": "اطلاعات مورد نظر برای درخت را وارد نمایید",
-        "autorizedbook": "کتب مجاز"
+        "autorizedbook": "کتب مجاز",
+        "nodes": "نودها"
     },
     "book": {
         "title": "عنوان کتاب",

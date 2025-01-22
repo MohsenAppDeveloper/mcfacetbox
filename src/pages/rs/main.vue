@@ -37,7 +37,7 @@ function changeWindowTitle(status: boolean) {
   <div class="main">
     <Splitpanes style="block-size: calc(100vh - 70px);" rtl class="default-theme">
       <Pane size="30">
-        <MCWindow title="درخت خانواده" class="family-tree" @close="menu = true">
+        <MCWindow title="درخت خانواده" @close="menu = true">
           <MCMainTree />
         </MCWindow>
       </Pane>

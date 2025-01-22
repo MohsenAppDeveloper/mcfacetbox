@@ -14,11 +14,12 @@ interface Emit {
 
 <template>
   <div class="content-box">
-    <div class="content">
+    <VCard class="elevation-1 content">
       <VRow no-gutters justify="space-between" align="center" class="tool-bar">
         <div class="title">
           {{ props.title }}
         </div>
+         
         <div>
           <VRow no-gutters class="btn-box">
             <IconBtn size="small" @click="emit('move')">
@@ -35,6 +36,6 @@ interface Emit {
         </div>
       </VRow>
       <slot name="default" />
-    </div>
+    </VCard>
   </div>
 </template>

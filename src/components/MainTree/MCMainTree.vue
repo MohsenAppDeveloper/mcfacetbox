@@ -57,8 +57,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <VRow no-gutters class="btn-box family-tree-toolbar">
+  <div class="mc-main-tree">
+    <VRow no-gutters class="btn-box toolbar">
       <IconBtn size="small" @click="">
         <VIcon icon="tabler-search" size="22" />
       </IconBtn>
@@ -82,16 +82,32 @@ onMounted(() => {
       </IconBtn>
     </VRow>
 
+    <VRow dense class="header">
+      <VCol />
+      <VCol cols="auto">
+        {{ $t('tree.nodes') }}
+      </VCol>
+    </VRow>
+
     <VTreeview
       v-model:selected="selectedProjects" :items="projectList" expand-icon="mdi-menu-left" item-value="id"
       item-title="title" style="block-size: calc(100vh - 267px);"
       density="compact" :lines="false"
     >
       <template #title="{ item }">
-        <div @dblclick="selectTreeNode(item)">
+        <div :class="`no-select ${item.selected ? 'selected' : ''}`" :style="item.selected ? 'color:red' : ''" @dblclick="selectTreeNode(item)">
           <VTooltip :text="item.title">
             <template #activator="{ props }">
-              <span v-bind="props" class="no-select" :style="item.selected ? 'color:red' : 'color:black'"> {{ item.title }}</span>
+              <VRow v-bind="props" dense>
+                <VCol class="tree-title">
+                  {{ item.title }}
+                </VCol>
+                <VCol cols="auto" class="tree-node">
+                  <template v-if="item.children && item.children.length > 0">
+                    {{ item.children.length }}
+                  </template>
+                </VCol>
+              </VRow>
             </template>
           </VTooltip>
         </div>
