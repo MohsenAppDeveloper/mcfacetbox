@@ -28,11 +28,11 @@
         "editor.defaultFormatter": "Vue.volar",
     },
     // Extension: ESLint
-    "eslint.options": {
-        "rulePaths": [
-            "eslint-internal-rules"
-        ]
-    },
+    // "eslint.options": {
+    //     "rulePaths": [
+    //         "eslint-internal-rules"
+    //     ]
+    // },
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "explicit",
         "source.fixAll.stylelint": "explicit",

@@ -2,127 +2,137 @@
 // !SECTION این دیالوگ برای افزودن و یا ویرایش یک پنل یا درگاه کاربری میباشد
 
 import { useToast } from 'vue-toastification'
-import type { ISimpleDTO } from '@/types/baseModels'
-import type { GateProperties } from '@/types/gate'
+import { DataShelfBoxModel, type IDataShelfBox, type IFootNote } from '@/types/dataShelf'
 
-const props = defineProps({
-  isDialogVisible: Boolean,
-  gateApiUrl: String,
-})
+interface Props {
+  isDialogVisible: boolean
+  databoxItem?: IDataShelfBox
+}
+
+const props = defineProps<Props>()
 
 const emit = defineEmits<Emit>()
 const { t } = useI18n({ useScope: 'global' })
 const toast = useToast()
+const tempdataItem = reactive<IDataShelfBox>(new DataShelfBoxModel())
+const footnotes = reactive<IFootNote[]>([])
 
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'gateDataAdded', value: number): void
-  (e: 'gateDataUpdated', value: number): void
-
+  (e: 'update:databoxItem', databoxItem: IDataShelfBox): void
 }
 
 const isloading = ref(false)
+const editor = ref<HTMLDivElement>()
 
-const editableContent = ref('<p>این یک متن نمونه است. کلمات را انتخاب کنید.</p>')
-const footnotes = reactive<ISimpleDTO[]>([])
-const highlightedWord = ref('')
+// const editableContent = ref('')
+// const footnotes = reactive<IFootNote[]>([])
 
-const renderedContent = computed(() => {
-  let content = editableContent.value
-  footnotes.forEach((footnote, index) => {
-    if (footnote.word.length != 0) {
-      const regex = new RegExp(`${footnote.word}`, 'g')
+// // const { focused } = useFocus(target)
+// watch(footnotes, () => {
+//   console.log('footnotechanged', footnotes)
+// })
+onMounted(() => {
+  Object.assign(tempdataItem, props.databoxItem)
+  footnotes.push(...tempdataItem.footnotes)
 
-      content = content.replace(
-        regex,
-        `<span class="footnote" data-footnote-index="${index}">${footnote.word}[${index + 1}]</span>`,
-      )
-    }
-  })
-
-  //   console.log('content', content)
-
-  return content
+//   editableContent.value = props.dataItem.text
+//   footnotes.push(...props.dataItem.footnote ?? [])
 })
-
-const handleMouseUp = (event: MouseEvent) => {
-  const selectedText = window.getSelection()?.toString().trim()
-
-  highlightedWord.value = selectedText ?? ''
-}
-
-const addFootnote = () => {
-  const selection = window.getSelection()
-  if ((selection?.rangeCount ?? 0) > 0) {
-    const range = selection?.getRangeAt(0)
-
-    // const span = document.createElement('span')
-    // span.className = 'footnote'
-    // span.setAttribute('data-footnote-index', (footnotes.length + 1).toString())
-    // const newHighlight = {
-    //   start: range?.startOffset,
-    //   end: range?.endOffset,
-    //   node: range?.startContainer,
-    //   parentNode: range?.startContainer.parentNode,
-    // } as highlightRange
-
-    const selectedText = range?.toString().trim()
-    const parent = range?.startContainer.parentNode
-    if (selectedText && !(parent?.nodeName === 'SUP')) {
-      // ایجاد تگ <sup> برای افزودن شماره پاورقی
-      const sup = document.createElement('sup')
-
-      sup.innerText = (footnotes.length + 1).toString()
-      sup.className = 'footnote'
-      sup.addEventListener('click', (event: MouseEvent) => {})
-
-      // افزودن شماره پاورقی بعد از متن انتخاب شده
-      //   range?.deleteContents() // حذف متن انتخاب شده
-      range?.collapse(false)
-      range?.insertNode(sup) // افزودن <sup> به محتوای div
-      footnotes.push({ title: (selectedText ?? ''), id: footnotes.length + 1 })
-    }
-
-    // const overlap = highlights.some(highlight => {
-    //   return isOverlapping(highlight, newHighlight)
-    // })
-
-    // if (overlap) {
-    //   alert('نمی‌توانید این ناحیه را هایلایت کنید چون با هایلایت قبلی تداخل دارد.')
-
-    //   return
-    // }
-    // range?.surroundContents(span)
-
-    // // بدست آوردن مختصات
-    // const rect = span.getBoundingClientRect()
-
-    // span.textContent = `${span.textContent}[${footnotes.length + 1}]`
-
-    // }
-    // else {
-    //   range?.extractContents()
-    //   console.log('problem in range')
-    // }
-  }
-}
-
-const updateContent = () => {
-  const editor = document.querySelector('.editor')
-
-  editableContent.value = editor?.textContent ?? '' // به روز رسانی محتوای ویرایشگر
-}
 
 const onReset = () => {
   isloading.value = false
-
   emit('update:isDialogVisible', false)
 }
 
-const updateGate = (gateDataItem: GateProperties) => {
+const acceptchanged = () => {
+  console.log('htmlbefore', editor.value?.innerHTML)
+
+  tempdataItem.text = editor.value?.innerHTML ?? ''
+  tempdataItem.footnotes.splice(0)
+  tempdataItem.footnotes.push(...footnotes)
+  console.log('htmlafter', tempdataItem.text)
+
+  emit('update:databoxItem', tempdataItem)
+  onReset()
 }
 
-defineExpose({ updateGate })
+const refreshfootnote = () => {
+  if (editor.value) {
+    const sups = editor.value.querySelectorAll('sup.footenote-index')
+
+    // NOTE - اندیس های بعد از اندیس حذف شده را منهای یک میکنیم
+    for (let footnoteIndex = 0; footnoteIndex < sups.length; footnoteIndex++) {
+      const footnoteid = Number.parseInt(sups[footnoteIndex].attributes[1].value)
+
+      const footnoteItem = footnotes.find(item => item.id === footnoteid)
+      if (footnoteItem)
+        footnoteItem.index = footnoteIndex + 1
+      sups[footnoteIndex].textContent = (footnoteIndex + 1).toString()
+    }
+  }
+}
+
+const addFootnote = () => {
+  // NOTE - بدلیل نیاز به نمایش شماره پاورقی ها از یک همه جا اندیس پاورقی بعلاوه یک شده است، برای همین هرجا بخواهیم به یک رکورد از آرایه پاورقی دسترسی داشته باشیم، اندیس نمایش را منهای یک می کنیم
+  const selection = window.getSelection()
+  if ((selection?.rangeCount ?? 0) > 0) {
+    const range = selection?.getRangeAt(0)
+    const selectedText = range?.toString().trim()
+    const parent = range?.startContainer.parentNode
+    if (selectedText && !(parent?.nodeName === 'SUP')) {
+      const sup = document.createElement('sup')
+
+      sup.innerText = (footnotes.length + 1).toString()
+      sup.className = 'footenote-index'
+      sup.setAttribute('footnote-id', (footnotes.length + 1).toString())
+
+      //   sup.addEventListener('click', (event: MouseEvent) => {})
+      range?.collapse(false)
+      range?.insertNode(sup) // افزودن <sup> به محتوای div
+      footnotes.push({ title: '', id: footnotes?.length + 1, isEditing: true, index: footnotes.length + 1 })
+      refreshfootnote()
+    }
+  }
+}
+
+const footnoteSort = computed(() => {
+//   if (isUndefined(footnotes))
+//     return footnotes
+
+  return footnotes.sort((a, b) => a.index - b.index)
+})
+
+const deletefootnote = (footnoteId: number) => {
+  if (editor.value) {
+    const removedsup = editor.value.querySelector(`sup[footnote-id="${footnoteId}"]`)
+
+    if (removedsup != null) {
+      const parent = removedsup.parentNode // والد را پیدا کنید
+
+      parent?.removeChild(removedsup)
+    }
+    footnotes.splice(footnotes.findIndex(item => item.id === footnoteId), 1)
+    refreshfootnote()
+  }
+}
+
+function checkForRemovedFootnotes() {
+  if (editor.value && footnotes.length > 0) {
+    const supElements = editor.value.querySelectorAll('sup')
+
+    // بررسی آیا پاورقی‌ها در لیست موجود هستند
+    const currentFootnotes = Array.from(supElements).map(sup => Number.parseInt(sup.innerText))
+
+    footnotes.filter(footnote => !currentFootnotes.includes(footnote.index)).forEach(footnoteisdelete => {
+      console.log('filter', footnotes, currentFootnotes, footnoteisdelete)
+
+      deletefootnote(footnoteisdelete.id)
+    })
+  }
+}
+
+// defineExpose({ updateGate })
 </script>
 
 <template>
@@ -132,51 +142,42 @@ defineExpose({ updateGate })
   >
     <!-- 👉 Dialog close btn -->
     <DialogCloseBtn :disabled="isloading" @click="onReset" />
-    <!-- <PerfectScrollbar :options="{ wheelPropagation: false }"> -->
-    <VCard flat :title="$t('gate.addedit')" :subtitle="$t('gate.addeditsubtitle')">
+    <VCard flat :title="$t('datashelfbox.addedit')">
       <VCardText>
         <div
           ref="editor"
           contenteditable="true"
-          class="editor"
-          @mouseup="handleMouseUp"
-          v-html="editableContent"
+          class="fish-editor"
+          @input="checkForRemovedFootnotes"
+          v-html="tempdataItem.text"
         />
-        <div v-if="footnotes.length > 0" class="py-3 px-4">
-          <VChip
-            v-for="(footnote, i) in footnotes"
-            :key="i"
-            class="me-2"
+        <div class="d-flex pb-2 flex-column">
+          <MCDataBoxEditableFootnote
+            v-for="(footnote, i) in footnoteSort" :id="footnote.id" :key="footnote.id" v-model:editing="footnote.isEditing"
+            v-model:text="footnote.title"
+            :index="i + 1" @deletefootnote="deletefootnote"
           />
         </div>
-        <VBtn @click="addFootnote">
-          Add Footnote
-        </VBtn>
+        <VDivider />
+        <VCardActions>
+          <VBtn variant="plain" @click="acceptchanged">
+            {{ t('accept') }}
+          </VBtn>
+
+          <VBtn variant="plain" icon @click="addFootnote">
+            <VIcon icon="tabler-superscript" size="22" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ t('datashelfbox.addfootnote') }}
+            </VTooltip>
+          </VBtn>
+        </VCardActions>
+
         <!-- <div v-html="renderedContent" /> -->
       </VCardText>
     </VCard>
     <!-- </PerfectScrollbar> -->
   </VDialog>
 </template>
-
-<style lang="css">
-.editor {
-  padding: 10px;
-  border: 1px solid #ccc;
-  margin-block-end: 20px;
-  min-block-size: 200px;
-}
-
-.output {
-  padding: 10px;
-  border: 1px solid #ccc;
-  background-color: #f9f9f9;
-  min-block-size: 200px;
-}
-
-.footnote {
-  color: blue;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-</style>

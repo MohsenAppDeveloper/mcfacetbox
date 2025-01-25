@@ -11,7 +11,6 @@ const totalItems = ref(0)
 const sortBy = ref()
 const orderBy = ref()
 const searchQuery = ref('')
-const idDialogDataShelfBoxEdit = ref(false)
 const resultdataItems = ref<IDataShelfBox[]>([])
 const { t } = useI18n({ useScope: 'global' })
 
@@ -85,9 +84,7 @@ onFetchError(() => {
 function dataBoxItemAddTag(databoxId: number) {
   console.log('addtag', databoxId)
 }
-function editdataboxcontent(datashelfboxitem: IDataShelfBox) {
-  idDialogDataShelfBoxEdit.value = true
-}
+
 function getInfoSearch() { }
 </script>
 
@@ -104,32 +101,78 @@ function getInfoSearch() { }
         <VRow no-gutters class="btn-box data-shelf-toolbar d-flex">
           <div>
             <VBtn icon size="small" variant="tonal" @click="">
-              <VIcon icon="tabler-box-multiple" size="22" />
+              <VIcon icon="tabler-select-all" size="22" />
+              <VTooltip
+                activator="parent"
+                location="top center"
+              >
+                {{ $t('datashelfbox.selectall') }}
+              </VTooltip>
             </VBtn>
             <VBtn icon size="small" variant="tonal" @click="">
               <VIcon icon="tabler-search" size="22" />
+              <VTooltip
+                activator="parent"
+                location="top center"
+              >
+                {{ $t('datashelfbox.search') }}
+              </VTooltip>
             </VBtn>
             <VBtn icon size="small" variant="tonal" @click="">
               <VIcon icon="tabler-filter" size="22" />
+              <VTooltip
+                activator="parent"
+                location="top center"
+              >
+                {{ $t('datashelfbox.filter') }}
+              </VTooltip>
             </VBtn>
             <VBtn icon size="small" variant="tonal" @click="">
               <VIcon icon="tabler-list-tree" size="22" />
-            </VBtn>
-            <VBtn icon size="small" variant="tonal" @click="">
-              <VIcon icon="tabler-separator-vertical" size="22" />
+              <VTooltip
+                activator="parent"
+                location="top center"
+              >
+                {{ $t('datashelfbox.treemode') }}
+              </VTooltip>
             </VBtn>
             <VBtn icon size="small" variant="tonal" @click="">
               <VIcon icon="tabler-trash-x" size="22" />
-            </VBtn>
-            <VBtn icon size="small" variant="tonal" @click="">
-              <VIcon icon="tabler-plug-connected-x" size="22" />
+              <VTooltip
+                activator="parent"
+                location="top center"
+              >
+                {{ $t('datashelfbox.deleteselecteditem') }}
+              </VTooltip>
             </VBtn>
 
             <VBtn icon size="small" variant="tonal" @click="">
-              <VIcon icon="tabler-square-plus" size="22" />
+              <VIcon icon="tabler-filters" size="22" />
+              <VTooltip
+                activator="parent"
+                location="top center"
+              >
+                {{ $t('datashelfbox.allnode') }}
+              </VTooltip>
+            </VBtn>
+
+            <VBtn icon size="small" variant="tonal" @click="">
+              <VIcon icon="tabler-pencil-plus" size="22" />
+              <VTooltip
+                activator="parent"
+                location="top center"
+              >
+                {{ $t('datashelfbox.add') }}
+              </VTooltip>
             </VBtn>
             <VBtn icon size="small" variant="tonal" @click="">
-              <VIcon icon="tabler-eye-plus" size="22" />
+              <VIcon icon="tabler-list-details" size="22" />
+              <VTooltip
+                activator="parent"
+                location="top center"
+              >
+                {{ $t('datashelfbox.listdetail') }}
+              </VTooltip>
             </VBtn>
           </div>
           <div class="ms-auto">
@@ -153,10 +196,7 @@ function getInfoSearch() { }
       </VCol>
       <VCol md="9">
         <div>
-          <MCDataShelfBox
-            v-for="(item, i) in resultdataItems" :key="i" :databoxitem="item" @addtag="dataBoxItemAddTag"
-            @editdataboxcontent="editdataboxcontent"
-          />
+          <MCDataShelfBox v-for="(item, i) in resultdataItems" :key="item.id" v-model="resultdataItems[i]" @addtag="dataBoxItemAddTag" />
           <div v-show="!loadingdata" ref="loadmore" />
         </div>
       </VCol>
@@ -167,7 +207,6 @@ function getInfoSearch() { }
         <VProgressCircular size="20" width="2" indeterminate />
       </div>
     </VRow>
-    <MCDialogDataShelfBoxEdit :is-dialog-visible="idDialogDataShelfBoxEdit" />
   </VContainer>
 </template>
 

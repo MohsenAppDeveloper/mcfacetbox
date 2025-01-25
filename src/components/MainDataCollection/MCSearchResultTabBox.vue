@@ -78,7 +78,7 @@ const onContextMenu = (e: MouseEvent) => {
                     v-model="textData.raw.selected" density="compact"
                   />
 
-                  <VCol class="data-box-content">
+                  <VCol>
                     <p class="text">
                       {{ textData.raw.text }}
                     </p>

@@ -346,6 +346,7 @@ declare module 'vue' {
     DropZone: typeof import('./src/@core/components/DropZone.vue')['default']
     ErrorHeader: typeof import('./src/components/ErrorHeader.vue')['default']
     I18n: typeof import('./src/@core/components/I18n.vue')['default']
+    MCDataBoxEditableFootnote: typeof import('./src/components/MCDataBoxEditableFootnote.vue')['default']
     MCDataShelfBox: typeof import('./src/components/MainDataShelf/MCDataShelfBox.vue')['default']
     MCDataTable: typeof import('./src/components/MCDataTable.vue')['default']
     MCDialogBookSelect: typeof import('./src/components/dialogs/MCDialogBookSelect.vue')['default']
@@ -377,6 +378,5 @@ declare module 'vue' {
     TimelineOutlined: typeof import('./src/views/demos/components/timeline/TimelineOutlined.vue')['default']
     TimelineWithIcons: typeof import('./src/views/demos/components/timeline/TimelineWithIcons.vue')['default']
     TiptapEditor: typeof import('./src/@core/components/TiptapEditor.vue')['default']
-    VueApexCharts: typeof import('vue3-apexcharts')['default']
   }
 }
