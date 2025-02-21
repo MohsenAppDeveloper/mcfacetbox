@@ -31,6 +31,21 @@ export interface ISimpleTree extends Record<string, any> {
   children?: ISimpleTree[]
 }
 
+export interface ISimpleTreeActionable extends baseItemAction, baseItemState {
+  id: number
+  title: string
+  children?: ISimpleTreeActionable[]
+}
+export interface baseItemState {
+  editing?: boolean
+  loading?: boolean
+  selected?: boolean
+  tempData: any
+}
+export interface baseItemAction {
+  selectable?: boolean
+  disabled?: boolean
+}
 export interface baseDataTableModel extends Record<string, any> {
   id: number
   isSelected: boolean

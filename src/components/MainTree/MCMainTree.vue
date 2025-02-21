@@ -3,7 +3,7 @@ import { VTreeview } from 'vuetify/labs/VTreeview'
 import { isUndefined } from '@sindresorhus/is'
 import { useToast } from 'vue-toastification'
 import MCLoading from '../MCLoading.vue'
-import type { GridResult, ISimpleTree } from '@/types/baseModels'
+import type { GridResult, ISimpleTree, ISimpleTreeActionable } from '@/types/baseModels'
 import { createTreeIndex } from '@/types/tree'
 import { useSelectedNode } from '@/store/treeStore'
 
@@ -17,36 +17,23 @@ const props = defineProps({
 const emit = defineEmits<Emit>()
 const treeview = ref()
 const items = [{ title: 'Option 1', value: 'Option 1' }, { title: 'Option 2', value: 'Option 2' }, { title: 'Option 3', value: 'Option 3' }]
-const treeData = reactive<ISimpleTree[]>([])
+const treeData = reactive<ISimpleTreeActionable[]>([])
 const { t } = useI18n({ useScope: 'global' })
 const toast = useToast()
 
-// const projectList = reactive<ISimpleTree[]>([{ id: 1, title: 'موسوعه یک', children: [{ id: 2, title: 'درخت یک' }, { id: 3, title: 'درخت دو' }] }, {
-//   id: 4,
-//   title: 'موسوعه دو',
-//   children: [{ id: 5, title: 'درخت سه' }, {
-//     id: 6,
-//     title: 'درخت چهار',
-//     children: [{ id: 7, title: 'درخت پنج' }, {
-//       id: 8,
-//       title: 'عَلِيُّ بْنُ مُحَمَّدٍ عَنْ سَهْلِ بْنِ زِيَادٍ عَنْ عَمْرِو بْنِ عُثْمَانَ عَنْ مُفَضَّلِ بْنِ صَالِحٍ عَنْ سَعْدِ بْنِ طَرِيفٍجَ .',
-//       children: [{ id: 51, title: 'درخت 9', children: [{ id: 65, title: 'درخت 9', children: [{ id: 21, title: 'درخت 9', children: [{ id: 54, title: 'درخت 9', children: [{ id: 80, title: 'درخت 9', children: [{ id: 90, title: 'درخت 9', children: [{ id: 19, title: 'درخت 9', children: [{ id: 91, title: 'درخت 9' }] }] }] }] }] }] }] }],
-//     }],
-//   }],
-// }])
-
+// const { F2, alt_s } = useMagicKeys()
 const activatedNode = ref<number[]>([])
 const openedNode = ref<number[]>([])
-const treeIndex = reactive<Record<number, ISimpleTree>>({})
+const treeIndex = reactive<Record<number, ISimpleTreeActionable>>({})
+const editableNode = ref()
+const disabledSelection = ref(false)
 
 interface Emit {
   (e: 'close'): void // ایونت جدید close اضافه شد
   (e: 'open'): void // ایونت جدید close اضافه شد
 }
-
 const selectenode = useSelectedNode()
-
-const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi<GridResult<ISimpleTree>>(createUrl('/apps/maintree'), { immediate: false })
+const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi<GridResult<ISimpleTreeActionable>>(createUrl('/apps/maintree'), { immediate: false })
 
 onFetchResponse(response => {
   response.json().then(value => {
@@ -64,6 +51,15 @@ onFetchResponse(response => {
 onFetchError(response => {
   toast.error(t('alert.dataActionFailed'))
 })
+
+// watch(F2, v => {
+//   if (v && activatedNode.value[0])
+//     treeIndex[activatedNode.value[0]].editing = true
+// })
+// watch(alt_s, v => {
+//   if (v)
+//     console.log('Control+A+B have been pressed')
+// })
 function updateTreeIndex(dataItems: ISimpleTree[]) {
   // اینجا فرض می‌شود که createTreeIndex(tree) یک شیء جدید برمی‌گرداند
   const newTreeIndex = createTreeIndex(dataItems)
@@ -110,6 +106,45 @@ const openParents = (nodeItems: ISimpleTree[], id: number) => {
   return false
 }
 
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key === 'F2' && activatedNode.value.length > 0) {
+    disabledSelection.value = true
+    treeIndex[activatedNode.value[0]].editing = true
+    treeIndex[activatedNode.value[0]].tempData = treeIndex[activatedNode.value[0]].title
+  }
+}
+function handleTreeViewKeydown(event: KeyboardEvent) {
+  console.log('pressetree', event.key)
+
+//   if (event.key === ' ') {
+//     event.preventDefault()
+//     event.stopPropagation()
+//   }
+}
+function handleEditableNodeKeydown(event: KeyboardEvent, item: ISimpleTreeActionable) {
+  console.log('pressetextbox', event.key)
+
+  switch (event.key) {
+    case ' ':
+    event.stopPropagation()
+      break;
+    case 'Enter':
+      event.stopPropagation()
+      item.loading = true
+      setTimeout(() => {
+        item.loading = false
+      }, 3000)
+      break;
+    case 'Escape':
+      if (item.loading)
+        break;
+      item.loading = item.editing = false
+      item.title = item.tempData
+      break;
+    default:
+      break;
+  }
+}
 function gotoNode(nodeId: number) {
   if (nodeId > 0) {
     treeIndex[nodeId].selected = true
@@ -128,7 +163,7 @@ function gotoNode(nodeId: number) {
 </script>
 
 <template>
-  <div class="mc-main-tree">
+  <div class="mc-main-tree" @keydown="handleKeydown">
     <MCLoading :showloading="loadingdata" />
     <VRow no-gutters class="btn-box toolbar">
       <IconBtn size="small" @click="">
@@ -165,27 +200,35 @@ function gotoNode(nodeId: number) {
       <VTreeview
         ref="treeview" v-model:activated="activatedNode" v-model:opened="openedNode"
         activatable :items="treeData" expand-icon="mdi-menu-left" item-value="id"
-        item-title="title" density="compact" :lines="false"
+        item-title="title" density="compact" :lines="false" @keydown="handleTreeViewKeydown"
       >
         <template #title="{ item }">
           <div
             :class="`no-select ${item.selected ? 'selected' : ''}`" :style="item.selected ? 'color:red' : ''"
             @dblclick="selectTreeNode(item)"
           >
-            <VTooltip :text="item.title">
+            <!--
+              <VTooltip :text="item.title">
               <template #activator="{ props }">
-                <VRow v-bind="props" dense class="mx-0">
-                  <VCol class="tree-title">
-                    {{ item.title }}
-                  </VCol>
-                  <VCol cols="auto" class="tree-node">
-                    <template v-if="item.children && item.children.length > 0">
-                      {{ item.children.length }}
-                    </template>
-                  </VCol>
-                </VRow>
+            -->
+            <VRow dense class="mx-0">
+              <VCol class="tree-title">
+                <span v-if="!(item.editing ?? false)">{{ item.title }}</span>
+                <VTextField
+                  v-else ref="editableNode" v-model:model-value="item.title" autofocus :placeholder="item.title" :loading="item.loading"
+                  :focused="!(item.loading ?? false)" :readonly="item.loading ?? false" @keydown="handleEditableNodeKeydown($event, item)"
+                />
+              </VCol>
+              <VCol cols="auto" class="tree-node">
+                <template v-if="item.children && item.children.length > 0">
+                  {{ item.children.length }}
+                </template>
+              </VCol>
+            </VRow>
+            <!--
               </template>
-            </VTooltip>
+              </VTooltip>
+            -->
           </div>
         </template>
       </VTreeview>

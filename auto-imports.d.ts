@@ -8,6 +8,8 @@ declare global {
   const $api: typeof import('./src/utils/api')['$api']
   const COOKIE_MAX_AGE_1_YEAR: typeof import('./src/utils/constants')['COOKIE_MAX_AGE_1_YEAR']
   const CreateUrl: typeof import('./src/@core/composable/CreateUrl')['CreateUrl']
+  const DialogSizeMD: typeof import('./src/utils/constants')['DialogSizeMD']
+  const DialogSizeSM: typeof import('./src/utils/constants')['DialogSizeSM']
   const EffectScope: typeof import('vue')['EffectScope']
   const MapTwoObjectProperties: typeof import('./src/composables/objectUtils')['MapTwoObjectProperties']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
@@ -385,6 +387,8 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly $api: UnwrapRef<typeof import('./src/utils/api')['$api']>
     readonly COOKIE_MAX_AGE_1_YEAR: UnwrapRef<typeof import('./src/utils/constants')['COOKIE_MAX_AGE_1_YEAR']>
+    readonly DialogSizeMD: UnwrapRef<typeof import('./src/utils/constants')['DialogSizeMD']>
+    readonly DialogSizeSM: UnwrapRef<typeof import('./src/utils/constants')['DialogSizeSM']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly alphaDashValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['alphaDashValidator']>

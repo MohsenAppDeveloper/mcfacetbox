@@ -1,13 +1,13 @@
-export const resolveActiveColor = (isActive: Boolean) => {
-    if (isActive)
-        return 'success'
-    else
-        return 'error'
+export const resolveActiveColor = (isActive: boolean) => {
+  if (isActive)
+    return 'success'
+  else
+    return 'error'
 }
 
-export const resolveActiveTitle = (isActive: Boolean) => {
-    if (isActive)
-        return 'active'
-    else
-        return 'deactive'
+export const resolveActiveTitle = (isActive: boolean) => {
+  if (isActive)
+    return 'active'
+  else
+    return 'deactive'
 }

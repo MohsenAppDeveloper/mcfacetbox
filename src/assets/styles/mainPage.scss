@@ -279,6 +279,12 @@
 
 }
 
+.v-card {
+    .v-card-actions {
+        padding: 0 !important;
+    }
+}
+
 .mc-facet-box {
     &:not(.v-theme--dark) {
         background-color: rgba(var(--v-theme-primary), 0.1);

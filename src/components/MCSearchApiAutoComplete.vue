@@ -9,6 +9,7 @@ interface Prop {
   title: string
   selectionType: SelectionType
   seletedItems?: number[]
+  maxHeight?: number
 }
 
 const props = defineProps<Prop>()
@@ -99,6 +100,7 @@ watch(searchResult, () => {
       lines="one"
       :select-strategy="selectionStrategy"
       :return-object="false"
+      :max-height="`${props.maxHeight ?? 500}px`"
     >
       <!-- <VVirtualScroll :items="filteredItems" :height="(props.scrollItemCount ?? 10) * 20"> -->
       <VListItem v-for="item in searchResult" :key="item.id" :title="item.text" :value="item.id">

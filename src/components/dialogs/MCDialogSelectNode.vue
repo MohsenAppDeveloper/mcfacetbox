@@ -36,12 +36,12 @@ function loadingTreeStateChanged(loadingstate: boolean, resultCount: number) {
 
 <template>
   <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : 900" :model-value="props.isDialogVisible"
+    :width="$vuetify.display.smAndDown ? 'auto' : DialogSizeSM" :model-value="props.isDialogVisible"
     persistent @update:model-value="onReset(true)"
   >
     <DialogCloseBtn @click="onReset(true)" />
     <VCard variant="flat">
-      <MCSearchApiAutoComplete v-model:selected-items="selectedNodes" api-url="/apps/searchsimple" :selection-type="SelectionType.Single" :title="$t('tree.selectnode')" @loading-state-changed="loadingTreeStateChanged" />
+      <MCSearchApiAutoComplete v-model:selected-items="selectedNodes" :max-height="400" api-url="/apps/searchsimple" :selection-type="SelectionType.Single" :title="$t('tree.selectnode')" @loading-state-changed="loadingTreeStateChanged" />
       <VDivider v-if="activeActions" />
       <template #actions>
         <div v-if="activeActions" class="w-100 d-flex justify-center py-2">
