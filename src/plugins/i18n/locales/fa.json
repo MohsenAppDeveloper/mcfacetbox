@@ -70,7 +70,14 @@
     'autorizedbook': 'کتب مجاز',
     'nodes': 'نودها',
     'selectednode':'نود انتخاب شده',
-    'selectnode':'انتخاب درخت'
+    'selectnode':'انتخاب درخت',
+    'newnode':'جدید',
+    'editnode':'ویرایش',
+    'addcomment':'افزودن توضیحات',
+    'merge':'ادغام',
+    'transfernode':'انتقال',
+    'relation':'ارجاع / ارتباط',
+    'duplicate':'دوبل کردن'
   },
   'book': {
     'title': 'عنوان کتاب',

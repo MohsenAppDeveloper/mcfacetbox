@@ -140,9 +140,8 @@ defineExpose({ updateProject })
               />
             </VCol>
             <VCol cols="12">
-              <VBtn type="submit" class="me-3">
-                <VProgressCircular v-if="isloading" size="20" width="3" indeterminate />
-                <span v-else>
+              <VBtn type="submit" class="me-3" :loading="isloading">
+                <span>
                   {{ $t('accept') }}
                 </span>
               </VBtn>

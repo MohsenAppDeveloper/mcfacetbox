@@ -2,6 +2,7 @@
 import { VTreeview } from 'vuetify/labs/VTreeview'
 import { isUndefined } from '@sindresorhus/is'
 import { useToast } from 'vue-toastification'
+import ContextMenu from '@imengyu/vue3-context-menu'
 import MCLoading from '../MCLoading.vue'
 import type { GridResult, ISimpleTree, ISimpleTreeActionable } from '@/types/baseModels'
 import { createTreeIndex } from '@/types/tree'
@@ -37,6 +38,8 @@ const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchRe
 
 onFetchResponse(response => {
   response.json().then(value => {
+    console.log('response', value)
+
     if (resultData.value) {
       treeData.push(resultData.value.items)
       updateTreeIndex(treeData)
@@ -107,23 +110,29 @@ const openParents = (nodeItems: ISimpleTree[], id: number) => {
 }
 
 function handleKeydown(event: KeyboardEvent) {
-  if (event.key === 'F2' && activatedNode.value.length > 0) {
+  if (event.key === 'F2' && activatedNode.value.length > 0)
+    editNodeItem()
+}
+function editNodeItem() {
+  if (activatedNode.value.length > 0) {
     disabledSelection.value = true
     treeIndex[activatedNode.value[0]].editing = true
     treeIndex[activatedNode.value[0]].tempData = treeIndex[activatedNode.value[0]].title
   }
 }
 function handleTreeViewKeydown(event: KeyboardEvent) {
-  console.log('pressetree', event.key)
-
 //   if (event.key === ' ') {
 //     event.preventDefault()
 //     event.stopPropagation()
 //   }
 }
-function handleEditableNodeKeydown(event: KeyboardEvent, item: ISimpleTreeActionable) {
-  console.log('pressetextbox', event.key)
+async function editNodeITem(nodeitem: ISimpleTreeActionable) {
+  await setTimeout(() => {
+    nodeitem.loading = nodeitem.editing = false
+  }, 5000)
+}
 
+function handleEditableNodeKeydown(event: KeyboardEvent, item: ISimpleTreeActionable) {
   switch (event.key) {
     case ' ':
     event.stopPropagation()
@@ -131,9 +140,7 @@ function handleEditableNodeKeydown(event: KeyboardEvent, item: ISimpleTreeAction
     case 'Enter':
       event.stopPropagation()
       item.loading = true
-      setTimeout(() => {
-        item.loading = false
-      }, 3000)
+      editNodeITem(item)
       break;
     case 'Escape':
       if (item.loading)
@@ -155,6 +162,86 @@ function gotoNode(nodeId: number) {
         activeNode.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     }, 1000)
   }
+}
+
+const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
+  // prevent the browser's default menu
+  e.preventDefault()
+  activatedNode.value = [nodeItem.id]
+  ContextMenu.showContextMenu({
+    x: e.x,
+    y: e.y,
+    items: [
+      {
+        label: t('tree.newnode'),
+
+        // children: [
+        //   { label: t('tree.editnode') },
+        //   { label: t('tree.addcomment') },
+        // ],
+        icon: 'tabler-plus',
+        onClick: () => {
+          alert('You click a menu item')
+        },
+      },
+      {
+        label: t('tree.editnode'),
+        icon: 'tabler-edit',
+        onClick: () => {
+          editNodeItem()
+        },
+      },
+      {
+        label: t('tree.addcomment'),
+        icon: 'tabler-square-plus',
+
+        onClick: () => {
+          alert('You click a menu item')
+        },
+      },
+      {
+        label: t('tree.merge'),
+        icon: 'tabler-arrow-merge',
+
+        onClick: () => {
+          alert('You click a menu item')
+        },
+      },
+      {
+        label: t('tree.transfernode'),
+        icon: 'tabler-arrow-merge-alt-left',
+
+        onClick: () => {
+          alert('You click a menu item')
+        },
+      },
+      {
+        label: t('tree.relation'),
+        icon: 'tabler-affiliate',
+
+        onClick: () => {
+          alert('You click a menu item')
+        },
+      },
+      {
+        label: t('tree.duplicate'),
+        icon: 'tabler-corner-down-right-double',
+
+        onClick: () => {
+          alert('You click a menu item')
+        },
+      },
+
+    //   {
+    //     label: 'A submenu',
+    //     children: [
+    //       { label: 'Item1' },
+    //       { label: 'Item2' },
+    //       { label: 'Item3' },
+    //     ],
+    //   },
+    ],
+  })
 }
 
 // watch(selectenode.simpleTreeModelStored, newval => {
@@ -205,7 +292,7 @@ function gotoNode(nodeId: number) {
         <template #title="{ item }">
           <div
             :class="`no-select ${item.selected ? 'selected' : ''}`" :style="item.selected ? 'color:red' : ''"
-            @dblclick="selectTreeNode(item)"
+            @dblclick="selectTreeNode(item)" @contextmenu="onContextMenu($event, item)"
           >
             <!--
               <VTooltip :text="item.title">

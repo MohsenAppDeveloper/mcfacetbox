@@ -47,15 +47,17 @@ const onReset = () => {
 
 const acceptchanged = () => {
 //   console.log('htmlbefore', editor.value?.innerHTML)
+  isloading.value = true
+  setTimeout(() => {
+    tempdataItem.text = editor.value?.innerHTML ?? ''
+    tempdataItem.footnotes.splice(0)
+    tempdataItem.footnotes.push(...footnotes)
 
-  tempdataItem.text = editor.value?.innerHTML ?? ''
-  tempdataItem.footnotes.splice(0)
-  tempdataItem.footnotes.push(...footnotes)
+    //   console.log('htmlafter', tempdataItem.text)
 
-  //   console.log('htmlafter', tempdataItem.text)
-
-  emit('update:databoxItem', tempdataItem)
-  onReset()
+    emit('update:databoxItem', tempdataItem)
+    onReset()
+  }, 3000)
 }
 
 const refreshfootnote = () => {
@@ -158,11 +160,11 @@ function checkForRemovedFootnotes() {
         </div>
         <VDivider />
         <VCardActions>
-          <VBtn variant="plain" @click="acceptchanged">
+          <VBtn variant="plain" :loading="isloading" @click="acceptchanged">
             {{ t('accept') }}
           </VBtn>
 
-          <VBtn variant="plain" icon @click="addFootnote">
+          <VBtn variant="plain" icon :disabled="isloading" @click="addFootnote">
             <VIcon icon="tabler-superscript" size="22" />
             <VTooltip
               activator="parent"

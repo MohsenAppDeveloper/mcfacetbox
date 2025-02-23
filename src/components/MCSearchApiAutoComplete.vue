@@ -86,12 +86,12 @@ watch(searchResult, () => {
 
 <template>
   <VCard variant="flat">
-    <MCLoading :showloading="loadingdata" />
+    <!-- <MCLoading :showloading="loadingdata" /> -->
     <VCardTitle>{{ props.title }}</VCardTitle>
     <div class="search-container">
       <VTextField
         v-model:model-value="searchPhrase" :placeholder="$t('search')" append-inner-icon="tabler-search"
-        clearable density="compact" @click:clear="onReset"
+        clearable density="compact" :loading="loadingdata" @click:clear="onReset"
       />
     </div>
 

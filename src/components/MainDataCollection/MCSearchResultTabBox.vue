@@ -47,6 +47,13 @@ const onContextMenu = (e: MouseEvent) => {
     items: [
       {
         disabled: selectenode.simpleTreeModelStored.id <= 0,
+        icon: h('i', {
+          class: 'tabler-plug-connected icon iconfont',
+          style: {
+            width: '18px',
+            height: '18px',
+          },
+        }),
         label: t('datagathering.connecttoselectednode'),
         onClick: () => {
           alert('You click a menu item')
@@ -54,11 +61,25 @@ const onContextMenu = (e: MouseEvent) => {
       },
       {
         label: t('datagathering.connecttocustomnode'),
+        icon: h('i', {
+          class: 'tabler-plug icon iconfont',
+          style: {
+            width: '18px',
+            height: '18px',
+          },
+        }),
         onClick: () => {
           dialogSelectNodeVisible.value = true
         },
       },
       {
+        icon: h('i', {
+          class: 'tabler-plug-off icon iconfont',
+          style: {
+            width: '18px',
+            height: '18px',
+          },
+        }),
         label: t('datagathering.connecttoreserve'),
         onClick: () => {
           alert('You click a menu item')
@@ -66,6 +87,13 @@ const onContextMenu = (e: MouseEvent) => {
       },
       {
         label: t('datagathering.copy'),
+        icon: h('i', {
+          class: 'tabler-copy icon iconfont',
+          style: {
+            width: '18px',
+            height: '18px',
+          },
+        }),
         onClick: () => {
           alert('You click a menu item')
         },
@@ -91,7 +119,6 @@ const onContextMenu = (e: MouseEvent) => {
         <VCard variant="text">
           <VCardText>
             <MCDialogSelectNode v-if="dialogSelectNodeVisible" v-model:is-dialog-visible="dialogSelectNodeVisible" />
-
             <VDataIterator :items="item.content" :items-per-page="1">
               <template #default="{ items }">
                 <VRow
