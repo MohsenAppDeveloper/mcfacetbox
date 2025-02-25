@@ -77,7 +77,10 @@
     'merge':'ادغام',
     'transfernode':'انتقال',
     'relation':'ارجاع / ارتباط',
-    'duplicate':'دوبل کردن'
+    'duplicate':'دوبل کردن',
+    'addnewnode':'افزدودن نود جدید',
+    'samelevelnode':'نود همسطح',
+    'childnode':'نود فرزند'
   },
   'book': {
     'title': 'عنوان کتاب',
@@ -240,7 +243,8 @@
     'deleteDataFailed': 'مشکل در حذف بوجود آمد',
     'deleteSelectedItem?': 'مورد انتخاب شده حذف گردد؟',
     'resultNotFound': 'نتیجه یافت نشد',
-    'probleminGetInformation': 'مشکل در دریافت اطلاعات وجود دارد'
+    'probleminGetInformation': 'مشکل در دریافت اطلاعات وجود دارد',
+    'specificNodeAdded':"نود (0) اضافه شد"
   },
   '$vuetify': {
     'badge': 'نشان',

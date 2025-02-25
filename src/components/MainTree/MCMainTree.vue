@@ -6,7 +6,7 @@ import ContextMenu from '@imengyu/vue3-context-menu'
 import MCLoading from '../MCLoading.vue'
 import type { GridResult, ISimpleTree, ISimpleTreeActionable } from '@/types/baseModels'
 import { createTreeIndex } from '@/types/tree'
-import { useSelectedNode } from '@/store/treeStore'
+import { useTree } from '@/store/treeStore'
 
 // watch(activatedNode, (newvalue, oldvalue) => {
 //     roleData.projects = convertSimpleTreeToSimpleDtoArray(projectList).filter((item) => activatedNode.value.includes(item.id))
@@ -15,37 +15,39 @@ const props = defineProps({
   title: { type: String },
 })
 
-const emit = defineEmits<Emit>()
+// const emit = defineEmits<Emit>()
 const treeview = ref()
-const items = [{ title: 'Option 1', value: 'Option 1' }, { title: 'Option 2', value: 'Option 2' }, { title: 'Option 3', value: 'Option 3' }]
-const treeData = reactive<ISimpleTreeActionable[]>([])
 const { t } = useI18n({ useScope: 'global' })
 const toast = useToast()
 
-// const { F2, alt_s } = useMagicKeys()
 const activatedNode = ref<number[]>([])
 const openedNode = ref<number[]>([])
-const treeIndex = reactive<Record<number, ISimpleTreeActionable>>({})
+const isLoading = ref(true)
+
+// const treeData = reactive<ISimpleTreeActionable[]>([])
+// const treeIndex = reactive<Record<number, ISimpleTreeActionable>>({})
+const { treeData, treeIndex, selectNode, selectedNode } = useTree()
+
+// const treeIndex = useTreeIndex()
+
 const editableNode = ref()
 const disabledSelection = ref(false)
-
+const dialogAddNewNodeVisible = ref(false)
 interface Emit {
-  (e: 'close'): void // ایونت جدید close اضافه شد
-  (e: 'open'): void // ایونت جدید close اضافه شد
+  (e: 'close'): void
+  (e: 'open'): void
 }
-const selectenode = useSelectedNode()
 const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi<GridResult<ISimpleTreeActionable>>(createUrl('/apps/maintree'), { immediate: false })
 
 onFetchResponse(response => {
   response.json().then(value => {
-    console.log('response', value)
-
     if (resultData.value) {
       treeData.push(resultData.value.items)
       updateTreeIndex(treeData)
     }
     if (isUndefined(treeData))
       toast.error(t('alert.probleminGetInformation'))
+    isLoading.value = false
 
     // if ((resultData.value?.items ?? 0) <= 0)
     //   toast.info(t('alert.resultNotFound'))
@@ -53,6 +55,10 @@ onFetchResponse(response => {
 })
 onFetchError(response => {
   toast.error(t('alert.dataActionFailed'))
+})
+watch(loadingdata, () => {
+  if (loadingdata.value)
+    isLoading.value = true
 })
 
 // watch(F2, v => {
@@ -70,20 +76,23 @@ function updateTreeIndex(dataItems: ISimpleTree[]) {
   // به‌روزرسانی مقادیر در treeIndex
   Object.assign(treeIndex, { ...newTreeIndex })
 }
-watch(openedNode, () => {
-  console.log('openednode', openedNode.value)
-})
 
-const selectTreeNode = (item: ISimpleTree) => {
-  if (selectenode.simpleTreeModelStored.id > 0)
-    treeIndex[selectenode.simpleTreeModelStored.id].selected = false
+// watch(openedNode, () => {
+//   console.log('openednode', openedNode.value)
+// })
+
+const selectTreeNode = (item: ISimpleTreeActionable) => {
+  if (selectedNode.id > 0)
+    treeIndex[selectedNode.id].selected = false
 
   //   treeNodeDeselectAll(projectList)
   item.selected = true
-  selectenode.simpleTreeModelStored.id = item.id
-  selectenode.simpleTreeModelStored.title = item.title
-  selectenode.simpleTreeModelStored.selected = item.selected
-  selectenode.simpleTreeModelStored.children = item.children
+  selectNode(item)
+
+//   selectenode.simpleTreeModelStored.id = item.id
+//   selectenode.simpleTreeModelStored.title = item.title
+//   selectenode.simpleTreeModelStored.selected = item.selected
+//   selectenode.simpleTreeModelStored.children = item.children
 }
 
 onMounted(() => {
@@ -164,6 +173,10 @@ function gotoNode(nodeId: number) {
   }
 }
 
+const nodeItemAdded = (nodeItem: ISimpleTreeActionable) => {
+  toast.success(formatString(t('alert.specificNodeAdded'), nodeItem.title))
+}
+
 const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
   // prevent the browser's default menu
   e.preventDefault()
@@ -181,7 +194,7 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
         // ],
         icon: 'tabler-plus',
         onClick: () => {
-          alert('You click a menu item')
+          dialogAddNewNodeVisible.value = true
         },
       },
       {
@@ -251,7 +264,8 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
 
 <template>
   <div class="mc-main-tree" @keydown="handleKeydown">
-    <MCLoading :showloading="loadingdata" />
+    <MCLoading :showloading="isLoading" />
+    <MCDialogAddNewNode v-if="dialogAddNewNodeVisible" v-model:is-dialog-visible="dialogAddNewNodeVisible" :selected-node="treeIndex[activatedNode[0]]" @node-added="nodeItemAdded" />
     <VRow no-gutters class="btn-box toolbar">
       <IconBtn size="small" @click="">
         <VIcon icon="tabler-search" size="22" />
@@ -320,10 +334,10 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
         </template>
       </VTreeview>
     </div>
-    <VBtn v-if="selectenode.simpleTreeModelStored.id > 0" class="selected-node pr-1 pl-1 pb-1" variant="text" @click="gotoNode(selectenode.simpleTreeModelStored.id)">
+    <VBtn v-if="selectedNode.id > 0" class="selected-node pr-1 pl-1 pb-1" variant="text" @click="gotoNode(selectedNode.id)">
       <p>
         {{ $t('tree.selectednode') }}: <span>
-          {{ selectenode.simpleTreeModelStored.title }}
+          {{ selectedNode.title }}
         </span>
       </p>
     </VBtn>

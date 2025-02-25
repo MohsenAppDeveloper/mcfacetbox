@@ -172,7 +172,7 @@ defineExpose({ increaseOrder, decreaseOrder })
 <template>
   <VCard ref="databox" :class="[highlightClass]">
     <VCardText class="h-auto">
-      <VRow no-gutters class="justify-start align-start box" @contextmenu="onContextMenu($event)">
+      <VRow no-gutters class="justify-start align-start box">
         <VCheckbox v-model="isSelected" density="compact" />
         <VCol>
           <div class="text pb-1" v-html="databoxItem?.text" />

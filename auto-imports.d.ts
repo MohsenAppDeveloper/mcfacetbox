@@ -11,7 +11,7 @@ declare global {
   const DialogSizeMD: typeof import('./src/utils/constants')['DialogSizeMD']
   const DialogSizeSM: typeof import('./src/utils/constants')['DialogSizeSM']
   const EffectScope: typeof import('vue')['EffectScope']
-  const MapTwoObjectProperties: typeof import('./src/composables/objectUtils')['MapTwoObjectProperties']
+  const MapTwoObjectProperties: typeof import('./src/utils/objectUtils')['MapTwoObjectProperties']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const alphaDashValidator: typeof import('./src/@core/utils/validators')['alphaDashValidator']
   const alphaValidator: typeof import('./src/@core/utils/validators')['alphaValidator']
@@ -28,7 +28,7 @@ declare global {
   const controlledComputed: typeof import('@vueuse/core')['controlledComputed']
   const controlledRef: typeof import('@vueuse/core')['controlledRef']
   const convertSimpleTreeToSimpleDtoArray: typeof import('./src/composables/objectUtils')['convertSimpleTreeToSimpleDtoArray']
-  const convertTreeToArray: typeof import('./src/composables/objectUtils')['convertTreeToArray']
+  const convertTreeToArray: typeof import('./src/utils/objectUtils')['convertTreeToArray']
   const createApp: typeof import('vue')['createApp']
   const createEventHook: typeof import('@vueuse/core')['createEventHook']
   const createGenericProjection: typeof import('@vueuse/math')['createGenericProjection']
@@ -50,7 +50,7 @@ declare global {
   const defineLoader: typeof import('vue-router/auto')['defineLoader']
   const definePage: typeof import('unplugin-vue-router/runtime')['_definePage']
   const defineStore: typeof import('pinia')['defineStore']
-  const deselectAllTreeNode: typeof import('./src/composables/treeUtils')['deselectAllTreeNode']
+  const deselectAllTreeNode: typeof import('./src/utils/treeUtils')['deselectAllTreeNode']
   const directives: typeof import('./src/utils/directives')['default']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const effectScope: typeof import('vue')['effectScope']
@@ -58,6 +58,7 @@ declare global {
   const extendRef: typeof import('@vueuse/core')['extendRef']
   const formatDate: typeof import('./src/@core/utils/formatters')['formatDate']
   const formatDateToMonthShort: typeof import('./src/@core/utils/formatters')['formatDateToMonthShort']
+  const formatString: typeof import('./src/composables/objectUtils')['formatString']
   const getActivePinia: typeof import('pinia')['getActivePinia']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
@@ -434,6 +435,7 @@ declare module 'vue' {
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
     readonly formatDate: UnwrapRef<typeof import('./src/@core/utils/formatters')['formatDate']>
     readonly formatDateToMonthShort: UnwrapRef<typeof import('./src/@core/utils/formatters')['formatDateToMonthShort']>
+    readonly formatString: UnwrapRef<typeof import('./src/composables/objectUtils')['formatString']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>

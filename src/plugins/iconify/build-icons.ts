@@ -108,6 +108,8 @@ const sources: BundleScriptConfig = {
         'settings-outline',
         'chevron-left',
         'chevron-right',
+        'radiobox-blank',
+        'checkbox-blank-circle-outline',
       ],
     },
     {

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { VCol } from 'vuetify/lib/components/index.mjs'
 import MCDialogBookSelect from '../dialogs/MCDialogBookSelect.vue'
-import { useSelectedNode } from '@/store/treeStore'
 import type { GridResult } from '@/types/baseModels'
 import type { IFacetBox, ISearchResultTabBox } from '@/types/SearchResult'
 
@@ -40,7 +39,7 @@ const selectedBooks = ref<string[]>([])
 const selectedFacetItems = reactive<Record<string, string[]>>({})
 const testfacetlist = ref<IFacetBox[]>([{ key: 'book', title: 'کتاب', hasSearchBox: true, scrollSize: 5, itemList: [{ key: '1', title: 'پژوهشگر', count: 10 }, { key: '2', title: 'مدیر کل', count: 11 }, { key: '3', title: 'ناظر', count: 5 }, { key: '4', title: 'ارزیاب یک', count: 7 }, { key: '5', title: 'ارزیاب دو', count: 7 }] }, { key: 'book1', title: 'قرن', isTree: true, hasSearchBox: false, scrollSize: 5, itemList: [{ key: '1', title: 'پژوهشگر', count: 13 }, { key: '2', parent: 1, title: 'مدیر کل', count: 18 }, { key: '3', title: 'ناظر', count: 16 }, { key: '4', parent: 3, title: 'ارزیاب یک', count: 13 }, { key: '5', parent: 4, title: 'ارزیاب دو', count: 1 }] }])
 
-const selectenode = useSelectedNode()
+// const selectenode = useSelectedNode()
 
 const { stop } = useIntersectionObserver(
   loadmore,

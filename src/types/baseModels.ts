@@ -24,17 +24,27 @@ export interface ISimpleSelectableDTO {
 
 }
 
-export interface ISimpleTree extends Record<string, any> {
+export interface ISimpleTree extends baseItemState {
   id: number
   title: string
-  selected?: boolean
   children?: ISimpleTree[]
 }
 
-export interface ISimpleTreeActionable extends baseItemAction, baseItemState {
-  id: number
-  title: string
-  children?: ISimpleTreeActionable[]
+export interface ISimpleTreeActionable extends ISimpleTree, baseItemAction {
+  parentId: number
+}
+
+export class SimpleTreeAcionableModel implements ISimpleTreeActionable {
+  parentId: number = -1
+  id: number = -1
+  title: string = ''
+  children?: ISimpleTree[] | undefined
+  editing?: boolean | undefined = false
+  loading?: boolean | undefined = false
+  selected?: boolean | undefined = false
+  tempData: any = null
+  selectable?: boolean | undefined = false
+  disabled?: boolean | undefined = false
 }
 export interface baseItemState {
   editing?: boolean

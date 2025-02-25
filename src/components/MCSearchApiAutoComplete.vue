@@ -6,10 +6,10 @@ import { SelectionType } from '@/types/baseModels'
 
 interface Prop {
   apiUrl: string
-  title: string
   selectionType: SelectionType
   seletedItems?: number[]
   maxHeight?: number
+  fillSearchPhraseWithSelected?: boolean
 }
 
 const props = defineProps<Prop>()
@@ -19,6 +19,7 @@ interface Emit {
   (e: 'errorHasOccured', message: string): void
   (e: 'update:selectedItems', seletedItems: number[]): void
   (e: 'loadingStateChanged', loading: boolean, dataItemsCount: number): void
+  (e: 'searchPhraseChanged', searchPhrase: string): void
 
 }
 const itemsPerPage = ref(10)
@@ -71,13 +72,17 @@ const onReset = () => {
 }
 
 watch(selectedItemsLocal, () => {
+  if ((props.fillSearchPhraseWithSelected ?? false) && props.selectionType === SelectionType.Single)
+    searchPhrase.value = searchResult.find(item => { return item.id === selectedItemsLocal.value[0] })?.text ?? ''
   emit('update:selectedItems', selectedItemsLocal.value)
 })
 watch(searchPhrase, () => {
+  emit('searchPhraseChanged', searchPhrase.value)
+
   if (searchPhrase.value.length >= 2)
     fetchData(false)
-  else
-    searchResult.splice(0)
+
+  else searchResult.splice(0)
 })
 watch(searchResult, () => {
   emit('loadingStateChanged', loadingdata.value, searchResult.length)
@@ -87,7 +92,6 @@ watch(searchResult, () => {
 <template>
   <VCard variant="flat">
     <!-- <MCLoading :showloading="loadingdata" /> -->
-    <VCardTitle>{{ props.title }}</VCardTitle>
     <div class="search-container">
       <VTextField
         v-model:model-value="searchPhrase" :placeholder="$t('search')" append-inner-icon="tabler-search"

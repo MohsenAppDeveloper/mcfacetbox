@@ -285,6 +285,10 @@
     }
 }
 
+.v-icon--size-default {
+    font-size: calc(var(--v-icon-size-multiplier) * 1em)
+}
+
 .mc-facet-box {
     &:not(.v-theme--dark) {
         background-color: rgba(var(--v-theme-primary), 0.1);
