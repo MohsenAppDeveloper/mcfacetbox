@@ -18,6 +18,8 @@ export const setupGuards = (router: Router) => {
      */
     const isLoggedIn = !!(useCookie('userData').value && useCookie('accessToken').value)
 
+    // console.log('isloggedin', isLoggedIn, useCookie('userData').value, useCookie('accessToken').value)
+
     /*
       If user is logged in and is trying to access login like page, redirect to home
       else allow visiting the page
@@ -35,7 +37,7 @@ export const setupGuards = (router: Router) => {
       return isLoggedIn
         ? { name: 'not-authorized' }
         : {
-            name: 'login',
+            name: 'auth',
             query: {
               ...to.query,
               to: to.fullPath !== '/' ? to.path : undefined,

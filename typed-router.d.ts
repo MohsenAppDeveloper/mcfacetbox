@@ -69,6 +69,7 @@ declare module 'vue-router/auto/routes' {
     'apps-user-view-id': RouteRecordInfo<'apps-user-view-id', '/apps/user/view/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'apps-email-filter': RouteRecordInfo<'apps-email-filter', '/apps/email/:filter', { filter: ParamValue<true> }, { filter: ParamValue<false> }>,
     'apps-email-label': RouteRecordInfo<'apps-email-label', '/apps/email/:label', { label: ParamValue<true> }, { label: ParamValue<false> }>,
+    'auth': RouteRecordInfo<'auth', '/auth', Record<never, never>, Record<never, never>>,
     'charts-apex-chart': RouteRecordInfo<'charts-apex-chart', '/charts/apex-chart', Record<never, never>, Record<never, never>>,
     'charts-chartjs': RouteRecordInfo<'charts-chartjs', '/charts/chartjs', Record<never, never>, Record<never, never>>,
     'components-alert': RouteRecordInfo<'components-alert', '/components/alert', Record<never, never>, Record<never, never>>,

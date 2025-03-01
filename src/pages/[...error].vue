@@ -32,12 +32,14 @@ definePage({
 
     <!-- 👉 Image -->
     <div class="misc-avatar w-100 text-center">
-      <VImg
+      <!--
+        <VImg
         :src="misc404"
         alt="error 404"
         :max-height="$vuetify.display.smAndDown ? 350 : 500"
         class="mx-auto"
-      />
+        />
+      -->
     </div>
 
     <img

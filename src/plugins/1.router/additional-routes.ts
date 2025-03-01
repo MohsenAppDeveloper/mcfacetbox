@@ -1,4 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router/auto'
+import type { ITokenProfile } from '@/types/users'
 
 const emailRouteComponent = () => import('@/pages/apps/email/index.vue')
 
@@ -11,15 +12,17 @@ export const redirects: RouteRecordRaw[] = [
     name: 'index',
     redirect: to => {
       // TODO: Get type from backend
-      const userData = useCookie<Record<string, unknown> | null | undefined>('userData')
-      const userRole = userData.value?.role
+      const userData = useCookie<ITokenProfile>('userData')
 
-      if (userRole === 'admin')
+      //   const userRole = userData.value?.role
+
+      if (userData.value)
         return { name: 'um-gate-management' }
-      if (userRole === 'client')
-        return { name: 'access-control' }
 
-      return { name: 'login', query: to.query }
+      //   if (userRole === 'client')
+      //   return { name: 'access-control' }
+
+      return { name: 'auth', query: to.query }
     },
   },
   {

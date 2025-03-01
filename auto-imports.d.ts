@@ -8,10 +8,17 @@ declare global {
   const $api: typeof import('./src/utils/api')['$api']
   const COOKIE_MAX_AGE_1_YEAR: typeof import('./src/utils/constants')['COOKIE_MAX_AGE_1_YEAR']
   const CreateUrl: typeof import('./src/@core/composable/CreateUrl')['CreateUrl']
+  const CustomError: typeof import('./src/utils/api')['CustomError']
+  const CustomFetchError: typeof import('./src/utils/api')['CustomFetchError']
   const DialogSizeMD: typeof import('./src/utils/constants')['DialogSizeMD']
   const DialogSizeSM: typeof import('./src/utils/constants')['DialogSizeSM']
   const EffectScope: typeof import('vue')['EffectScope']
+  const HttpStatusCodesWasHandled: typeof import('./src/utils/constants')['HttpStatusCodesWasHandled']
+  const MainPage: typeof import('./src/utils/constants')['MainPage']
+  const MainPageURI: typeof import('./src/utils/constants')['MainPageURI']
   const MapTwoObjectProperties: typeof import('./src/utils/objectUtils')['MapTwoObjectProperties']
+  const ServerApi: typeof import('./src/utils/constants')['ServerApi']
+  const ServerApiAddress: typeof import('./src/utils/constants')['ServerApiAddress']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const alphaDashValidator: typeof import('./src/@core/utils/validators')['alphaDashValidator']
   const alphaValidator: typeof import('./src/@core/utils/validators')['alphaValidator']
@@ -63,6 +70,7 @@ declare global {
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const h: typeof import('vue')['h']
+  const handleFetchError: typeof import('./src/utils/api')['handleFetchError']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
   const inject: typeof import('vue')['inject']
   const injectLocal: typeof import('@vueuse/core')['injectLocal']
@@ -380,6 +388,9 @@ declare global {
   // @ts-ignore
   export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
+  // @ts-ignore
+  export type { CustomFetchError } from './src/utils/api'
+  import('./src/utils/api')
 }
 // for vue template auto import
 import { UnwrapRef } from 'vue'
@@ -388,9 +399,13 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly $api: UnwrapRef<typeof import('./src/utils/api')['$api']>
     readonly COOKIE_MAX_AGE_1_YEAR: UnwrapRef<typeof import('./src/utils/constants')['COOKIE_MAX_AGE_1_YEAR']>
+    readonly CustomFetchError: UnwrapRef<typeof import('./src/utils/api')['CustomFetchError']>
     readonly DialogSizeMD: UnwrapRef<typeof import('./src/utils/constants')['DialogSizeMD']>
     readonly DialogSizeSM: UnwrapRef<typeof import('./src/utils/constants')['DialogSizeSM']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly HttpStatusCodesWasHandled: UnwrapRef<typeof import('./src/utils/constants')['HttpStatusCodesWasHandled']>
+    readonly MainPageURI: UnwrapRef<typeof import('./src/utils/constants')['MainPageURI']>
+    readonly ServerApiAddress: UnwrapRef<typeof import('./src/utils/constants')['ServerApiAddress']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly alphaDashValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['alphaDashValidator']>
     readonly alphaValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['alphaValidator']>
@@ -440,6 +455,7 @@ declare module 'vue' {
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
+    readonly handleFetchError: UnwrapRef<typeof import('./src/utils/api')['handleFetchError']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly injectLocal: UnwrapRef<typeof import('@vueuse/core')['injectLocal']>
