@@ -99,7 +99,7 @@ const products = computed((): ECommerceProduct[] => productsData.value.products)
 const totalProduct = computed(() => productsData.value.total)
 
 const deleteProduct = async (id: number) => {
-  await $api(`apps/ecommerce/products/${id}`, {
+  await $api()(`apps/ecommerce/products/${id}`, {
     method: 'DELETE',
   })
 

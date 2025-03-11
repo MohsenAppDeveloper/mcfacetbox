@@ -6,7 +6,7 @@ const connectionData = ref<ConnectionsTab[]>([])
 
 const fetchProjectData = async () => {
   if (router.params.tab === 'connections') {
-    const data = await $api('/pages/profile', {
+    const data = await $api()('/pages/profile', {
       query: {
         tab: router.params.tab,
       },

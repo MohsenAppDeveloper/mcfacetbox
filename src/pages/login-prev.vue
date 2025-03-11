@@ -46,7 +46,7 @@ const rememberMe = ref(false)
 
 const login = async () => {
   try {
-    const res = await $api('/auth/login', {
+    const res = await $api()('/auth/login', {
       method: 'POST',
       body: {
         email: credentials.value.email,

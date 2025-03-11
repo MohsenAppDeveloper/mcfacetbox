@@ -102,7 +102,7 @@ const isAddNewUserDrawerVisible = ref(false)
 
 // 👉 Add new user
 const addNewUser = async (userData: UserProperties) => {
-  await $api('/apps/users', {
+  await $api()('/apps/users', {
     method: 'POST',
     body: userData,
   })
@@ -113,7 +113,7 @@ const addNewUser = async (userData: UserProperties) => {
 
 // 👉 Delete user
 const deleteUser = async (id: number) => {
-  await $api(`/apps/users/${id}`, {
+  await $api()(`/apps/users/${id}`, {
     method: 'DELETE',
   })
 

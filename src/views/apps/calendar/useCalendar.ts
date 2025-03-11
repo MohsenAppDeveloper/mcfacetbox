@@ -157,7 +157,7 @@ export const useCalendar = (event: Ref<Event | NewEvent>, isEventHandlerSidebarA
 
   // 👉 Update event
   const updateEvent = (_event: Event) => {
-    // ℹ️ Making API call using $api('', { method: ... })
+    // ℹ️ Making API call using $api()('', { method: ... })
     store.updateEvent(_event)
       .then(r => {
         const propsToUpdate = ['id', 'title', 'url'] as (keyof Event)[]

@@ -11,6 +11,7 @@ import { GateNewItemModel, GatePropMappedToNewItem } from '@/types/gate'
 const props = defineProps({
   isDialogVisible: Boolean,
   gateApiUrl: String,
+  gateId: Number,
 })
 
 const emit = defineEmits<Emit>()
@@ -19,15 +20,17 @@ const toast = useToast()
 
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'gateDataAdded', value: number): void
-  (e: 'gateDataUpdated', value: number): void
+  (e: 'gateDataAdded'): void
+  (e: 'gateDataUpdated'): void
 
 }
 
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
 const isloading = ref(false)
+const opening = ref(false)
 const gateData = reactive<IGateNewItem>(new GateNewItemModel())
+const router = useRouter()
 
 const onReset = () => {
   isloading.value = false
@@ -38,16 +41,16 @@ const onReset = () => {
 }
 
 async function gateAdd() {
-  const { serviceData, serviceError } = await serviceAdd<IGateNewItem>(gateData, props.gateApiUrl === undefined ? '' : props.gateApiUrl)
-  if (serviceData.value) {
+  const { serviceError } = await serviceAdd<IGateNewItem>(gateData, props.gateApiUrl === undefined ? '' : props.gateApiUrl)
+  if (!serviceError.value) {
     toast.success(t('alert.dataActionSuccess'))
-    emit('gateDataAdded', serviceData.value)
+    emit('gateDataAdded')
     emit('update:isDialogVisible', false)
     nextTick(() => {
       onReset()
     })
   }
-  else if (serviceError.value) {
+  else {
     if (serviceError.value instanceof CustomFetchError)
       toast.error(t(`httpstatuscodes.${serviceError.value.code}`))
     else toast.error(t('httpstatuscodes.0'))
@@ -56,19 +59,16 @@ async function gateAdd() {
 }
 
 async function gateEdit() {
-  const { serviceData, serviceError } = await serviceUpdate<IGateNewItem>(gateData, gateData.id, props.gateApiUrl === undefined ? '' : props.gateApiUrl)
-
-  console.log('gateedit', serviceData.value, serviceError.value)
-
-  if (serviceData.value) {
+  const { serviceError } = await serviceUpdate<IGateNewItem>(gateData, gateData.id, props.gateApiUrl === undefined ? '' : props.gateApiUrl)
+  if (!serviceError.value) {
     toast.success(t('alert.dataActionSuccess'))
-    emit('gateDataUpdated', serviceData.value)
+    emit('gateDataUpdated')
     emit('update:isDialogVisible', false)
     nextTick(() => {
       onReset()
     })
   }
-  else if (serviceError.value) {
+  else {
     toast.error(t('alert.dataActionFailed'))
   }
   isloading.value = false
@@ -86,9 +86,26 @@ const onSubmit = () => {
   })
 }
 
-const updateGate = (gateDataItem: GateProperties) => {
-//   gateData = GatePropMappedToNewItem(gateDataItem)
-  Object.assign(gateData, GatePropMappedToNewItem(gateDataItem))
+const updateGate = async (gateId: number) => {
+  try {
+    opening.value = true
+
+    const gateDataItem = await $api(router)<GateProperties>(`app/gate/${gateId}`)
+
+    Object.assign(gateData, GatePropMappedToNewItem(gateDataItem))
+
+    opening.value = false
+  }
+  catch (error) {
+    opening.value = false
+    if (error instanceof CustomFetchError)
+      toast.error(t(`httpstatuscodes.${error.code}`))
+    else toast.error(t('httpstatuscodes.0'))
+    emit('update:isDialogVisible', false)
+  }
+
+  //   gateData = GatePropMappedToNewItem(gateDataItem)
+//   Object.assign(gateData, GatePropMappedToNewItem(gateDataItem))
 }
 
 defineExpose({ updateGate })
@@ -102,10 +119,10 @@ defineExpose({ updateGate })
     <!-- 👉 Dialog close btn -->
     <DialogCloseBtn :disabled="isloading" @click="onReset" />
     <!-- <PerfectScrollbar :options="{ wheelPropagation: false }"> -->
-    <VCard flat :title="$t('gate.addedit')" :subtitle="$t('gate.addeditsubtitle')">
+    <VCard flat :title="$t('gate.addedit')" :subtitle="$t('gate.addeditsubtitle')" :loading="opening">
       <VCardText>
         <!-- 👉 Form -->
-        <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
+        <VForm ref="refForm" v-model="isFormValid" :disabled="opening" @submit.prevent="onSubmit">
           <VRow>
             <!-- 👉 Gate Title -->
             <VCol cols="12">

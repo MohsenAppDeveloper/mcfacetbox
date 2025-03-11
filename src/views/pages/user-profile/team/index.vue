@@ -6,7 +6,7 @@ const teamData = ref<TeamsTab[]>([])
 
 const fetchTeamData = async () => {
   if (router.params.tab === 'teams') {
-    const data = await $api('/pages/profile', {
+    const data = await $api()('/pages/profile', {
       query: {
         tab: router.params.tab,
       },

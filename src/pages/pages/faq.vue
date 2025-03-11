@@ -8,7 +8,7 @@ const faqSearchQuery = ref('')
 const faqs = ref<FaqCategory[]>([])
 
 const fetchFaqs = async () => {
-  const data = await $api('/pages/faq', {
+  const data = await $api()('/pages/faq', {
     query: {
       q: faqSearchQuery.value,
     },

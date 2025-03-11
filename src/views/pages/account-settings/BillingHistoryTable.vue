@@ -74,7 +74,7 @@ const resolveInvoiceStatusVariantAndIcon = (status: string) => {
 
 // 👉 Delete Invoice
 const deleteInvoice = async (id: number) => {
-  await $api(`/apps/invoice/${id}`, { method: 'DELETE' })
+  await $api()(`/apps/invoice/${id}`, { method: 'DELETE' })
   fetchInvoices()
 }
 </script>

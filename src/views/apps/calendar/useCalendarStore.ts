@@ -41,19 +41,19 @@ export const useCalendarStore = defineStore('calendar', {
       return data.value
     },
     async addEvent(event: NewEvent) {
-      await $api('/apps/calendar', {
+      await $api()('/apps/calendar', {
         method: 'POST',
         body: event,
       })
     },
     async updateEvent(event: Event) {
-      return await $api(`/apps/calendar/${event.id}`, {
+      return await $api()(`/apps/calendar/${event.id}`, {
         method: 'PUT',
         body: event,
       })
     },
     async removeEvent(eventId: string) {
-      return await $api(`/apps/calendar/${eventId}`, {
+      return await $api()(`/apps/calendar/${eventId}`, {
         method: 'DELETE',
       })
     },

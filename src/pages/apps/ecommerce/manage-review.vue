@@ -33,7 +33,7 @@ const updateOptions = (options: any) => {
 
 // Delete Review
 const deleteReview = async (id: number) => {
-  await $api(`/apps/ecommerce/reviews/${id}`, {
+  await $api()(`/apps/ecommerce/reviews/${id}`, {
     method: 'DELETE',
   })
 

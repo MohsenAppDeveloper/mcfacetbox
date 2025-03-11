@@ -11,7 +11,7 @@ const profileTabData = ref<ProfileTab>()
 
 const fetchAboutData = async () => {
   if (router.params.tab === 'profile') {
-    const data = await $api('/pages/profile', {
+    const data = await $api()('/pages/profile', {
       query: {
         tab: router.params.tab,
       },

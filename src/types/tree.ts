@@ -1,4 +1,4 @@
-import type { ISimpleDTO, ISimpleTree, baseDataTableModel } from './baseModels'
+import type { ISimpleDTO, ISimpleTree, baseDataTableModel, baseItemState } from './baseModels'
 
 export function createTreeIndex(tree: ISimpleTree[]): Record<number, ISimpleTree> {
   const index: Record<number, ISimpleTree> = {}
@@ -15,7 +15,7 @@ export function createTreeIndex(tree: ISimpleTree[]): Record<number, ISimpleTree
   return index
 }
 
-export interface ITreeTitle extends baseDataTableModel {
+export interface ITreeTitle extends Record<string, any>, baseItemState {
   id: number
   title: string
   book: ISimpleDTO[]
@@ -25,6 +25,10 @@ export interface ITreeTitle extends baseDataTableModel {
 }
 
 export class TreeTitleModel implements ITreeTitle {
+  editing?: boolean | undefined = false
+  loading?: boolean | undefined = false
+  selected?: boolean | undefined = false
+  tempData: any
   [x: string]: any;
   id: number = 0
   title: string = ''
@@ -32,8 +36,4 @@ export class TreeTitleModel implements ITreeTitle {
   createDate: string = ''
   isActive: boolean = false
   description: string = ''
-  isSelected: boolean = false
-  isLoading: boolean = false
-  selectable: boolean = false
-  disabled: boolean = false
 }

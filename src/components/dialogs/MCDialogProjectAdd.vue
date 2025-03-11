@@ -6,10 +6,12 @@ import AppTextarea from '@/@core/components/app-form-elements/AppTextarea.vue'
 import { serviceAdd, serviceUpdate } from '@/services/genericServices'
 import type { IProject } from '@/types/project'
 import { ProjectModel } from '@/types/project'
+import type { ITreeTitle } from '@/types/tree'
 
 const props = defineProps({
   isDialogVisible: { type: Boolean, default: false },
   apiUrl: String,
+  treeList: { type: Array<ITreeTitle> },
 })
 
 const emit = defineEmits<Emit>()
@@ -27,16 +29,28 @@ const isFormValid = ref(false)
 const refForm = ref<VForm>()
 const isloading = ref(false)
 const projectData = reactive<IProject>(new ProjectModel())
-const treeList = reactive([{ id: 1, title: 'پژوهشگر' }, { id: 2, title: 'مدیر کل' }, { id: 3, title: 'ناظر' }, { id: 4, title: 'ارزیاب یک' }, { id: 5, title: 'ارزیاب دو' }, { id: 6, title: 'مدیر نظارت' }, { id: 7, title: 'خواندنی' }])
+
+// const treeList = reactive([{ id: 1, title: 'پژوهشگر' }, { id: 2, title: 'مدیر کل' }, { id: 3, title: 'ناظر' }, { id: 4, title: 'ارزیاب یک' }, { id: 5, title: 'ارزیاب دو' }, { id: 6, title: 'مدیر نظارت' }, { id: 7, title: 'خواندنی' }])
 const selectedTrees = ref<number[]>([])
 
 // const selectedRoles = ref([5, 1])
 
 watch(selectedTrees, (newvalue, oldvalue) => {
-  projectData.trees = treeList.filter(item => selectedTrees.value.includes(item.id))
+  projectData.trees = props.treeList?.filter(item => selectedTrees.value.includes(item.id)).map(item => item.id) ?? []
 })
+
+const onReset = () => {
+  isloading.value = false
+  projectData.id = 0
+  emit('update:isDialogVisible', false)
+  refForm.value?.reset()
+  refForm.value?.resetValidation()
+}
+
 async function projectAdd() {
-  const { serviceData, serviceError } = await serviceAdd<IProject>(projectData, props.apiUrl == undefined ? '' : props.apiUrl)
+  projectData.gateId = 3
+
+  const { serviceData, serviceError } = await serviceAdd<IProject>(projectData, props.apiUrl === undefined ? '' : props.apiUrl)
   if (serviceData.value) {
     toast.success(t('alert.dataActionSuccess'))
     emit('projectDataAdded', serviceData.value)
@@ -48,10 +62,13 @@ async function projectAdd() {
   else if (serviceError.value) {
     toast.error(t('alert.dataActionFailed'))
   }
+  isloading.value = false
 }
 
 async function projectEdit() {
-  const { serviceData, serviceError } = await serviceUpdate<IProject>(projectData, projectData.id, props.apiUrl == undefined ? '' : props.apiUrl)
+  projectData.gateId = 3
+
+  const { serviceData, serviceError } = await serviceUpdate<IProject>(projectData, projectData.id, props.apiUrl === undefined ? '' : props.apiUrl)
   if (serviceData.value) {
     toast.success(t('alert.dataActionSuccess'))
     emit('projectDataUpdated', serviceData.value)
@@ -63,6 +80,7 @@ async function projectEdit() {
   else if (serviceError.value) {
     toast.error(t('alert.dataActionFailed'))
   }
+  isloading.value = false
 }
 
 const onSubmit = () => {
@@ -81,13 +99,6 @@ const onSubmit = () => {
 // watch(userData.role, (newdata, olddata) => {
 //     console.log('watchuserdata', newdata, olddata);
 // })
-const onReset = () => {
-  isloading.value = false
-  projectData.id = 0
-  emit('update:isDialogVisible', false)
-  refForm.value?.reset()
-  refForm.value?.resetValidation()
-}
 
 const updateProject = (projectDataItem: IProject) => {
   objectMap(projectData, useCloned(projectDataItem))
@@ -120,7 +131,7 @@ defineExpose({ updateProject })
                 <!-- 👉 Name -->
                 <VCol sm="10" cols="12">
                   <AppAutocomplete
-                    v-model="selectedTrees" :items="treeList" item-title="title"
+                    v-model="selectedTrees" :items="props.treeList" item-title="title"
                     item-value="id" :label="$t('role.treeselect')"
                     :rules="[requiredValidator(projectData.trees, $t('validatorrequired'))]" chips
                     closable-chips multiple

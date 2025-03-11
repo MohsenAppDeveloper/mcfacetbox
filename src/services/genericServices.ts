@@ -4,7 +4,7 @@ export async function serviceAdd<T extends BodyInit | Record<string, any>>(dataM
   const serviceData = ref(0)
   const serviceError = ref()
   try {
-    await $api(serviceUrl, {
+    await $api()(serviceUrl, {
       method: 'POST',
       body: JSON.parse(JSON.stringify(dataModel)),
       ignoreResponseError: false,
@@ -27,14 +27,14 @@ export async function serviceAdd<T extends BodyInit | Record<string, any>>(dataM
 
 export async function serviceUpdate<T extends BodyInit | Record<string, any>>(dataModel: T, entityId: number, serviceUrl: string) {
   const serviceData = ref(0)
-  const serviceError = ref('')
+  const serviceError = ref()
   try {
-    await $api((`${serviceUrl}/`).replace('//', '/') + entityId, {
+    await $api()((`${serviceUrl}/`).replace('//', '/') + entityId, {
       method: 'PUT',
       body: JSON.parse(JSON.stringify(dataModel)),
       ignoreResponseError: false,
-    }).then(responce => {
-      serviceData.value = responce.body
+    }).then(response => {
+      serviceData.value = response
     }, error => {
       const temp = (error as FetchError)
 
@@ -44,7 +44,7 @@ export async function serviceUpdate<T extends BodyInit | Record<string, any>>(da
     })
   }
   catch (error) {
-    serviceError.value = 'error'
+    serviceError.value = error
   }
 
   return { serviceData, serviceError }
@@ -54,7 +54,7 @@ export async function serviceDelete(id: number, serviceUrl: string) {
   const serviceData = ref()
   const serviceError = ref()
 
-  serviceData.value = await $api((`${serviceUrl}/`).replace('//', '/') + id, {
+  serviceData.value = await $api()((`${serviceUrl}/`).replace('//', '/') + id, {
     method: 'DELETE',
     parseResponse: JSON.parse,
   },

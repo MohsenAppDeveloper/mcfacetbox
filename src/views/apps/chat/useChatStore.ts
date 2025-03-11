@@ -37,7 +37,7 @@ export const useChatStore = defineStore('chat', {
     },
 
     async getChat(userId: ChatContact['id']) {
-      const res = await $api(`/apps/chat/chats/${userId}`)
+      const res = await $api()(`/apps/chat/chats/${userId}`)
 
       this.activeChat = res
     },
@@ -45,7 +45,7 @@ export const useChatStore = defineStore('chat', {
     async sendMsg(message: ChatMessage['message']) {
       const senderId = this.profileUser?.id
 
-      const response = await $api(`apps/chat/chats/${this.activeChat?.contact.id}`, {
+      const response = await $api()(`apps/chat/chats/${this.activeChat?.contact.id}`, {
         method: 'POST',
         body: { message, senderId },
       })

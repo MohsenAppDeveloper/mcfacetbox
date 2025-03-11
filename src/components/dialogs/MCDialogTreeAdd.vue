@@ -28,8 +28,18 @@ const refForm = ref<VForm>()
 const isloading = ref(false)
 const treeTitleData = reactive<ITreeTitle>(new TreeTitleModel())
 
+const onReset = () => {
+  isloading.value = false
+  treeTitleData.id = 0
+  emit('update:isDialogVisible', false)
+  refForm.value?.reset()
+  refForm.value?.resetValidation()
+}
+
 async function projectAdd() {
-  const { serviceData, serviceError } = await serviceAdd<ITreeTitle>(treeTitleData, props.apiUrl == undefined ? '' : props.apiUrl)
+  treeTitleData.gateId = 3
+
+  const { serviceData, serviceError } = await serviceAdd<ITreeTitle>(treeTitleData, props.apiUrl === undefined ? '' : props.apiUrl)
   if (serviceData.value) {
     toast.success(t('alert.dataActionSuccess'))
     emit('treeTitleDataAdded', serviceData.value)
@@ -41,10 +51,13 @@ async function projectAdd() {
   else if (serviceError.value) {
     toast.error(t('alert.dataActionFailed'))
   }
+  isloading.value = false
 }
 
 async function projectEdit() {
-  const { serviceData, serviceError } = await serviceUpdate<ITreeTitle>(treeTitleData, treeTitleData.id, props.apiUrl == undefined ? '' : props.apiUrl)
+  treeTitleData.gateId = 3
+
+  const { serviceData, serviceError } = await serviceUpdate<ITreeTitle>(treeTitleData, treeTitleData.id, props.apiUrl === undefined ? '' : props.apiUrl)
   if (serviceData.value) {
     toast.success(t('alert.dataActionSuccess'))
     emit('treeTitleDataUpdated', serviceData.value)
@@ -56,6 +69,7 @@ async function projectEdit() {
   else if (serviceError.value) {
     toast.error(t('alert.dataActionFailed'))
   }
+  isloading.value = false
 }
 
 const onSubmit = () => {
@@ -69,14 +83,6 @@ const onSubmit = () => {
         projectAdd()
     }
   })
-}
-
-const onReset = () => {
-  isloading.value = false
-  treeTitleData.id = 0
-  emit('update:isDialogVisible', false)
-  refForm.value?.reset()
-  refForm.value?.resetValidation()
 }
 
 const updateTreeTitle = (treeTitleDataItem: ITreeTitle) => {

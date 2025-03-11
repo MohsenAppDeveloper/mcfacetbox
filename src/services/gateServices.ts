@@ -4,7 +4,7 @@ import { FetchError } from "ofetch";
 export const gateAdd = async (gateModel: GateProperties, serviceUrl: string) => {
     const data = ref(null)
     const error = ref(null)
-    await $api(serviceUrl, {
+    await $api()(serviceUrl, {
         method: 'POST',
         body: gateModel,
         ignoreResponseError: false

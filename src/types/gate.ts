@@ -62,13 +62,11 @@ export interface GateProperties {
   description: string
 }
 
-export class GateModel implements GateProperties, baseItemAction, baseItemState {
+export class GateModel implements GateProperties, baseItemState {
   editing?: boolean | undefined = false
   loading?: boolean | undefined = false
   selected?: boolean | undefined = false
   tempData: any
-  selectable?: boolean | undefined
-  disabled?: boolean | undefined = false
   id: number = 0
   title: string = ''
   manager: IUserBase = new UserBaseModel()

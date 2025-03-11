@@ -14,6 +14,7 @@ const isAddNewGateDialogVisible = ref(false)
 
 // GateHeaders
 const gateHeaders = [
+  { text: '0', value: 'num', sortable: false },
   { title: t('gate.title'), key: 'title' },
   { title: t('nameandfamily'), value: 'manager.fullName' },
   { title: t('mobilenumber'), value: 'manager.phoneNumber' },
@@ -29,42 +30,20 @@ const gateHeaders = [
 
 const gateApiUrl = 'app/gate'
 
-function clickbutton() {
+function gateAdd() {
   isAddNewGateDialogVisible.value = true
-}
-
-// 👉 search filters
-const roles = [
-  { title: 'Admin', value: 'admin' },
-  { title: 'Author', value: 'author' },
-  { title: 'Editor', value: 'editor' },
-  { title: 'Maintainer', value: 'maintainer' },
-  { title: 'Subscriber', value: 'subscriber' },
-]
-
-const resolveUserRoleVariant = (role: string) => {
-  const roleLowerCase = role.toLowerCase()
-
-  if (roleLowerCase === 'subscriber')
-    return { color: 'primary', icon: 'tabler-user' }
-  if (roleLowerCase === 'author')
-    return { color: 'warning', icon: 'tabler-settings' }
-  if (roleLowerCase === 'maintainer')
-    return { color: 'success', icon: 'tabler-chart-donut' }
-  if (roleLowerCase === 'editor')
-    return { color: 'info', icon: 'tabler-pencil' }
-  if (roleLowerCase === 'admin')
-    return { color: 'error', icon: 'tabler-device-laptop' }
-
-  return { color: 'primary', icon: 'tabler-user' }
 }
 
 const gateEdit = (dataItem: Record<string, any>) => {
   isAddNewGateDialogVisible.value = true
-  dialogGate.value.updateGate({ ...dataItem })
+  nextTick(() => dialogGate.value.updateGate(dataItem.id))
 }
 
-const gateDataAdded = (gateDataId: number) => {
+const gateDataAdded = () => {
+  mcdatatable.value.refreshData()
+}
+
+const gateDataUpdated = () => {
   mcdatatable.value.refreshData()
 }
 </script>
@@ -76,7 +55,7 @@ const gateDataAdded = (gateDataId: number) => {
         {{ $t('gate.pageTitle') }}
       </div>
 
-      <VBtn prepend-icon="tabler-plus" @click="clickbutton">
+      <VBtn prepend-icon="tabler-plus" @click="gateAdd">
         {{ $t('gate.add') }}
       </VBtn>
     </VRow>
@@ -154,9 +133,9 @@ const gateDataAdded = (gateDataId: number) => {
     </VRow>
     <!-- 👉 Add New User -->
     <MCDialogGateAdd
-      ref="dialogGate" v-model:is-dialog-visible="isAddNewGateDialogVisible"
+      v-if="isAddNewGateDialogVisible" ref="dialogGate" v-model:is-dialog-visible="isAddNewGateDialogVisible"
       :gate-data="gateEditDataItem" :is-update-mode="false" :gate-api-url="gateApiUrl"
-      @gate-data-added="gateDataAdded"
+      @gate-data-added="gateDataAdded" @gate-data-updated="gateDataUpdated"
     />
   </section>
 </template>

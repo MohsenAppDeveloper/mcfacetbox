@@ -4,6 +4,7 @@ import { useToast } from 'vue-toastification'
 import { VDialog } from 'vuetify/lib/components/index.mjs'
 import MCDataTable from '@/components/MCDataTable.vue'
 import type { ISimpleDTO } from '@/types/baseModels'
+import type { ITreeTitle } from '@/types/tree'
 
 const { t } = useI18n({ useScope: 'global' })
 const mcdatatableProject = ref(MCDataTable)
@@ -12,17 +13,18 @@ const dialogProject = ref(VDialog)
 const dialogTree = ref(VDialog)
 const isAddNewProjectDialogVisible = ref(false)
 const isAddNewTreeDialogVisible = ref(false)
-const projectApiUrl = '/apps/Projects'
-const treeApiUrl = '/apps/Trees'
+const projectApiUrl = 'app/project'
+const treeApiUrl = 'app/tree'
+const treeDataItems = ref<ITreeTitle[]>([])
 
 const toast = useToast()
 
 // GateHeaders
 const projectHeaders = [
   { title: t('project.title'), key: 'title' },
-  { title: t('role.trees'), key: 'trees' },
-  { title: t('createDate'), key: 'createDate' },
-  { title: t('description'), key: 'description' },
+  { title: t('role.trees'), key: 'trees', sortable: false },
+  { title: t('createDate'), key: 'creationTime' },
+  { title: t('description'), key: 'description', sortable: false },
   { title: t('status'), key: 'isActive', sortable: false },
   { title: t('actions'), key: 'actions', sortable: false },
 ]
@@ -30,8 +32,8 @@ const projectHeaders = [
 const treeHeaders = [
   { title: t('tree.title'), key: 'title' },
   { title: t('tree.autorizedbook'), key: 'book' },
-  { title: t('description'), key: 'description' },
-  { title: t('createDate'), key: 'createDate' },
+  { title: t('description'), key: 'description', sortable: false },
+  { title: t('createDate'), key: 'creationTime' },
   { title: t('status'), key: 'isActive', sortable: false },
   { title: t('actions'), key: 'actions', sortable: false },
 
@@ -55,7 +57,16 @@ const treeTitleDataAdded = (treeDataId: number) => {
   mcdatatableTree.value.refreshData()
 }
 
+const treeLoadCompleted = (dataItems: ITreeTitle[]) => {
+  console.log('treedatabefor', dataItems)
+
+  treeDataItems.value.splice(0)
+  treeDataItems.value.push(...dataItems)
+  console.log('treedataafter', treeDataItems)
+}
+
 const selectBook = (treeid: number) => {
+
 }
 </script>
 
@@ -110,7 +121,7 @@ const selectBook = (treeid: number) => {
         <VCard>
           <MCDataTable
             ref="mcdatatableTree" :headers="treeHeaders" :api-url="treeApiUrl"
-            @edit-item="treeEdit"
+            @edit-item="treeEdit" @load-completed="treeLoadCompleted"
           >
             <template #item.book="{ value }">
               <div class="d-flex align-center gap-x-4">
@@ -138,7 +149,7 @@ const selectBook = (treeid: number) => {
     <!-- 👉 Add New User -->
     <MCDialogProjectAdd
       ref="dialogProject" v-model:is-dialog-visible="isAddNewProjectDialogVisible"
-      :api-url="projectApiUrl" @project-data-added="projectDataAdded"
+      :api-url="projectApiUrl" :tree-list="treeDataItems" @project-data-added="projectDataAdded"
     />
     <MCDialogTreeAdd
       ref="dialogTree" v-model:is-dialog-visible="isAddNewTreeDialogVisible"

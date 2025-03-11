@@ -24,7 +24,7 @@ interface ApiDataType {
 const apiData = ref<ApiDataType | null>()
 
 setTimeout(async () => {
-  const faqData = await $api<ApiDataType>('/pages/help-center')
+  const faqData = await $api()<ApiDataType>('/pages/help-center')
 
   apiData.value = faqData
 }, 1000)

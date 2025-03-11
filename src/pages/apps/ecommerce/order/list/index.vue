@@ -80,7 +80,7 @@ const totalOrder = computed(() => ordersData.value.total)
 
 // Delete Orders
 const deleteOrder = async (id: number) => {
-  await $api(`/apps/ecommerce/orders/${id}`, {
+  await $api()(`/apps/ecommerce/orders/${id}`, {
     method: 'DELETE',
   })
   fetchOrders()

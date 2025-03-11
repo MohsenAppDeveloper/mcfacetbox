@@ -20,6 +20,7 @@ const toast = useToast()
 interface Emit {
   (e: 'deletedItem', value: boolean): void
   (e: 'editItem', value: Record<string, any>): void
+  (e: 'loadCompleted', value: Record<string, any>): void
 }
 
 // import {useTemplateRef} from vue
@@ -44,7 +45,7 @@ const updateOptions = (options: any) => {
 //   orderBy.value = options.sorting[0]?.order
 }
 
-const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse } = useApi<GridResult<baseDataTableModel>>(createUrl(props.apiUrl, {
+const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi<GridResult<baseDataTableModel>>(createUrl(props.apiUrl, {
   query: {
     q: searchQuery,
     status: selectedStatus,
@@ -53,16 +54,12 @@ const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchRe
     pageNumber,
     sorting,
     orderBy,
+    GateId: 3,
   },
 }), { immediate: false })
 
 setTimeout(async () => {
-  try {
-    await fetchData(false)
-  }
-  catch (error) {
-    console.log('fetchthrow', error)
-  }
+  await fetchData(false)
 }, 1000)
 
 const datatable = ref(VDataTableServer)
@@ -71,18 +68,19 @@ onFetchResponse(response => {
   response.json().then(value => {
     datatableItems.value.splice(0)
     resultData.value?.items.forEach(element => {
-      element.disabled = false
-      element.isLoading = false
-      element.isSelected = false
-      element.selectable = true
+    //   element.disabled = false
+    //   element.isLoading = false
+    //   element.isSelected = false
+    //   element.selectable = true
       datatableItems.value.push(element)
     })
+    emit('loadCompleted', resultData.value?.items ?? [])
   })
 })
 
-// onFetchError(error => {
-//   // console.log('haserror', error)
-// })
+onFetchError(() => {
+  toast.error(t('alert.probleminGetInformation'))
+})
 
 const searchLabelDefault = computed(() => {
   if (props.searchLabel.length > 0)
@@ -109,22 +107,18 @@ const deleteAction = async (item: baseDataTableModel, index: number) => {
     showLoaderOnConfirm: true,
     showCloseButton: true,
     preConfirm: async () => {
-      const { serviceData, serviceError } = await serviceDelete(item.id, props.apiUrl)
+      const { serviceError } = await serviceDelete(item.id, props.apiUrl)
 
-      console.log('insidemethod', serviceData.value, serviceError.value)
-
-      return { serviceData, serviceError }
+      return { serviceError }
     },
     allowOutsideClick: false,
   }).then(value => {
     if (value.isConfirmed) {
-      console.log('deletevalue', value)
-
       if (value.value?.serviceError.value) {
         toast.error(t('alert.deleteDataFailed'))
         emit('deletedItem', false)
       }
-      if (value.value?.serviceData.value) {
+      else {
         refreshData()
         toast.success(t('alert.deleteDataSuccess'))
         emit('deletedItem', true)
@@ -173,7 +167,7 @@ defineExpose({ refreshData })
           <AppSelect
             :model-value="pageSize"
             :items="[
-              { value: 10, title: '10' },
+              { value: 5, title: '5' },
               { value: 25, title: '25' },
               { value: 50, title: '50' },
               { value: 100, title: '100' },
@@ -195,7 +189,7 @@ defineExpose({ refreshData })
         v-model:page="pageNumber"
         item-selectable="selectable"
         :items-per-page-options="[
-          { value: 10, title: '10' },
+          { value: 5, title: '5' },
           { value: 20, title: '20' },
           { value: 50, title: '50' },
           { value: -1, title: '$vuetify.dataFooter.itemsPerPageAll' },
@@ -256,12 +250,23 @@ defineExpose({ refreshData })
             <span v-else>{{ item[header.key] }}</span>
           </slot>
         </template>
+        <template #item.num="{ index }">
+          {{ index + 1 + ((pageNumber - 1) * pageSize) }}
+        </template>
         <template #bottom>
           <TablePagination
             v-model:page="pageNumber"
             :items-per-page="pageSize"
             :total-items="resultData?.totalCount === undefined ? 0 : resultData?.totalCount"
           />
+        </template>
+        <template #no-data>
+          <div class="pt-5">
+            <span>{{ $t('loadagain') }}</span>
+            <IconBtn size="medium" @click="refreshData">
+              <VIcon icon="tabler-refresh" size="32" />
+            </IconBtn>
+          </div>
         </template>
       </VDataTableServer>
       <!-- SECTION -->

@@ -41,7 +41,7 @@ const credentials = ref({
 
 async function sendTokenRequest(systemKey: string) {
   try {
-    const result = await $api<ITokenProfile>(`${ServerApiAddress}api/account/token/${systemKey}`, {
+    const result = await $api(router)<ITokenProfile>(`${ServerApiAddress}api/account/token/${systemKey}`, {
       method: 'GET',
       ignoreResponseError: true,
     })
@@ -88,7 +88,7 @@ onMounted(async () => {
 
 const login = async () => {
   try {
-    const res = await $api('/auth/login', {
+    const res = await $api()('/auth/login', {
       method: 'POST',
       body: {
         email: credentials.value.email,
