@@ -36,12 +36,11 @@ const datatableItems = ref<Array<baseDataTableModel>>([])
 const pageSize = ref(10)
 const pageNumber = ref(1)
 const sorting = ref()
-const orderBy = ref()
 
 const updateOptions = (options: any) => {
-  console.log('options', options)
+  if (options.sortBy && options.sortBy[0])
+    sorting.value = `${options.sortBy[0].key} ${options.sortBy[0].order}`
 
-//   sorting.value = options.sorting[0]?.key
 //   orderBy.value = options.sorting[0]?.order
 }
 
@@ -53,7 +52,6 @@ const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchRe
     pageSize,
     pageNumber,
     sorting,
-    orderBy,
     GateId: 3,
   },
 }), { immediate: false })
