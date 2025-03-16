@@ -62,7 +62,9 @@ async function projectAdd() {
     })
   }
   else {
-    toast.error(t('alert.dataActionFailed'))
+    if (serviceError.value instanceof CustomFetchError)
+      toast.error(t(`httpstatuscodes.${serviceError.value.code}`))
+    else toast.error(t('httpstatuscodes.0'))
   }
   isloading.value = false
 }
@@ -81,8 +83,6 @@ onMounted(async () => {
     opening.value = false
   }
   catch (error) {
-    console.log('treedataerror', error)
-
     opening.value = false
     if (error instanceof CustomFetchError)
       toast.error(t(`httpstatuscodes.${error.code}`))
@@ -102,8 +102,10 @@ async function projectEdit() {
       onReset()
     })
   }
-  else if (serviceError.value) {
-    toast.error(t('alert.dataActionFailed'))
+  else {
+    if (serviceError.value instanceof CustomFetchError)
+      toast.error(t(`httpstatuscodes.${serviceError.value.code}`))
+    else toast.error(t('httpstatuscodes.0'))
   }
   isloading.value = false
 }

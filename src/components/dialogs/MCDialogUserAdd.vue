@@ -19,48 +19,63 @@ const toast = useToast()
 
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'userDataAdded', value: number): void
-  (e: 'userDataUpdated', value: number): void
+  (e: 'userDataAdded'): void
+  (e: 'userDataUpdated'): void
 
 }
 
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
 const isloading = ref(false)
+const opening = ref(false)
 const userData = reactive<IUser>(new UserModel())
 const rolesList = reactive([{ id: 1, title: 'پژوهشگر' }, { id: 2, title: 'مدیر کل' }, { id: 3, title: 'ناظر' }, { id: 4, title: 'ارزیاب یک' }, { id: 5, title: 'ارزیاب دو' }, { id: 6, title: 'مدیر نظارت' }, { id: 7, title: 'خواندنی' }])
 const selectedRoles = ref<number[]>([])
+const router = useRouter()
 
-watch(selectedRoles, (newvalue, oldvalue) => {
+watch(selectedRoles, () => {
   userData.role = rolesList.filter(item => selectedRoles.value.includes(item.id))
 })
+
+const onReset = () => {
+  userData.id = 0
+  isloading.value = false
+  emit('update:isDialogVisible', false)
+  refForm.value?.reset()
+  refForm.value?.resetValidation()
+}
+
 async function userAdd() {
-  const { serviceData, serviceError } = await serviceAdd<IUser>(userData, props.apiUrl == undefined ? '' : props.apiUrl)
-  if (serviceData.value) {
+  const { serviceError } = await serviceAdd<IUser>(userData, props.apiUrl == undefined ? '' : props.apiUrl)
+  if (!serviceError.value) {
     toast.success(t('alert.dataActionSuccess'))
-    emit('userDataAdded', serviceData.value)
+    emit('userDataAdded')
     emit('update:isDialogVisible', false)
     nextTick(() => {
       onReset()
     })
   }
-  else if (serviceError.value) {
-    toast.error(t('alert.dataActionFailed'))
+  else {
+    if (serviceError.value instanceof CustomFetchError)
+      toast.error(t(`httpstatuscodes.${serviceError.value.code}`))
+    else toast.error(t('httpstatuscodes.0'))
   }
 }
 
 async function userEdit() {
-  const { serviceData, serviceError } = await serviceUpdate<IUser>(userData, userData.id, props.apiUrl == undefined ? '' : props.apiUrl)
-  if (serviceData.value) {
+  const { serviceError } = await serviceUpdate<IUser>(userData, userData.id, props.apiUrl == undefined ? '' : props.apiUrl)
+  if (!serviceError.value) {
     toast.success(t('alert.dataActionSuccess'))
-    emit('userDataUpdated', serviceData.value)
+    emit('userDataUpdated')
     emit('update:isDialogVisible', false)
     nextTick(() => {
       onReset()
     })
   }
-  else if (serviceError.value) {
-    toast.error(t('alert.dataActionFailed'))
+  else {
+    if (serviceError.value instanceof CustomFetchError)
+      toast.error(t(`httpstatuscodes.${serviceError.value.code}`))
+    else toast.error(t('httpstatuscodes.0'))
   }
 }
 
@@ -77,20 +92,37 @@ const onSubmit = () => {
   })
 }
 
+const loadRoles = async () => {
+
+}
+
 // watch(userData.role, (newdata, olddata) => {
 //     console.log('watchuserdata', newdata, olddata);
 // })
-const onReset = () => {
-  userData.id = 0
-  isloading.value = false
-  emit('update:isDialogVisible', false)
-  refForm.value?.reset()
-  refForm.value?.resetValidation()
-}
 
-const updateUser = (userDataItem: IUser) => {
-  objectMap(userData, useCloned(userDataItem))
-  selectedRoles.value = userData.role.map(item => item.id)
+const updateUser = async (userId: number) => {
+  try {
+    opening.value = true
+
+    const userDataResult = await $api(router)<IUser>(`app/gate/3/user/${userId}`)
+
+    await loadRoles()
+
+    // selectedTrees.value.push(...projectDataResult.trees)
+    Object.assign(userData, userDataResult)
+
+    opening.value = false
+  }
+  catch (error) {
+    opening.value = false
+    if (error instanceof CustomFetchError)
+      toast.error(t(`httpstatuscodes.${error.code}`))
+    else toast.error(t('httpstatuscodes.0'))
+    emit('update:isDialogVisible', false)
+  }
+
+//   objectMap(userData, useCloned(userDataItem))
+//   selectedRoles.value = userData.role.map(item => item.id)
 }
 
 defineExpose({ updateUser })
@@ -104,10 +136,10 @@ defineExpose({ updateUser })
     <!-- 👉 Dialog close btn -->
     <DialogCloseBtn :disabled="isloading" @click="onReset" />
     <!-- <PerfectScrollbar :options="{ wheelPropagation: false }"> -->
-    <VCard flat :title="$t('user.addedit')" :subtitle="$t('user.addeditsubtitle')">
+    <VCard flat :title="$t('user.addedit')" :subtitle="$t('user.addeditsubtitle')" :loading="opening">
       <VCardText>
         <!-- 👉 Form -->
-        <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
+        <VForm ref="refForm" v-model="isFormValid" :disabled="opening" @submit.prevent="onSubmit">
           <VRow>
             <!-- 👉 Gate Title -->
             <VCol cols="12">

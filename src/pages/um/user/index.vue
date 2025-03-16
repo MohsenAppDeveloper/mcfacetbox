@@ -12,63 +12,33 @@ const dialogUser = ref(VDialog)
 const dialogUserRole = ref(VDialog)
 const isAddNewUserDialogVisible = ref(false)
 const isAddNewRoleDialogVisible = ref(false)
-const userApiUrl = '/apps/users'
+const userApiUrl = 'app/gate/3/user'
 const userRoleApiUrl = '/apps/roles'
 
 const toast = useToast()
 
 // GateHeaders
 const userHeaders = [
+  { text: '0', value: 'num', sortable: false },
   { title: t('nameandfamily'), key: 'fullName' },
-  { title: t('mobilenumber'), key: 'contact' },
+  { title: t('mobilenumber'), key: 'phoneNumber' },
   { title: t('roles'), key: 'role' },
   { title: t('email'), key: 'email' },
-  { title: t('expireDate'), key: 'expireDate' },
+  { title: t('createdate'), key: 'creationTime' },
   { title: t('description'), key: 'description' },
   { title: t('status'), key: 'isActive', sortable: false },
   { title: t('actions'), key: 'actions', sortable: false },
 ]
 
 const roleHeaders = [
+  { text: '0', value: 'num', sortable: false },
   { title: t('role.title'), key: 'title' },
   { title: t('permissions'), key: 'permissions' },
   { title: t('role.trees'), key: 'projects' },
-  { title: t('createDate'), key: 'createDate' },
+  { title: t('createdate'), key: 'createDate' },
   { title: t('status'), key: 'isActive', sortable: false },
-
-  // { title: t('users'), key: 'userType', sortable: false },
   { title: t('actions'), key: 'actions', sortable: false },
 ]
-
-function clickbutton() {
-  isAddNewUserDialogVisible.value = true
-}
-
-// 👉 search filters
-const roles = [
-  { title: 'Admin', value: 'admin' },
-  { title: 'Author', value: 'author' },
-  { title: 'Editor', value: 'editor' },
-  { title: 'Maintainer', value: 'maintainer' },
-  { title: 'Subscriber', value: 'subscriber' },
-]
-
-const resolveUserRoleVariant = (role: string) => {
-  const roleLowerCase = role.toLowerCase()
-
-  if (roleLowerCase === 'subscriber')
-    return { color: 'primary', icon: 'tabler-user' }
-  if (roleLowerCase === 'author')
-    return { color: 'warning', icon: 'tabler-settings' }
-  if (roleLowerCase === 'maintainer')
-    return { color: 'success', icon: 'tabler-chart-donut' }
-  if (roleLowerCase === 'editor')
-    return { color: 'info', icon: 'tabler-pencil' }
-  if (roleLowerCase === 'admin')
-    return { color: 'error', icon: 'tabler-device-laptop' }
-
-  return { color: 'primary', icon: 'tabler-user' }
-}
 
 const userEdit = (dataItem: Record<string, any>) => {
   isAddNewUserDialogVisible.value = true
@@ -90,11 +60,11 @@ const roleEdit = (dataItem: Record<string, any>) => {
   // console.log('gateedititem', gateEditDataItem.value);
 }
 
-const userDataAdded = (gateDataId: number) => {
+const userDataAdded = () => {
   mcdatatableUser.value.refreshData()
 }
 
-const roleDataAdded = (gateDataId: number) => {
+const roleDataAdded = () => {
   mcdatatableUserRole.value.refreshData()
 }
 </script>

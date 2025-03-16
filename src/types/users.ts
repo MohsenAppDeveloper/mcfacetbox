@@ -43,6 +43,8 @@ export interface IToken {
 
 export interface ITokenProfile extends IToken {
   profile: IProfile | null
+  gates: ISimpleDTO[]
+  permissions: string[]
 }
 
 export class UserModel implements IUser {

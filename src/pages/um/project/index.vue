@@ -4,7 +4,6 @@ import { useToast } from 'vue-toastification'
 import { VDialog } from 'vuetify/lib/components/index.mjs'
 import MCDataTable from '@/components/MCDataTable.vue'
 import type { ISimpleDTO } from '@/types/baseModels'
-import type { ITreeTitle } from '@/types/tree'
 
 const { t } = useI18n({ useScope: 'global' })
 const mcdatatableProject = ref(MCDataTable)
