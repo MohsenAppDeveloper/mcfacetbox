@@ -10,6 +10,8 @@ import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { CustomFetchError } from '@/utils/api'
 import type { ITokenProfile } from '@/types/users'
+import { useGateList } from '@/store/gateStore'
+import type { ISimpleSelectableDTO } from '@/types/baseModels'
 
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 
@@ -28,6 +30,7 @@ const router = useRouter()
 const toast = useToast()
 const ability = useAbility()
 const loginfailed = ref(false)
+const gatelist = useGateList()
 
 const errors = ref<Record<string, string | undefined>>({
   email: undefined,
@@ -47,10 +50,11 @@ async function sendTokenRequest(systemKey: string) {
     })
 
     if (result.token) {
-      console.log('result', result)
-
       useCookie<ITokenProfile>('userData').value = result
       useCookie('accessToken').value = result.token
+      gatelist.value.splice(0)
+      gatelist.value.push(...result.gates.map<ISimpleSelectableDTO>(item => ({ id: item.id, title: item.title, tempData: null })))
+      gatelist.value[0].selected = true
       useCookie('userAbilityRules').value = JSON.stringify([{ action: 'manage', subject: 'all' }])
       ability.update([{ action: 'manage', subject: 'all' }])
 

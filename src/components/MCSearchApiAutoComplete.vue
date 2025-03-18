@@ -73,7 +73,7 @@ const onReset = () => {
 
 watch(selectedItemsLocal, () => {
   if ((props.fillSearchPhraseWithSelected ?? false) && props.selectionType === SelectionType.Single)
-    searchPhrase.value = searchResult.find(item => { return item.id === selectedItemsLocal.value[0] })?.text ?? ''
+    searchPhrase.value = searchResult.find(item => { return item.id === selectedItemsLocal.value[0] })?.title ?? ''
   emit('update:selectedItems', selectedItemsLocal.value)
 })
 watch(searchPhrase, () => {
@@ -107,7 +107,7 @@ watch(searchResult, () => {
       :max-height="`${props.maxHeight ?? 500}px`"
     >
       <!-- <VVirtualScroll :items="filteredItems" :height="(props.scrollItemCount ?? 10) * 20"> -->
-      <VListItem v-for="item in searchResult" :key="item.id" :title="item.text" :value="item.id">
+      <VListItem v-for="item in searchResult" :key="item.id" :title="item.title" :value="item.id">
         <template #prepend="{ isSelected }">
           <VListItemAction start>
             <VCheckbox :model-value="isSelected" density="compact" />

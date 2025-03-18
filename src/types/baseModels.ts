@@ -15,11 +15,15 @@ export interface ISimpleDTO {
   isEditing?: boolean
 }
 
-export interface ISimpleSelectableDTO {
+export interface ISimpleSelectableDTO extends ISimpleDTO, baseItemState, baseItemAction {
   id: number
-  text: string
-  selectable?: boolean
+  title: string
+  editing?: boolean
+  loading?: boolean
   selected?: boolean
+  tempData?: any
+  selectable?: boolean
+  disabled?: boolean
 
 }
 
@@ -49,7 +53,7 @@ export interface baseItemState {
   editing?: boolean
   loading?: boolean
   selected?: boolean
-  tempData: any
+  tempData?: any
 }
 export interface baseItemAction {
   selectable?: boolean
@@ -65,7 +69,7 @@ export interface baseDataTableModel extends Record<string, any> {
 
 export class SimpleSelectableDTOModel implements ISimpleSelectableDTO {
   id: number = 0
-  text: string = ''
+  title: string = ''
   selectable?: boolean | undefined = false
   selected?: boolean | undefined = false
 }
