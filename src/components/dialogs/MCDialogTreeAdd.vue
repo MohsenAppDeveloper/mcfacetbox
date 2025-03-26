@@ -64,7 +64,7 @@ async function projectEdit() {
   treeTitleData.gateId = props.gateId ?? 0
   try {
     await $api((`${props.apiUrl}/`).replace('//', '/') + treeTitleData.id, {
-      method: 'POST',
+      method: 'PUT',
       body: JSON.parse(JSON.stringify(treeTitleData)),
       ignoreResponseError: false,
     })
@@ -131,7 +131,7 @@ defineExpose({ updateTreeTitle })
           <VRow>
             <VCol cols="12">
               <AppTextField
-                v-model="treeTitleData.title"
+                v-model="treeTitleData.title" autofocus
                 :rules="[requiredValidator(treeTitleData.title, $t('validatorrequired'))]"
                 :label="$t('tree.title')" placeholder=""
               />

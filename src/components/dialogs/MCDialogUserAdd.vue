@@ -4,8 +4,9 @@
 import { useToast } from 'vue-toastification'
 import { VForm } from 'vuetify/components/VForm'
 import AppTextarea from '@/@core/components/app-form-elements/AppTextarea.vue'
-import type { IUser } from '@/types/users'
-import { UserModel } from '@/types/users'
+import type { IUser, IUserEdit } from '@/types/users'
+import { UserEditModel } from '@/types/users'
+import type { GridResult, ISimpleDTO } from '@/types/baseModels'
 
 const props = defineProps({
   isDialogVisible: { type: Boolean, default: false },
@@ -28,12 +29,14 @@ const isFormValid = ref(false)
 const refForm = ref<VForm>()
 const isloading = ref(false)
 const opening = ref(false)
-const userData = reactive<IUser>(new UserModel())
-const rolesList = reactive([{ id: 1, title: 'پژوهشگر' }, { id: 2, title: 'مدیر کل' }, { id: 3, title: 'ناظر' }, { id: 4, title: 'ارزیاب یک' }, { id: 5, title: 'ارزیاب دو' }, { id: 6, title: 'مدیر نظارت' }, { id: 7, title: 'خواندنی' }])
-const selectedRoles = ref<number[]>([])
+const userData = reactive<IUserEdit>(new UserEditModel())
+const rolesList = reactive<ISimpleDTO<string>[]>([])
+const selectedRoles = ref<string[]>([])
 
 watch(selectedRoles, () => {
-  userData.role = rolesList.filter(item => selectedRoles.value.includes(item.id))
+  console.log('selectedroles', selectedRoles)
+
+//   userData.role = rolesList.filter(item => selectedRoles.value.includes(item.id))
 })
 
 const onReset = () => {
@@ -45,7 +48,6 @@ const onReset = () => {
 }
 
 async function userAdd() {
-  userData.gateId = props.gateId ?? 0
   try {
     await $api(props.apiUrl === undefined ? '' : props.apiUrl, {
       method: 'POST',
@@ -68,7 +70,6 @@ async function userAdd() {
 }
 
 async function userEdit() {
-  userData.gateId = props.gateId ?? 0
   try {
     await $api((`${props.apiUrl}/`).replace('//', '/') + userData.id, {
       method: 'POST',
@@ -93,6 +94,8 @@ async function userEdit() {
 const onSubmit = () => {
   refForm.value?.validate().then(({ valid }) => {
     if (valid) {
+      userData.gateRoles.splice(0)
+      userData.gateRoles.push(...selectedRoles.value)
       isloading.value = true
       if (userData.id > 0)
         userEdit()
@@ -104,8 +107,26 @@ const onSubmit = () => {
 }
 
 const loadRoles = async () => {
+  const roleDataResult = await $api<GridResult<ISimpleDTO<string>>>(`app/role/simple?gateId=${props.gateId}`)
 
+  rolesList.splice(0)
+  rolesList.push(...roleDataResult.items)
 }
+
+onMounted(async () => {
+  try {
+    opening.value = true
+    await loadRoles()
+    opening.value = false
+  }
+  catch (error) {
+    opening.value = false
+    if (error instanceof CustomFetchError && error.code > 1)
+      toast.error(error.message)
+    else toast.error(t('httpstatuscodes.0'))
+    emit('update:isDialogVisible', false)
+  }
+})
 
 // watch(userData.role, (newdata, olddata) => {
 //     console.log('watchuserdata', newdata, olddata);
@@ -153,21 +174,23 @@ defineExpose({ updateUser })
         <VForm ref="refForm" v-model="isFormValid" :disabled="opening" @submit.prevent="onSubmit">
           <VRow>
             <!-- 👉 Gate Title -->
-            <VCol cols="12">
+            <!--
+              <VCol cols="12">
               <AppTextField
-                v-model="userData.fullName"
-                :rules="[requiredValidator(userData.fullName, $t('validatorrequired'))]"
-                :label="$t('nameandfamily')" placeholder=""
+              v-model="userData.fullName"
+              :rules="[requiredValidator(userData.fullName, $t('validatorrequired'))]"
+              :label="$t('nameandfamily')" placeholder=""
               />
-            </VCol>
+              </VCol>
+            -->
 
             <VCol cols="12">
               <VRow>
                 <!-- 👉 Contact -->
                 <VCol cols="12" sm="6">
                   <AppTextField
-                    v-model="userData.contact" type="number"
-                    :rules="[requiredValidator(userData.contact, $t('validatorrequired'))]"
+                    v-model="userData.phoneNumber" type="number"
+                    :rules="[requiredValidator(userData.phoneNumber, $t('validatorrequired'))]"
                     :label="$t('mobilenumber')" placeholder="09xx-xxx-xx-xx"
                   />
                 </VCol>
@@ -188,7 +211,7 @@ defineExpose({ updateUser })
                   <AppAutocomplete
                     v-model="selectedRoles" :items="rolesList" item-title="title"
                     item-value="id" :label="$t('role.select')"
-                    :rules="[requiredValidator(userData.role, $t('validatorrequired'))]" chips
+                    :rules="[requiredValidator(selectedRoles, $t('validatorrequired'))]" chips
                     closable-chips multiple
                   />
                   <!-- :rules="[requiredValidator(userData.role, $t('validatorrequired'))]"  -->

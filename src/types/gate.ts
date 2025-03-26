@@ -58,7 +58,7 @@ export interface GateProperties {
   createDate: string
   expireDate: string
   isActive: boolean
-  gateType: ISimpleDTO
+  gateType: ISimpleDTO<number>
   description: string
 }
 
@@ -73,6 +73,6 @@ export class GateModel implements GateProperties, baseItemState {
   createDate: string = ''
   expireDate: string = ''
   isActive: boolean = false
-  gateType: ISimpleDTO = { id: 0, title: '' }
+  gateType: ISimpleDTO<number> = { id: 0, title: '' }
   description: string = ''
 }

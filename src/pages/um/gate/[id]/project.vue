@@ -46,19 +46,21 @@ const treeHeaders = [
 
 const projectEdit = (dataItem: Record<string, any>) => {
   isAddNewProjectDialogVisible.value = true
-  dialogProject.value.updateProject(dataItem.id)
+  nextTick(() => dialogProject.value.updateProject(dataItem.id))
 }
 
 const treeEdit = (dataItem: Record<string, any>) => {
   isAddNewTreeDialogVisible.value = true
-  dialogTree.value.updateTreeTitle(dataItem.id)
+  nextTick(() => dialogTree.value.updateTreeTitle(dataItem.id))
 }
 
 const projectDataAdded = () => {
-  mcdatatableProject.value.refreshData()
+  nextTick(() => mcdatatableProject.value.refreshData())
 }
 
 const treeTitleDataAdded = () => {
+  console.log('treeTitleDataAdded')
+
   mcdatatableTree.value.refreshData()
 }
 
@@ -88,7 +90,7 @@ const selectBook = (treeid: number) => {
           >
             <template #item.trees="{ value }">
               <div class="d-flex align-center gap-x-4">
-                {{ value.trees && value.trees.map((item: ISimpleDTO) => `${item.title}`).join(' ,') }}
+                {{ value.trees && value.trees.map((item: ISimpleDTO<number>) => `${item.title}`).join(' ,') }}
               </div>
             </template>
             <template #item.isActive="{ value }">
@@ -122,7 +124,7 @@ const selectBook = (treeid: number) => {
           >
             <template #item.book="{ value }">
               <div class="d-flex align-center gap-x-4">
-                {{ value.book && value.book.map((item: ISimpleDTO) => `${item.title}`).join(' ,') }}
+                {{ value.book && value.book.map((item: ISimpleDTO<number>) => `${item.title}`).join(' ,') }}
               </div>
             </template>
             <template #action="{ value }">
@@ -149,7 +151,7 @@ const selectBook = (treeid: number) => {
     />
     <MCDialogTreeAdd
       v-if="isAddNewTreeDialogVisible" ref="dialogTree" v-model:is-dialog-visible="isAddNewTreeDialogVisible"
-      :api-url="treeApiUrl" :gate-id="currentGateId" @tree-title-data-added="treeTitleDataAdded" @tree-data-updated="treeTitleDataAdded"
+      :api-url="treeApiUrl" :gate-id="currentGateId" @tree-title-data-added="treeTitleDataAdded" @tree-title-data-updated="treeTitleDataAdded"
     />
   </section>
 </template>

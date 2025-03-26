@@ -1,20 +1,19 @@
 <script setup lang="ts">
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { isNull } from '@sindresorhus/is'
-import type { ITokenProfile } from '@/types/users'
+import type { IProfile } from '@/types/users'
 
-const router = useRouter()
 const ability = useAbility()
 
 // TODO: Get type from backend
-const userData = useCookie<ITokenProfile>('userData')
+const userData = useCookie<IProfile | null>('userData')
 
 const logout = async () => {
   // Remove "accessToken" from cookie
   useCookie('accessToken').value = null
 
   // Remove "userData" from cookie
-  userData.value.profile = null
+  userData.value = null
 
   // Redirect to login page
   //   await router.push('/login')
@@ -31,7 +30,7 @@ const logout = async () => {
 }
 
 function avatarUrl(): string {
-  return userData.value.profile?.avatarUrl.replace('xxx', 'small') ?? ''
+  return userData.value?.avatarUrl.replace('xxx', 'small') ?? ''
 }
 
 // const userProfileList = [
@@ -52,7 +51,7 @@ const userProfileList = [
 
 <template>
   <VBadge
-    v-if="userData.profile != null"
+    v-if="userData != null"
     dot
     bordered
     location="bottom right"
@@ -63,12 +62,12 @@ const userProfileList = [
     <VAvatar
       size="38"
       class="cursor-pointer"
-      :color="!(!isNull(userData.profile) && userData.profile.avatarUrl) ? 'primary' : undefined"
-      :variant="!(!isNull(userData.profile) && userData.profile.avatarUrl) ? 'tonal' : undefined"
+      :color="!(!isNull(userData) && userData.avatarUrl) ? 'primary' : undefined"
+      :variant="!(!isNull(userData) && userData.avatarUrl) ? 'tonal' : undefined"
     >
       <VImg
-        v-if="!isNull(userData.profile) && userData.profile.avatarUrl"
-        :src="userData.profile?.avatarUrl.replace('xxx', 'small') ?? ''"
+        v-if="!isNull(userData) && userData.avatarUrl"
+        :src="userData.avatarUrl.replace('xxx', 'small') ?? ''"
       />
       <VIcon
         v-else
@@ -95,12 +94,12 @@ const userProfileList = [
                   bordered
                 >
                   <VAvatar
-                    :color="!(!isNull(userData.profile) && userData.profile.avatarUrl) ? 'primary' : undefined"
-                    :variant="!(!isNull(userData.profile) && userData.profile.avatarUrl) ? 'tonal' : undefined"
+                    :color="!(!isNull(userData) && userData.avatarUrl) ? 'primary' : undefined"
+                    :variant="!(!isNull(userData) && userData.avatarUrl) ? 'tonal' : undefined"
                   >
                     <VImg
-                      v-if="!isNull(userData.profile) && userData.profile.avatarUrl"
-                      :src="userData.profile?.avatarUrl.replace('xxx', 'small') ?? ''"
+                      v-if="!isNull(userData) && userData.avatarUrl"
+                      :src="userData.avatarUrl.replace('xxx', 'small') ?? ''"
                     />
                     <VIcon
                       v-else
@@ -112,7 +111,7 @@ const userProfileList = [
             </template>
 
             <VListItemTitle class="font-weight-medium">
-              {{ userData.profile.fullName || userData.profile.email }}
+              {{ userData.fullName || userData.email }}
             </VListItemTitle>
             <!-- <VListItemSubtitle>{{ userData.role }}</VListItemSubtitle> -->
           </VListItem>

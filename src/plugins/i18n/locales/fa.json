@@ -277,7 +277,8 @@
     'resultNotFound': 'نتیجه یافت نشد',
     'probleminGetInformation': 'مشکل در دریافت اطلاعات وجود دارد',
     'specificNodeAdded':"نود (0) اضافه شد",
-    'tryagainmin':"چند دقیقه دیگر تلاش کنید"
+    'tryagainmin':"چند دقیقه دیگر تلاش کنید",
+    "youmustselectoneperm":"باید حتما یک دسترسی را انتخاب کنید"
   },
   '$vuetify': {
     'badge': 'نشان',

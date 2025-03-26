@@ -13,7 +13,7 @@ export const objectMap = (newObject: Record<string, any>, oldObject: UseClonedRe
 }
 
 // 👉 - Convert Array of SimplTree To Array of Simple Dto for Search
-export function convertSimpleTreeToSimpleDtoArray(tree: ISimpleTree[]): ISimpleDTO[] {
+export function convertSimpleTreeToSimpleDtoArray(tree: ISimpleTree[]): ISimpleDTO<number>[] {
   return tree.flatMap(node => {
     const currentEntry = [{ id: node.id, title: node.title }]
     const childrenEntries = node.children ? convertTreeToArray(node.children) : []

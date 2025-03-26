@@ -5,7 +5,7 @@ import { useGenerateImageVariant } from '@core/composable/useGenerateImageVarian
 import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { CustomFetchError } from '@/utils/api'
-import type { ITokenProfile } from '@/types/users'
+import type { IProfile, ITokenProfile } from '@/types/users'
 import { LoginState } from '@/types/baseModels'
 import { useLoginState } from '@/store/baseStore'
 
@@ -25,16 +25,6 @@ const toast = useToast()
 const ability = useAbility()
 const loginfailed = ref(false)
 
-const errors = ref<Record<string, string | undefined>>({
-  email: undefined,
-  password: undefined,
-})
-
-const credentials = ref({
-  email: 'admin@demo.com',
-  password: 'admin',
-})
-
 async function sendTokenRequest(systemKey: string) {
   try {
     const result = await $api<ITokenProfile>(`${ServerApiAddress}api/account/token/${systemKey}`, {
@@ -42,7 +32,7 @@ async function sendTokenRequest(systemKey: string) {
     })
 
     if (result.token) {
-      useCookie<ITokenProfile>('userData').value = result
+      useCookie<IProfile | null>('userData').value = result.profile
       useCookie('accessToken').value = result.token
 
       //   gatelist.value.splice(0)
@@ -57,7 +47,7 @@ async function sendTokenRequest(systemKey: string) {
 
       // console.log('ability', ability.can('read', 'Report'), userAbilityRules);
       await nextTick(() => {
-        router.push(route.query.to ? String(route.query.to) : '/')
+        router.replace(route.query.to ? String(route.query.to) : '/')
       })
     }
     else {
@@ -87,40 +77,6 @@ onMounted(async () => {
     await tryLogin()
   }
 })
-
-const login = async () => {
-  try {
-    const res = await $api('/auth/login', {
-      method: 'POST',
-      body: {
-        email: credentials.value.email,
-        password: credentials.value.password,
-      },
-      onResponseError({ response }) {
-        errors.value = response._data.errors
-      },
-    })
-
-    const { accessToken, userData, userAbilityRules } = res
-
-    useCookie('userAbilityRules').value = userAbilityRules
-    ability.update(userAbilityRules)
-
-    // console.log('ability', ability.can('read', 'Report'), userAbilityRules);
-
-    useCookie('userData').value = userData
-    useCookie('accessToken').value = accessToken
-
-    // Redirect to `to` query if exist or redirect to index route
-    // ❗ nextTick is required to wait for DOM updates and later redirect
-    await nextTick(() => {
-      router.replace(route.query.to ? String(route.query.to) : '/')
-    })
-  }
-  catch (err) {
-    console.error(err)
-  }
-}
 </script>
 
 <template>

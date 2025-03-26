@@ -19,6 +19,10 @@ export const useApi = createFetch({
     async beforeFetch({ options }) {
       const accessToken = useCookie('accessToken').value
 
+      options.headers = {
+        ...options.headers,
+        'Accept-Language': 'fa-IR',
+      }
       if (accessToken) {
         options.headers = {
           ...options.headers,

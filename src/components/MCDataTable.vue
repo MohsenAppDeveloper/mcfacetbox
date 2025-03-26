@@ -2,6 +2,7 @@
 import Swal from 'sweetalert2'
 import { useToast } from 'vue-toastification'
 import { VDataTableServer } from 'vuetify/lib/components/index.mjs'
+import type { FetchError } from 'ofetch'
 import type { GridResult, baseDataTableModel } from '@/types/baseModels'
 import { serviceDelete } from '@/services/genericServices'
 
@@ -90,7 +91,9 @@ const searchLabelDefault = computed(() => {
     return t('search')
 })
 
-const refreshData = async () => await fetchData(false)
+const refreshData = () => {
+  fetchData(false)
+}
 
 const updateAction = (dataModel: Record<string, any>) => {
   emit('editItem', dataModel)
@@ -107,7 +110,20 @@ const deleteAction = async (item: baseDataTableModel, index: number) => {
     showLoaderOnConfirm: true,
     showCloseButton: true,
     preConfirm: async () => {
-      const { serviceError } = await serviceDelete(item.id, props.apiUrl)
+    //   const { serviceError } = await serviceDelete(item.id, props.apiUrl)
+      const serviceError = shallowRef()
+      try {
+        await $api((`${props.apiUrl}/`).replace('//', '/') + item.id, {
+          method: 'DELETE',
+        })
+      }
+      catch (error) {
+        serviceError.value = error
+
+        // if (error instanceof CustomFetchError && error.code > 0)
+        //   toast.error(error.message)
+        // else toast.error(t('httpstatuscodes.0'))
+      }
 
       return { serviceError }
     },
@@ -115,7 +131,11 @@ const deleteAction = async (item: baseDataTableModel, index: number) => {
   }).then(value => {
     if (value.isConfirmed) {
       if (value.value?.serviceError.value) {
-        toast.error(t('alert.deleteDataFailed'))
+        if (value.value?.serviceError.value instanceof CustomFetchError && value.value?.serviceError.value.code > 0)
+          toast.error(value.value?.serviceError.value.message)
+        else toast.error(t('httpstatuscodes.0'))
+
+        // toast.error(t('alert.deleteDataFailed'))
         emit('deletedItem', false)
       }
       else {

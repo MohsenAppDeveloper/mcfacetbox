@@ -3,8 +3,8 @@
 import { useToast } from 'vue-toastification'
 import { VForm } from 'vuetify/components/VForm'
 import AppTextarea from '@/@core/components/app-form-elements/AppTextarea.vue'
-import type { IProject } from '@/types/project'
-import { ProjectModel } from '@/types/project'
+import type { IProject, IProjectEdit, IProjectView } from '@/types/project'
+import { ProjectEditModel, ProjectModel } from '@/types/project'
 import type { GridResult, ISimpleDTO } from '@/types/baseModels'
 
 const props = defineProps({
@@ -28,9 +28,9 @@ const isFormValid = ref(false)
 const refForm = ref<VForm>()
 const isloading = ref(false)
 const opening = ref(false)
-const projectData = reactive<IProject>(new ProjectModel())
+const projectData = reactive<IProjectEdit>(new ProjectEditModel())
 const selectedTrees = ref<number[]>([])
-const treeList = ref<ISimpleDTO[]>([])
+const treeList = ref<ISimpleDTO<number>[]>([])
 
 // const selectedRoles = ref([5, 1])
 
@@ -71,10 +71,10 @@ async function projectAdd() {
 }
 
 const loadTreeTitles = async () => {
-  const treeDataResult = await $api<GridResult<ISimpleDTO>>(`app/tree/simple?GateId=${props.gateId}`)
+  const treeDataResult = await $api<GridResult<ISimpleDTO<number>>>(`app/tree/simple?GateId=${props.gateId}`)
 
   treeList.value.splice(0)
-  treeList.value.push(...treeDataResult.items.map<ISimpleDTO>(item => ({ id: item.id, title: item.title })))
+  treeList.value.push(...treeDataResult.items.map<ISimpleDTO<number>>(item => ({ id: item.id, title: item.title })))
 }
 
 onMounted(async () => {
@@ -95,7 +95,7 @@ async function projectEdit() {
   projectData.gateId = props.gateId ?? 0
   try {
     await $api((`${props.apiUrl}/`).replace('//', '/') + projectData.id, {
-      method: 'POST',
+      method: 'PUT',
       body: JSON.parse(JSON.stringify(projectData)),
       ignoreResponseError: false,
     })
@@ -135,11 +135,21 @@ const updateProject = async (projectId: number) => {
   try {
     opening.value = true
 
-    const projectDataResult = await $api<IProject>(`app/project/${projectId}`)
+    const projectDataResult = await $api<IProjectView>(`app/project/${projectId}`)
 
-    await loadTreeTitles()
-    selectedTrees.value.push(...projectDataResult.trees)
-    Object.assign(projectData, projectDataResult)
+    // await loadTreeTitles()
+
+    projectData.id = projectDataResult.id
+    projectData.description = projectDataResult.description
+    projectData.title = projectDataResult.title
+    projectData.isActive = projectDataResult.isActive
+    projectData.trees = projectDataResult.trees.map(item => item.id)
+    selectedTrees.value.splice(0)
+    selectedTrees.value.push(...projectData.trees)
+    console.log('projecttree', projectData.trees)
+    console.log('selectedTrees', selectedTrees.value)
+
+    // Object.assign(projectData, projectDataResult)
 
     opening.value = false
   }

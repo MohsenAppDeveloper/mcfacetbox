@@ -12,7 +12,6 @@ const dialogUser = ref(VDialog)
 const dialogUserRole = ref(VDialog)
 const isAddNewUserDialogVisible = ref(false)
 const isAddNewRoleDialogVisible = ref(false)
-const userRoleApiUrl = '/apps/roles'
 const router = useRoute('um-gate-id-user')
 
 const currentGateId = computed((): number => {
@@ -20,6 +19,7 @@ const currentGateId = computed((): number => {
 })
 
 const userApiUrl = `app/gate/${currentGateId.value}/user`
+const roleApiUrl = 'app/role'
 
 const toast = useToast()
 
@@ -28,7 +28,7 @@ const userHeaders = [
   { text: '0', value: 'num', sortable: false },
   { title: t('nameandfamily'), key: 'fullName' },
   { title: t('mobilenumber'), key: 'phoneNumber' },
-  { title: t('roles'), key: 'role' },
+  { title: t('roles'), key: 'roles' },
   { title: t('email'), key: 'email' },
   { title: t('createdate'), key: 'creationTime' },
   { title: t('description'), key: 'description' },
@@ -38,17 +38,18 @@ const userHeaders = [
 
 const roleHeaders = [
   { text: '0', value: 'num', sortable: false },
-  { title: t('role.title'), key: 'title' },
+  { title: t('role.title'), key: 'name' },
+
   { title: t('permissions'), key: 'permissions' },
-  { title: t('role.trees'), key: 'projects' },
-  { title: t('createdate'), key: 'createDate' },
+  { title: t('role.trees'), key: 'trees' },
+  { title: t('createdate'), key: 'creationTime' },
   { title: t('status'), key: 'isActive', sortable: false },
   { title: t('actions'), key: 'actions', sortable: false },
 ]
 
 const userEdit = (dataItem: Record<string, any>) => {
   isAddNewUserDialogVisible.value = true
-  dialogUser.value.updateUser({ ...dataItem })
+  nextTick(() => dialogUser.value.updateUser(dataItem.id))
 
   // gateEditDataItem.value = { ...dataItem } ass GateModel
   // console.log('gateedititem', gateEditDataItem.value);
@@ -56,7 +57,7 @@ const userEdit = (dataItem: Record<string, any>) => {
 
 const roleEdit = (dataItem: Record<string, any>) => {
   isAddNewRoleDialogVisible.value = true
-  dialogUserRole.value.updateRole({ ...dataItem })
+  nextTick(() => dialogUserRole.value.updateRole(dataItem.id))
 
   // gateEditDataItem.value = { ...dataItem } ass GateModel
   // console.log('gateedititem', gateEditDataItem.value);
@@ -89,9 +90,9 @@ const roleDataAdded = () => {
             ref="mcdatatableUser" :headers="userHeaders" :api-url="userApiUrl"
             :gateid="currentGateId" @edit-item="userEdit"
           >
-            <template #item.role="{ value }">
+            <template #item.roles="{ value }">
               <div class="d-flex align-center gap-x-4">
-                {{ value.role && value.role.map((item: ISimpleDTO) => `${item.title}`).join(' ,') }}
+                {{ value.roles && value.roles.map((item: ISimpleDTO<string>) => `${item.title}`).join(' ,') }}
               </div>
             </template>
             <template #item.isActive="{ value }">
@@ -125,20 +126,22 @@ const roleDataAdded = () => {
       <VCol cols="12">
         <VCard variant="outlined">
           <MCDataTable
-            ref="mcdatatableUserRole" :headers="roleHeaders" :api-url="userRoleApiUrl" :gateid="currentGateId"
+            ref="mcdatatableUserRole" :headers="roleHeaders" :api-url="roleApiUrl" :gateid="currentGateId"
             @edit-item="roleEdit"
           >
-            <template #item.permissions="{ value }">
+            <!--
+              <template #item.permissions="{ value }">
               <div class="d-flex align-center gap-x-4">
-                {{ value.permissions && value.permissions.map((item: ISimpleDTO) =>
-                  `${item.title}`).join(' ,') }}
+              {{ value.permissions && value.permissions.map((item: ISimpleDTO<number>) =>
+              `${item.title}`).join(' ,') }}
               </div>
-            </template>
-            <template #item.projects="{ value }">
+              </template>
+              <template #item.projects="{ value }">
               <div class="d-flex align-center gap-x-4">
-                {{ value.projects.map((item: ISimpleDTO) => `${item.title}`).join(' ,') }}
+              {{ value.projects.map((item: ISimpleDTO<number>) => `${item.title}`).join(' ,') }}
               </div>
-            </template>
+              </template>
+            -->
             <template #item.isActive="{ value }">
               <VChip
                 :color="resolveActiveColor(value.isActive)"
@@ -158,12 +161,12 @@ const roleDataAdded = () => {
       </VCol>
     </VRow>
     <MCDialogUserAdd
-      ref="dialogUser" v-model:is-dialog-visible="isAddNewUserDialogVisible"
-      :api-url="userApiUrl" @user-data-added="userDataAdded"
+      v-if="isAddNewUserDialogVisible" ref="dialogUser" v-model:is-dialog-visible="isAddNewUserDialogVisible"
+      :api-url="userApiUrl" :gate-id="currentGateId" @user-data-added="userDataAdded"
     />
     <MCDialogRoleAdd
-      ref="dialogUserRole" v-model:is-dialog-visible="isAddNewRoleDialogVisible"
-      :api-url="userRoleApiUrl" @role-data-added="roleDataAdded"
+      v-if="isAddNewRoleDialogVisible" ref="dialogUserRole" v-model:is-dialog-visible="isAddNewRoleDialogVisible"
+      :api-url="roleApiUrl" :gate-id="currentGateId" @role-data-added="roleDataAdded"
     />
   </section>
 </template>

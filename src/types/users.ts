@@ -9,29 +9,41 @@ export const clearUserCookies = () => {
 //   ability.update([])
 }
 
+export interface IUserEdit extends IUserBase {
+  gateRoles: string[]
+  isActive: boolean
+}
 export interface IUser extends baseDataTableModel {
-  id: number
-  fullName: string
-  role: ISimpleDTO[]
-  contact: string
-  email: string
+  role: ISimpleDTO<string>[]
   createDate: string
   isActive: boolean
-  avatar: string
   expireDate: string
-  description: string
 }
 export interface IUserBase {
-  id: string
+  id: number
   fullName: string
   phoneNumber: string
   email: string
+  description: string
+  avatarUrl: string
 }
-export class UserBaseModel implements IUserBase {
-  id: string = ''
+export class UserEditModel implements IUserEdit {
+  gateRoles: string[] = []
+  id: number = 0
   fullName: string = ''
   phoneNumber: string = ''
   email: string = ''
+  description: string = ''
+  isActive: boolean = false
+  avatarUrl: string = ''
+}
+export class UserBaseModel implements IUserBase {
+  id: number = 0
+  fullName: string = ''
+  phoneNumber: string = ''
+  email: string = ''
+  description: string = ''
+  avatarUrl: string = ''
 }
 export interface IProfile extends IUserBase {
   userName: string
@@ -52,7 +64,7 @@ export interface IToken {
 
 export interface ITokenProfile extends IToken {
   profile: IProfile | null
-  gates: ISimpleDTO[]
+  gates: ISimpleDTO<number>[]
   permissions: string[]
 }
 
@@ -64,7 +76,7 @@ export class UserModel implements IUser {
   disabled: boolean = false
   id: number = 0
   fullName: string = ''
-  role: ISimpleDTO[] = []
+  role: ISimpleDTO<number>[] = []
   contact: string = ''
   email: string = ''
   createDate: string = ''

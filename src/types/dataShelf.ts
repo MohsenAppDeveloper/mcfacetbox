@@ -6,7 +6,7 @@ export interface IDataShelfBox {
   text: string
 
   // NOTE - فقط یک نود متصل رو اینجا ذخیره می کنیم که چسنچو راحت تر باشه، بعد میشه از طریق شناسه، اتصالات یک جعبه داده به چند نود را استخراج کرد
-  connectedTreeNode?: ISimpleDTO
+  connectedTreeNode?: ISimpleDTO<number>
 
   // NOTE - مشخص کننده، حدیث، متن، آیه و یا لغت
   contentType: number
@@ -18,9 +18,9 @@ export interface IDataShelfBox {
   // NOTE - شناسه جعبه داده ای که به این جعبه داده وصل شده و باید با آن حرکت کند
   pinnedItem?: number
   createdDate: string
-  creator?: ISimpleDTO
+  creator?: ISimpleDTO<number>
   selected?: boolean
-  tags?: ISimpleDTO[]
+  tags?: ISimpleDTO<number>[]
   comment?: string
 
   // NOTE - شناسه سایتی که محتوا از آن دریافت شده مثلا شناسه حدیث، آیه یا لغت
@@ -30,19 +30,19 @@ export interface IDataShelfBox {
 export class DataShelfBoxModel implements IDataShelfBox {
   id: number = 0
   text: string = ''
-  connectedTreeNode?: ISimpleDTO | undefined
+  connectedTreeNode?: ISimpleDTO<number> | undefined
   contentType: number = 0
   order: number = 0
   footnotes: IFootNote[] = []
   pinnedItem?: number | undefined
   createdDate: string = ''
-  creator?: ISimpleDTO | undefined
-  tags?: ISimpleDTO[] | undefined
+  creator?: ISimpleDTO<number> | undefined
+  tags?: ISimpleDTO<number>[] | undefined
   selected?: boolean = false
   comment?: string | undefined
   refrenceId: number = 0
 }
 
-export interface IFootNote extends ISimpleDTO, baseItemState {
+export interface IFootNote extends ISimpleDTO<number>, baseItemState {
   index: number
 }

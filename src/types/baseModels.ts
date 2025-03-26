@@ -19,13 +19,14 @@ export interface IServiceError {
   validationErrors: IServiceValidationDetails[]
 }
 
-export interface ISimpleDTO {
-  id: number
+type stringNumber = number | string
+
+export interface ISimpleDTO<T extends stringNumber> {
+  id: T
   title: string
 }
 
-export interface ISimpleSelectableDTO extends ISimpleDTO, baseItemState, baseItemAction {
-  id: number
+export interface ISimpleSelectableDTO<T extends stringNumber> extends ISimpleDTO<T>, baseItemState, baseItemAction {
   title: string
   editing?: boolean
   loading?: boolean
@@ -46,9 +47,13 @@ export interface ISimpleTreeActionable extends ISimpleTree, baseItemAction {
   parentId: number
 }
 
-export class SimpleDTOModel implements ISimpleDTO {
-  id: number = 0
+export class SimpleDTOModel<T extends stringNumber> implements ISimpleDTO<T> {
+  id: T
   title: string = ''
+  constructor(id: T, title: string) {
+    this.id = id
+    this.title = title
+  }
 }
 export class SimpleTreeAcionableModel implements ISimpleTreeActionable {
   parentId: number = -1
@@ -80,11 +85,15 @@ export interface baseDataTableModel extends Record<string, any> {
   disabled: boolean
 }
 
-export class SimpleSelectableDTOModel implements ISimpleSelectableDTO {
-  id: number = 0
+export class SimpleSelectableDTOModel<T extends stringNumber> implements ISimpleSelectableDTO<T> {
+  id: T
   title: string = ''
   selectable?: boolean | undefined = false
   selected?: boolean | undefined = false
+  constructor(id: T, title: string) {
+    this.id = id
+    this.title = title
+  }
 }
 
 export class SimpleTreeModel implements ISimpleTree {

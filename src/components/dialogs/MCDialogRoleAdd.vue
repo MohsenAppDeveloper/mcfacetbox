@@ -5,9 +5,8 @@ import { useToast } from 'vue-toastification'
 import { VForm } from 'vuetify/components/VForm'
 import { VTreeview } from 'vuetify/labs/VTreeview'
 import AppTextarea from '@/@core/components/app-form-elements/AppTextarea.vue'
-import type { ISimpleTree } from '@/types/baseModels'
-import type { IRole } from '@/types/rolePermission'
-import { RoleModel } from '@/types/rolePermission'
+import type { IBasePermissionTree, IRoleEdit, IRoleView } from '@/types/rolePermission'
+import { RoleEditModel } from '@/types/rolePermission'
 
 const props = defineProps({
   isDialogVisible: { type: Boolean, default: false },
@@ -29,23 +28,22 @@ interface Emit {
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
 const isloading = ref(false)
-const roleData = reactive<IRole>(new RoleModel())
-const projectList = reactive<ISimpleTree[]>([{ id: 1, title: 'موسوعه یک', children: [{ id: 2, title: 'درخت یک' }, { id: 3, title: 'درخت دو' }] }, { id: 4, title: 'موسوعه دو', children: [{ id: 5, title: 'درخت سه' }, { id: 6, title: 'درخت چهار', children: [{ id: 7, title: 'درخت پنج' }, { id: 8, title: 'درخت ثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثشش', children: [{ id: 51, title: 'درخت 9', children: [{ id: 65, title: 'درخت 9', children: [{ id: 21, title: 'درخت 9', children: [{ id: 54, title: 'درخت 9', children: [{ id: 80, title: 'درخت 9', children: [{ id: 90, title: 'درخت 9', children: [{ id: 19, title: 'درخت 9', children: [{ id: 91, title: 'درخت 9' }] }] }] }] }] }] }] }] }] }] }])
-const permissionList = reactive<ISimpleTree[]>([{ id: 1, title: 'ماژول درخت', children: [{ id: 2, title: 'افزودن نود' }, { id: 3, title: 'جابجایی نود' }] }, { id: 4, title: 'فیش نگار', children: [{ id: 5, title: 'افزودن فیش' }, { id: 6, title: 'اتصال فیش' }] }])
+const roleData = reactive<IRoleEdit>(new RoleEditModel())
 
-// const selectionType = ref<SelectStrategyProp>('classic')
-const selectedPermissions = ref<number[]>([])
-const selectedProjects = ref<number[]>([])
+// const projectList = reactive<ISimpleTree[]>([])
+// const permissionList = reactive<ISimpleTree[]>([{ id: 1, title: 'ماژول درخت', children: [{ id: 2, title: 'افزودن نود' }, { id: 3, title: 'جابجایی نود' }] }, { id: 4, title: 'فیش نگار', children: [{ id: 5, title: 'افزودن فیش' }, { id: 6, title: 'اتصال فیش' }] }])
 
-watch(selectedPermissions, (newvalue, oldvalue) => {
-  roleData.permissions = convertSimpleTreeToSimpleDtoArray(permissionList).filter(item => selectedPermissions.value.includes(item.id))
-})
-watch(selectedProjects, (newvalue, oldvalue) => {
-  roleData.projects = convertSimpleTreeToSimpleDtoArray(projectList).filter(item => selectedProjects.value.includes(item.id))
-})
+const projectList = reactive<IBasePermissionTree[]>([])
+const permissionList = reactive<IBasePermissionTree[]>([])
+const opening = ref(false)
+
+const selectedPermissions = ref<string[]>([])
+const selectedProjects = ref<string[]>([])
 
 async function roleAdd() {
   roleData.gateId = props.gateId ?? 0
+  console.log('roledata', roleData)
+
   try {
     await $api(props.apiUrl === undefined ? '' : props.apiUrl, {
       method: 'POST',
@@ -71,7 +69,7 @@ async function roleEdit() {
   roleData.gateId = props.gateId ?? 0
   try {
     await $api((`${props.apiUrl}/`).replace('//', '/') + roleData.id, {
-      method: 'POST',
+      method: 'PUT',
       body: JSON.parse(JSON.stringify(roleData)),
       ignoreResponseError: false,
     })
@@ -93,32 +91,120 @@ async function roleEdit() {
 const onSubmit = () => {
   refForm.value?.validate().then(({ valid }) => {
     if (valid) {
-      isloading.value = true
-      if (roleData.id > 0)
-        roleEdit()
+      collectPermissionData()
+      if (roleData.permissions.length === 0) {
+        toast.warning(t('alert.youmustselectoneperm'))
 
+        return
+      }
+      isloading.value = true
+      if (roleData.id.length > 3)
+        roleEdit()
       else
         roleAdd()
     }
   })
 }
 
+function collectPermissionData() {
+  roleData.permissions.splice(0)
+  selectedProjects.value.forEach(projecItem => {
+    roleData.permissions.push(...selectedPermissions.value.map(item => `${projecItem}.${item}`))
+  })
+  console.log('permission', roleData)
+}
+function generateUniqueId(): number {
+  return Math.floor(Math.random() * 1000000) // عددی تصادفی بین 0 و 999999 تولید می‌کند
+}
+function attachUniqueIds(tree: IBasePermissionTree[]): IBasePermissionTree[] {
+  return tree.map(node => {
+    const newNode: IBasePermissionTree = {
+      ...node,
+
+      //   id: generateUniqueId(),
+      children: (node.children && node.children.length > 0) ? attachUniqueIds(node.children) : undefined, // بازگشت به فرزندان
+    }
+
+    return newNode
+  })
+}
+
+const loadPermissions = async () => {
+  const projectListResult = await $api<IBasePermissionTree[]>(`app/permissions?gateId=${props.gateId}`)
+  const permissionListResult = await $api<IBasePermissionTree[]>('app/permissions/static')
+
+  //   setTimeout(() => {
+  //     projectList.push(...[{ id: 1, title: 'موسوعه یک', children: [{ id: 2, title: 'درخت یک' }, { id: 3, title: 'درخت دو' }] }, { id: 4, title: 'موسوعه دو', children: [{ id: 5, title: 'درخت سه' }, { id: 6, title: 'درخت چهار', children: [{ id: 7, title: 'درخت پنج' }, { id: 8, title: 'درخت ثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثثشش', children: [{ id: 51, title: 'درخت 9', children: [{ id: 65, title: 'درخت 9', children: [{ id: 21, title: 'درخت 9', children: [{ id: 54, title: 'درخت 9', children: [{ id: 80, title: 'درخت 9', children: [{ id: 90, title: 'درخت 9', children: [{ id: 19, title: 'درخت 9', children: [{ id: 91, title: 'درخت 9' }] }] }] }] }] }] }] }] }] }] }])
+  //   }, 2000)
+  projectList.splice(0)
+  permissionList.splice(0)
+
+  //   const result1 = attachUniqueIds(projectListResult)
+  //   const result2 = attachUniqueIds(permissionListResult)
+
+  //   console.log('project', result1)
+  //   console.log('permission', result2)
+
+  projectList.push(...attachUniqueIds(projectListResult))
+  permissionList.push(...attachUniqueIds(permissionListResult))
+
+  //   permissionList.push(...result2)
+
+//   Object.assign(projectList)
+//   Object.assign(permissionList)
+}
+
 function onReset() {
-  roleData.id = 0
+  roleData.id = '0'
   isloading.value = false
   roleData.permissions.splice(0)
-  roleData.projects.splice(0)
   selectedPermissions.value.splice(0)
   selectedProjects.value.splice(0)
   emit('update:isDialogVisible', false)
   refForm.value?.reset()
   refForm.value?.resetValidation()
 }
+onMounted(async () => {
+  try {
+    opening.value = true
+    await loadPermissions()
+    opening.value = false
+  }
+  catch (error) {
+    opening.value = false
+    if (error instanceof CustomFetchError && error.code > 1)
+      toast.error(error.message)
+    else toast.error(t('httpstatuscodes.0'))
+    emit('update:isDialogVisible', false)
+  }
+})
 
-const updateRole = (roleDataItem: IRole) => {
-  objectMap(roleData, useCloned(roleDataItem, { deep: true }))
-  selectedPermissions.value = roleData.permissions.map(item => item.id)
-  selectedProjects.value = roleData.projects.map(item => item.id)
+const updateRole = async (roleId: string) => {
+  try {
+    opening.value = true
+
+    const roleListResult = await $api<IRoleView>(`app/role/${roleId}`)
+
+    selectedPermissions.value.splice(0)
+    selectedProjects.value.splice(0)
+
+    selectedPermissions.value.push(...roleListResult.permissions.map(item => item.name))
+    selectedProjects.value.push(...roleListResult.trees.map(item => item.name))
+
+    objectMap(roleData, useCloned(roleListResult))
+    roleData.permissions.splice(0)
+    opening.value = false
+  }
+  catch (error) {
+    opening.value = false
+    if (error instanceof CustomFetchError && error.code > 1)
+      toast.error(error.message)
+    else toast.error(t('httpstatuscodes.0'))
+    emit('update:isDialogVisible', false)
+  }
+
+//   selectedPermissions.value = roleData.permissions.map(item => item.id)
+//   selectedProjects.value = roleData.projects.map(item => item.id)
 }
 
 defineExpose({ updateRole })
@@ -131,30 +217,30 @@ defineExpose({ updateRole })
   >
     <!-- 👉 Dialog close btn -->
     <DialogCloseBtn :disabled="isloading" @click="onReset" />
-    <VCard flat :title="$t('role.addedit')" :subtitle="$t('role.addeditsubtitle')">
+    <VCard flat :title="$t('role.addedit')" :subtitle="$t('role.addeditsubtitle')" :loading="opening">
       <VCardText>
         <!--
           <VBtn type="reset" variant="tonal" color="error" @click="testvmodel" :disabled="isloading">
           {{ "تست" }}
           </VBtn>
         -->
-        <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
+        <VForm ref="refForm" v-model="isFormValid" :disabled="opening" @submit.prevent="onSubmit">
           <VRow>
             <VCol cols="12">
               <AppTextField
-                v-model="roleData.title"
-                :rules="[requiredValidator(roleData.title, $t('validatorrequired'))]"
+                v-model="roleData.name"
+                :rules="[requiredValidator(roleData.name, $t('validatorrequired'))]"
                 :label="$t('role.title')" placeholder=""
               />
             </VCol>
 
             <VCol cols="12">
               <VRow>
-                <VCol cols="6" sm="6" style="overflow-x: auto;">
+                <VCol cols="6" sm="6">
                   <VTreeview
-                    v-model:selected="selectedProjects" :items="projectList"
-                    expand-icon="mdi-menu-left" item-value="id" item-title="title"
-                    select-strategy="classic" height="300px" lines="one" selectable
+                    v-model:selected="selectedProjects" :items="projectList" :return-object="false"
+                    expand-icon="mdi-menu-left" item-value="name" item-title="title"
+                    select-strategy="leaf" density="compact" height="300px" lines="one" selectable
                   >
                     <template #title="{ item }">
                       <VTooltip :text="item.title">
@@ -167,8 +253,8 @@ defineExpose({ updateRole })
                 </VCol>
                 <VCol cols="6" sm="6">
                   <VTreeview
-                    v-model:selected="selectedPermissions" :items="permissionList" height="300px"
-                    width="100%" item-value="id" item-title="title"
+                    v-model:selected="selectedPermissions" density="compact" :items="permissionList" height="300px"
+                    width="100%" item-value="name" item-title="title" :return-object="false"
                     expand-icon="mdi-menu-left" select-strategy="classic" selectable
                   >
                     <template #header="{ props }">

@@ -63,7 +63,7 @@ async function gateAdd() {
 async function gateEdit() {
   try {
     await $api((`${props.gateApiUrl}/`).replace('//', '/') + gateData.id, {
-      method: 'POST',
+      method: 'PUT',
       body: JSON.parse(JSON.stringify(gateData)),
       ignoreResponseError: false,
     })
