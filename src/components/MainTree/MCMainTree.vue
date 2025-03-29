@@ -27,7 +27,7 @@ const toast = useToast()
 
 const activatedNode = ref<number[]>([])
 const openedNode = ref<number[]>([])
-const isLoading = ref(true)
+const isLoading = ref(false)
 const selecteTreeStore = useSelectedTree()
 const { treeData, treeIndex, selectNode, selectedNode, clearTreeData, deselectAllTreeNodes } = useTree()
 const currentTreeId = ref(0)

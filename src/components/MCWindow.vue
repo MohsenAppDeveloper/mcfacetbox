@@ -15,13 +15,13 @@ interface Emit {
 <template>
   <div class="content-box">
     <VCard class="elevation-1 content">
-      <VRow no-gutters justify="space-between" align="center" class="tool-bar">
-        <div class="title">
+      <VRow no-gutters justify="space-between" align="center" class="tool-bar my-1">
+        <div class="title mb-1">
           {{ props.title }}
         </div>
 
         <div>
-          <VRow no-gutters class="btn-box">
+          <VRow no-gutters class="btn-box mb-1">
             <!-- <IconBtn size="small" @click="emit('move')"> -->
             <VIcon icon="tabler-arrows-down-up" size="18" @click="emit('move')" />
             <!-- </IconBtn> -->

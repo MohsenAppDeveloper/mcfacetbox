@@ -120,7 +120,7 @@ onMounted(async () => {
 function startWorkWithTree() {
   selectedTreeItem.value.id = selectedTree.value.id
   selectedTreeItem.value.title = selectedTree.value.title
-  router.replace({ name: 'rs', query: { gtd: btoa(selectedTree.value.toString()) } })
+  router.replace({ name: 'rs', query: { gtd: btoa(selectedTree.value.id.toString()) } })
   emit('update:isDialogVisible', false)
 }
 
