@@ -77,6 +77,79 @@ export const useApi = createFetch({
   },
 })
 
+export const useApiFake = createFetch({
+  baseUrl: '/api',
+  fetchOptions: {
+    headers: {
+      Accept: 'application/json',
+    },
+  },
+  options: {
+    // immediate: false,
+    updateDataOnError: true,
+    refetch: true,
+    async beforeFetch({ options }) {
+      const accessToken = useCookie('accessToken').value
+
+      options.headers = {
+        ...options.headers,
+        'Accept-Language': 'fa-IR',
+      }
+      if (accessToken) {
+        options.headers = {
+          ...options.headers,
+          Authorization: `Bearer ${accessToken}`,
+
+        }
+      }
+
+      return { options }
+    },
+    afterFetch(ctx) {
+      const { data, response } = ctx
+
+      // Parse data if it's JSON
+
+      let parsedData = null
+      try {
+        parsedData = destr(data)
+      }
+      catch (error) {
+      }
+
+      return { data: parsedData, response }
+    },
+    onFetchError(ctx) {
+      const { response, data } = ctx
+
+      let parsedData = null
+      try {
+        parsedData = destr(data)
+      }
+      catch (error) {
+      }
+
+      if (response && (response.status === 401)) {
+        const loginState = useLoginState()
+
+        loginState.Loginstate.value = LoginState.MustLogin
+      }
+      if (response && response.status === 403) {
+        const result = parsedData as IRootServiceError
+        if (result.error.code && result.error.code === 'Encyclopedia.ErrorCode:010017') {
+          setTimeout(() => {
+            const loginState = useLoginState()
+
+            loginState.Loginstate.value = LoginState.MustLogout
+          }, 5000)
+        }
+      }
+
+      return { data: parsedData, response }
+    },
+  },
+})
+
 // export const resolveServiceResponseMessage = (responseData: Record<string, any> | undefined, itemskey: string) => {
 //     if (isUndefined(responseData[itemskey] ?? undefined)) {
 //         toast.error(t('probleminGetInformation'))

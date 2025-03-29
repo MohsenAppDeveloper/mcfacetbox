@@ -67,3 +67,32 @@ export const $api = ofetch.create({
       await handleFetchError(response._data, response.status)
   },
 })
+
+export const $apiFake = ofetch.create({
+  baseURL: '/api',
+  timeout: 6000,
+  async onRequest({ options }) {
+    const accessToken = useCookie('accessToken').value
+
+    options.headers = {
+      ...options.headers,
+      'Accept-Language': 'fa-IR',
+    }
+    if (accessToken) {
+      options.headers = {
+        ...options.headers,
+        'Accept-Language': 'fa-IR',
+        'Authorization': `Bearer ${accessToken}`,
+      }
+    }
+  },
+
+  async onResponse({ response }) {
+    if (!response.ok)
+      await handleFetchError(response._data, response.status)
+  },
+  async onResponseError({ response }) {
+    if (!response.ok)
+      await handleFetchError(response._data, response.status)
+  },
+})

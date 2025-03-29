@@ -1,8 +1,7 @@
-import { createGlobalState } from '@vueuse/core'
+import { createGlobalState, useStorage } from '@vueuse/core'
 import { isUndefined } from '@antfu/utils'
-import { i } from 'vite/dist/node/types.d-jgA8ss1A'
-import type { ISimpleTreeActionable } from '@/types/baseModels'
-import { SimpleTreeAcionableModel, SimpleTreeModel } from '@/types/baseModels'
+import type { ISimpleDTO, ISimpleTreeActionable } from '@/types/baseModels'
+import { SimpleDTOModel, SimpleTreeAcionableModel, SimpleTreeModel } from '@/types/baseModels'
 
 export const useSelectedNode = createGlobalState(
   () => {
@@ -11,6 +10,10 @@ export const useSelectedNode = createGlobalState(
     return { simpleTreeModelStored }
   },
 )
+export const useSelectedTree = createGlobalState(() => {
+  return useStorage<ISimpleDTO<number>>('gtd', new SimpleDTOModel(0, ''))
+})
+
 const treeData = reactive<ISimpleTreeActionable[]>([])
 const treeIndex = reactive<Record<number, ISimpleTreeActionable>>({})
 const selectedNode = reactive<ISimpleTreeActionable>(new SimpleTreeAcionableModel())
@@ -27,6 +30,27 @@ export function useTree() {
     return true
   }
 
+  //   function createTreeIndex(tree: ISimpleTree[]): Record<number, ISimpleTree> {
+  //     const index: Record<number, ISimpleTree> = {}
+
+  //     function populateIndex(nodes: ISimpleTree[]) {
+  //       for (const node of nodes) {
+  //         index[node.id] = node
+  //         if (node.children)
+  //           populateIndex(node.children)
+  //       }
+  //     }
+  //     populateIndex(tree)
+
+  //     return index
+  //   }
+
+  const clearTreeData = () => {
+    treeData.splice(0)
+    Object.assign(treeIndex, [])
+    Object.assign(selectedNode, new SimpleTreeAcionableModel())
+  }
+
   const deselectAllTreeNodes = () => {
     for (const key in treeIndex) {
       if (treeIndex[key].selected)
@@ -35,6 +59,7 @@ export function useTree() {
   }
 
   const selectNode = (nodeItem: ISimpleTreeActionable) => {
+    treeIndex[nodeItem.id].selected = true
     selectedNode.id = nodeItem.id
     selectedNode.title = nodeItem.title
     selectedNode.parentId = nodeItem.parentId
@@ -46,6 +71,7 @@ export function useTree() {
     selectedNode,
     addNode,
     selectNode,
+    clearTreeData,
     deselectAllTreeNodes,
   }
 }

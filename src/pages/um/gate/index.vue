@@ -7,14 +7,13 @@ import { router } from '@/plugins/1.router'
 
 import ApexChartAreaChart from '@/views/charts/apex-chart/ApexChartAreaChart.vue'
 import ApexChartStatistics from '@/views/charts/apex-chart/ApexChartStatistics.vue'
-import { useSelectedGate, useSelectedGateId } from '@/store/gateStore'
+import { useSelectedGate } from '@/store/gateStore'
 
 const { t } = useI18n({ useScope: 'global' })
 const mcdatatable = ref(MCDataTable)
 const gateEditDataItem = ref<Record<string, any>>(new GateModel())
 const dialogGate = ref(VDialog)
 const isAddNewGateDialogVisible = ref(false)
-const currentgateId = ref(0)
 const currentGate = useSelectedGate()
 
 // const route = useRoute('ums-id')
@@ -60,8 +59,6 @@ const updateCharts = (gateid: number) => {
 const routeWithGateId = (page: string, gateid: number, gatetitle: string) => {
   currentGate.value.id = gateid
   currentGate.value.title = gatetitle
-  console.log('gatemodel', currentGate, gatetitle)
-
   nextTick(() => {
     router.push(`gate/${gateid}/${page}`)
   })

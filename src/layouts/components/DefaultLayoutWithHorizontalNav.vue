@@ -57,7 +57,9 @@ watch(loginState.Loginstate, async newval => {
   if (newval === LoginState.MustLogin) {
     clearUserCookies()
     await nextTick(() => {
-      router.push('/login')
+      window.location.href = `${import.meta.env.VITE_API_BASE_URL}signout?returnUrl=${import.meta.env.VITE_CLIENT_ADDRESS}login&to=${router.currentRoute.value.path}`
+
+    //   router.push('/login')
     })
   }
 })

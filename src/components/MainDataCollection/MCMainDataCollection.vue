@@ -3,6 +3,7 @@ import { VCol } from 'vuetify/lib/components/index.mjs'
 import MCDialogBookSelect from '../dialogs/MCDialogBookSelect.vue'
 import type { GridResult } from '@/types/baseModels'
 import type { IFacetBox, ISearchResultTabBox } from '@/types/SearchResult'
+import { useApiFake } from '@/composables/useApi'
 
 const itemsPerPage = ref(5)
 const page = ref(1)
@@ -12,7 +13,7 @@ const orderBy = ref()
 const searchQuery = ref('')
 const resultdataItems = ref<ISearchResultTabBox[]>([])
 
-const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse } = useApi<GridResult<ISearchResultTabBox>>(createUrl('/apps/DC', {
+const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse } = useApiFake<GridResult<ISearchResultTabBox>>(createUrl('/apps/DC', {
   query: {
     q: searchQuery,
     itemsPerPage,

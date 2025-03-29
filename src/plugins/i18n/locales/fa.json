@@ -29,7 +29,7 @@
     'management': 'مدیریت درگاه',
     'searchTitle': 'جستجوی درگاه',
     'addeditsubtitle': 'اطلاعات مورد نظر برای درگاه را وارد نمایید',
-    "gateselect":"انتخاب درگاه"
+    "select":"انتخاب درگاه"
   },
   'userManagement': 'مدیریت کاربران',
   "welcometoum":"به سامانه مدیریت موسوعه خوش آمدید",
@@ -57,6 +57,7 @@
   },
   'project': {
     'title': 'عنوان پروژه',
+    "select":"انتخاب پروژه",
     'pageTitle': 'پروژه ها',
     'add': 'افزودن پروژه',
     'addedit': 'افزودن / ویرایش پروژه',
@@ -67,12 +68,14 @@
   'tree': {
     'title': 'درخت',
     'changeTree': 'تغییر درخت',
+    "select":"انتخاب درخت",
     'pageTitle': 'درخت ها',
     'add': 'افزودن درخت',
     'addedit': 'افزودن / ویرایش درخت',
     'delete': 'حذف درخت',
     'management': 'مدیریت درخت ها',
     'addeditsubtitle': 'اطلاعات مورد نظر برای درخت را وارد نمایید',
+    "selectyourtree":"درخت مورد نظر برای پژوهش را انتخاب نمایید",
     'autorizedbook': 'کتب مجاز',
     'nodes': 'نودها',
     'selectednode':'نود انتخاب شده',
@@ -279,7 +282,8 @@
     "probleminLoadInformation":"مشکل در بارگذاری اطلاعات بوجود آمد.",
     'specificNodeAdded':"نود (0) اضافه شد",
     'tryagainmin':"چند دقیقه دیگر تلاش کنید",
-    "youmustselectoneperm":"باید حتما یک دسترسی را انتخاب کنید"
+    "youmustselectoneperm":"باید حتما یک دسترسی را انتخاب کنید",
+    "nothaveselecttree":"هیچ پروژه و درختی انتخاب نشده است"
   },
   '$vuetify': {
     'badge': 'نشان',

@@ -19,19 +19,15 @@ interface Emit {
         <div class="title">
           {{ props.title }}
         </div>
-         
+
         <div>
           <VRow no-gutters class="btn-box">
-            <IconBtn size="small" @click="emit('move')">
-              <VIcon icon="tabler-arrows-down-up" size="18" />
-            </IconBtn>
-            <IconBtn size="small" @click="emit('open')">
-              <VIcon icon="tabler-settings" size="18" />
-            </IconBtn>
-            <IconBtn size="small" @click="emit('close')">
-              <VIcon icon="tabler-x" size="18" />
-            </IconBtn>
-
+            <!-- <IconBtn size="small" @click="emit('move')"> -->
+            <VIcon icon="tabler-arrows-down-up" size="18" @click="emit('move')" />
+            <!-- </IconBtn> -->
+            <VIcon icon="tabler-settings" size="18" @click="emit('open')" />
+            <VIcon icon="tabler-x" size="18" @click="emit('close')" />
+            <slot name="actions" />
           </VRow>
         </div>
       </VRow>

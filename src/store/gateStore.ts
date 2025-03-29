@@ -7,5 +7,5 @@ export const useGateList = createGlobalState(
 )
 
 export const useSelectedGate = createGlobalState(() => {
-  return useStorage<ISimpleDTO<number>>('sgi', new SimpleDTOModel())
+  return useStorage<ISimpleDTO<number>>('sgi', new SimpleDTOModel(0, ''))
 })

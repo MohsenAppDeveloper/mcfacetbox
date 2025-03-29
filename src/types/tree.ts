@@ -1,4 +1,4 @@
-import type { ISimpleDTO, ISimpleTree, baseDataTableModel, baseItemState } from './baseModels'
+import type { ISimpleTree, baseItemState } from './baseModels'
 
 export function createTreeIndex(tree: ISimpleTree[]): Record<number, ISimpleTree> {
   const index: Record<number, ISimpleTree> = {}

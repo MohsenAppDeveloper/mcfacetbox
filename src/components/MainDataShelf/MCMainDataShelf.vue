@@ -6,6 +6,7 @@ import MCDataShelfBox from './MCDataShelfBox.vue'
 import { useTree } from '@/store/treeStore'
 import { type GridResult, SelectAllState } from '@/types/baseModels'
 import type { IDataShelfBox } from '@/types/dataShelf'
+import { useApiFake } from '@/composables/useApi'
 
 interface ISelectAllState {
   state: SelectAllState
@@ -33,7 +34,7 @@ const selectedFacetItems = reactive<Record<string, number[]>>({})
 const toast = useToast()
 const { selectedNode } = useTree()
 
-const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi<GridResult<IDataShelfBox>>(createUrl('/apps/dataShelf', {
+const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApiFake<GridResult<IDataShelfBox>>(createUrl('/apps/dataShelf', {
   query: {
     q: searchQuery,
     itemsPerPage,

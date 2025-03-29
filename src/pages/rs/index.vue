@@ -4,11 +4,14 @@ import MCMainDataCollection from '@/components/MainDataCollection/MCMainDataColl
 import MCMainDataShelf from '@/components/MainDataShelf/MCMainDataShelf.vue'
 
 import 'splitpanes/dist/splitpanes.css'
+import { useSelectedTree } from '@/store/treeStore'
 
 const menu = ref(false)
 const isComponentSwitch = ref(false)
 const topComponentOrder = ref(2)
 const bottomComponentOrder = ref(2)
+const dialogSelectTreeVisible = ref(false)
+const selectedTreeItem = useSelectedTree()
 
 const resolveTopComponent = (order: number) => {
   if (order === 1)
@@ -35,10 +38,15 @@ function changeWindowTitle(status: boolean) {
 
 <template>
   <div class="main">
+    <MCDialogSelectTree v-if="dialogSelectTreeVisible" v-model:is-dialog-visible="dialogSelectTreeVisible" />
+
     <Splitpanes style="block-size: calc(100vh - 70px);" rtl class="default-theme">
       <Pane size="30">
-        <MCWindow title="درخت خانواده" @close="menu = true">
-          <MCMainTree />
+        <MCWindow :title="selectedTreeItem.title" @close="menu = true">
+          <MCMainTree @show-select-tree="dialogSelectTreeVisible = true" />
+          <template #actions>
+            <VIcon icon="tabler-refresh" size="18" @click="dialogSelectTreeVisible = true" />
+          </template>
         </MCWindow>
       </Pane>
 

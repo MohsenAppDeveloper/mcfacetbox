@@ -4,9 +4,10 @@ import { isNumericString, isUndefined } from '@sindresorhus/is'
 import { useToast } from 'vue-toastification'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import MCLoading from '../MCLoading.vue'
-import type { GridResult, ISimpleTree, ISimpleTreeActionable } from '@/types/baseModels'
+import type { GridResult, ISimpleDTO, ISimpleTree, ISimpleTreeActionable } from '@/types/baseModels'
 import { createTreeIndex } from '@/types/tree'
-import { useTree } from '@/store/treeStore'
+import { useSelectedTree, useTree } from '@/store/treeStore'
+import { useApiFake } from '@/composables/useApi'
 
 // watch(activatedNode, (newvalue, oldvalue) => {
 //     roleData.projects = convertSimpleTreeToSimpleDtoArray(projectList).filter((item) => activatedNode.value.includes(item.id))
@@ -15,6 +16,7 @@ const props = defineProps({
   title: { type: String },
 })
 
+const emit = defineEmits<Emit>()
 const router = useRouter()
 const route = useRoute()
 
@@ -26,10 +28,11 @@ const toast = useToast()
 const activatedNode = ref<number[]>([])
 const openedNode = ref<number[]>([])
 const isLoading = ref(true)
+const selecteTreeStore = useSelectedTree()
+const { treeData, treeIndex, selectNode, selectedNode, clearTreeData, deselectAllTreeNodes } = useTree()
+const currentTreeId = ref(0)
 
-// const treeData = reactive<ISimpleTreeActionable[]>([])
-// const treeIndex = reactive<Record<number, ISimpleTreeActionable>>({})
-const { treeData, treeIndex, selectNode, selectedNode, deselectAllTreeNodes } = useTree()
+// const currentNodeId = ref(0)
 
 // const treeIndex = useTreeIndex()
 
@@ -39,46 +42,81 @@ const dialogAddNewNodeVisible = ref(false)
 interface Emit {
   (e: 'close'): void
   (e: 'open'): void
+  (e: 'showSelectTree'): void
 }
-const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi<GridResult<ISimpleTreeActionable>>(createUrl('/apps/maintree'), { immediate: false })
 
-onFetchResponse(response => {
+const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApiFake<GridResult<ISimpleTreeActionable>>(createUrl('/apps/maintree',
+  { query: { treeid: currentTreeId } }), { immediate: false })
+
+onFetchResponse(() => {
   if (resultData.value) {
-    treeData.splice(0)
+    clearTreeData()
     treeData.push(resultData.value.items)
     updateTreeIndex(treeData)
-    console.log('loadtree')
+
+    // console.log('loadtree')
     checkTreeRoute(false)
   }
   if (isUndefined(treeData))
     toast.error(t('alert.probleminGetInformation'))
   isLoading.value = false
-
-  // if ((resultData.value?.items ?? 0) <= 0)
-  //   toast.info(t('alert.resultNotFound'))
 })
-onFetchError(response => {
+onFetchError(() => {
   toast.error(t('alert.dataActionFailed'))
 })
 watch(loadingdata, () => {
   if (loadingdata.value)
     isLoading.value = true
 })
+watch(currentTreeId, async () => {
+  try {
+    if (currentTreeId.value !== selecteTreeStore.value.id) {
+      const treeDataResult = await $api<ISimpleDTO<number>>(`app/tree/${currentTreeId.value}`)
 
+      selecteTreeStore.value.id = treeDataResult.id
+      selecteTreeStore.value.title = treeDataResult.title
+    }
+  }
+  catch (error) {
+
+  }
+})
 watch(route, newval => {
   checkTreeRoute(true)
-  console.log('currentroute', newval.query.snd)
+  console.log('currentroute1', newval.query.snd)
 }, { immediate: true })
 
 function checkTreeRoute(deselectAll: boolean) {
-  console.log('checkroute')
+  if (!route.query.gtd) {
+    emit('showSelectTree')
+    toast.error(t('alert.nothaveselecttree'))
 
-  if (route.query.snd && isNumericString(route.query.snd) && selectedNode.id.toString() !== route.query.snd && treeIndex[route.query.snd]) {
-    if (deselectAll)
-      deselectAllTreeNodes()
-    selectNode(treeIndex[route.query.snd])
-    gotoNode(useToNumber(route.query.snd).value)
+    return
   }
+  const gtd = atob(route.query.gtd.toString())
+  if (!isNumericString(gtd)) {
+    toast.error(t('alert.nothaveselecttree'))
+
+    return
+  }
+  console.log('checkroute2', gtd, currentTreeId.value)
+
+  if (currentTreeId.value === useToNumber(gtd).value && route.query.snd) {
+    const snd = atob(route.query.snd.toString())
+    if (isNumericString(snd) && selectedNode.id.toString() !== snd && treeIndex[snd]) {
+      if (selectedNode.id > 0)
+        treeIndex[selectedNode.id].selected = false
+      else if (deselectAll)
+        deselectAllTreeNodes()
+
+      //   treeNodeDeselectAll(projectList)
+      //   item.selected = true
+      //   selectNode(item)
+      selectNode(treeIndex[snd])
+      gotoNode(useToNumber(snd).value)
+    }
+  }
+  currentTreeId.value = useToNumber(gtd).value
 }
 
 // watch(F2, v => {
@@ -102,25 +140,14 @@ function updateTreeIndex(dataItems: ISimpleTree[]) {
 // })
 
 const selectTreeNode = (item: ISimpleTreeActionable) => {
-  if (selectedNode.id > 0)
-    treeIndex[selectedNode.id].selected = false
-
-  //   treeNodeDeselectAll(projectList)
-  item.selected = true
-  selectNode(item)
-  router.push({ name: 'rs', query: { snd: item.id } })
-
-//   selectenode.simpleTreeModelStored.id = item.id
-//   selectenode.simpleTreeModelStored.title = item.title
-//   selectenode.simpleTreeModelStored.selected = item.selected
-//   selectenode.simpleTreeModelStored.children = item.children
+  router.push({ name: 'rs', query: { gtd: btoa(currentTreeId.value.toString()), snd: btoa(item.id.toString()) } })
 }
 
-onMounted(() => {
-  setTimeout(() => {
-    fetchData()
-  }, 1000)
-})
+// onMounted(() => {
+//   setTimeout(() => {
+//     fetchData()
+//   }, 1000)
+// })
 
 const openParents = (nodeItems: ISimpleTree[], id: number) => {
   for (const item of nodeItems) {
@@ -208,11 +235,6 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
     items: [
       {
         label: t('tree.newnode'),
-
-        // children: [
-        //   { label: t('tree.editnode') },
-        //   { label: t('tree.addcomment') },
-        // ],
         icon: 'tabler-plus',
         onClick: () => {
           dialogAddNewNodeVisible.value = true
@@ -277,16 +299,13 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
     ],
   })
 }
-
-// watch(selectenode.simpleTreeModelStored, newval => {
-//   console.log('storechange', newval)
-// })
 </script>
 
 <template>
   <div class="mc-main-tree" @keydown="handleKeydown">
     <MCLoading :showloading="isLoading" />
     <MCDialogAddNewNode v-if="dialogAddNewNodeVisible" v-model:is-dialog-visible="dialogAddNewNodeVisible" :selected-node="treeIndex[activatedNode[0]]" @node-added="nodeItemAdded" />
+
     <VRow no-gutters class="btn-box toolbar">
       <IconBtn size="small" @click="">
         <VIcon icon="tabler-search" size="22" />
