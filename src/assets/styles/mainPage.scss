@@ -73,7 +73,10 @@
         .toolbar {
             border-radius: 6px;
             background-color: rgba(var(--v-theme-primary), 0.1);
-            margin-block-start: 10px !important;
+            padding-top: 2px;
+            padding-bottom: 2px;
+            padding-inline: 4px;
+            // margin-block-start: 10px !important;
         }
 
         .header {

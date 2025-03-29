@@ -89,13 +89,13 @@ watch(route, newval => {
 function checkTreeRoute(deselectAll: boolean) {
   if (!route.query.gtd) {
     emit('showSelectTree')
-    toast.error(t('alert.nothaveselecttree'))
+    toast.warning(t('alert.nothaveselecttree'))
 
     return
   }
   const gtd = atob(route.query.gtd.toString())
   if (!isNumericString(gtd)) {
-    toast.error(t('alert.nothaveselecttree'))
+    toast.warning(t('alert.nothaveselecttree'))
 
     return
   }
@@ -307,27 +307,19 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
     <MCDialogAddNewNode v-if="dialogAddNewNodeVisible" v-model:is-dialog-visible="dialogAddNewNodeVisible" :selected-node="treeIndex[activatedNode[0]]" @node-added="nodeItemAdded" />
 
     <VRow no-gutters class="btn-box toolbar">
-      <IconBtn size="small" @click="">
-        <VIcon icon="tabler-search" size="22" />
-      </IconBtn>
-      <IconBtn size="small" @click="">
-        <VIcon icon="tabler-box-multiple" size="22" />
-      </IconBtn>
-      <IconBtn size="small" @click="">
-        <VIcon icon="tabler-select" size="22" />
-      </IconBtn>
-      <IconBtn size="small" @click="">
-        <VIcon icon="tabler-trash-x" size="22" />
-      </IconBtn>
-      <IconBtn size="small" @click="">
-        <VIcon icon="tabler-plug-connected" size="22" />
-      </IconBtn>
-      <IconBtn size="small" @click="">
-        <VIcon icon="tabler-brand-openai" size="22" />
-      </IconBtn>
-      <IconBtn size="small" @click="">
-        <VIcon icon="tabler-eraser" size="22" />
-      </IconBtn>
+      <VCol md="12">
+        <div class="toolbar">
+          <VBtn icon="tabler-plus" size="small" variant="text" />
+
+          <VBtn icon="tabler-search" size="small" variant="text" />
+          <VBtn icon="tabler-box-multiple" size="small" variant="text" />
+          <VBtn icon="tabler-select" size="small" variant="text" />
+          <VBtn icon="tabler-trash-x" size="small" variant="text" />
+          <VBtn icon="tabler-plug-connected" size="small" variant="text" />
+          <VBtn icon="tabler-eraser" size="small" variant="text" />
+          <VBtn icon="tabler-refresh" size="small" variant="text" />
+        </div>
+      </VCol>
     </VRow>
 
     <VRow dense class="header">

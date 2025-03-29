@@ -25,7 +25,7 @@ definePage({
     <VIcon icon="tabler-login" size="44" class="mb-3" color="primary" />
     <VBtn
       class="mb-11"
-      :to="`'/auth'+${$route.query.to ? `?to=${String($route.query.to)}` : ''}`"
+      :to="`/auth${$route.query.to ? `?to=${String($route.query.to)}` : ''}`"
     >
       {{ $t('login') }}
     </VBtn>

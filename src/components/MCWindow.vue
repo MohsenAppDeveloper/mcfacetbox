@@ -22,12 +22,12 @@ interface Emit {
 
         <div>
           <VRow no-gutters class="btn-box mb-1">
+            <slot name="actions" />
             <!-- <IconBtn size="small" @click="emit('move')"> -->
-            <VIcon icon="tabler-arrows-down-up" size="18" @click="emit('move')" />
+            <!-- <VIcon icon="tabler-arrows-down-up" size="18" @click="emit('move')" /> -->
             <!-- </IconBtn> -->
             <VIcon icon="tabler-settings" size="18" @click="emit('open')" />
             <VIcon icon="tabler-x" size="18" @click="emit('close')" />
-            <slot name="actions" />
           </VRow>
         </div>
       </VRow>

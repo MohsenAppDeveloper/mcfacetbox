@@ -45,7 +45,14 @@ function changeWindowTitle(status: boolean) {
         <MCWindow :title="selectedTreeItem.title" @close="menu = true">
           <MCMainTree @show-select-tree="dialogSelectTreeVisible = true" />
           <template #actions>
-            <VIcon icon="tabler-refresh" size="18" @click="dialogSelectTreeVisible = true" />
+            <VIcon icon="tabler-status-change" size="18" @click="dialogSelectTreeVisible = true">
+              <VTooltip
+                activator="parent"
+                location="top center"
+              >
+                {{ $t('tree.changeTree') }}
+              </VTooltip>
+            </VIcon>
           </template>
         </MCWindow>
       </Pane>
