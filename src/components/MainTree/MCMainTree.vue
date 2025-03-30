@@ -4,10 +4,11 @@ import { isNumericString, isUndefined } from '@sindresorhus/is'
 import { useToast } from 'vue-toastification'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import MCLoading from '../MCLoading.vue'
-import type { GridResult, ISimpleDTO, ISimpleTree, ISimpleTreeActionable } from '@/types/baseModels'
+import { type ISimpleDTO, type ISimpleTree, type ISimpleTreeActionable, SimpleTreeAcionableModel } from '@/types/baseModels'
 import { createTreeIndex } from '@/types/tree'
 import { useSelectedTree, useTree } from '@/store/treeStore'
-import { useApiFake } from '@/composables/useApi'
+import Swal from 'sweetalert2'
+
 
 // watch(activatedNode, (newvalue, oldvalue) => {
 //     roleData.projects = convertSimpleTreeToSimpleDtoArray(projectList).filter((item) => activatedNode.value.includes(item.id))
@@ -29,7 +30,7 @@ const activatedNode = ref<number[]>([])
 const openedNode = ref<number[]>([])
 const isLoading = ref(false)
 const selecteTreeStore = useSelectedTree()
-const { treeData, treeIndex, selectNode, selectedNode, clearTreeData, deselectAllTreeNodes } = useTree()
+const { treeData, treeIndex, selectNode, selectedNode, clearTreeData, deselectAllTreeNodes,deleteNode } = useTree()
 const currentTreeId = ref(0)
 
 // const currentNodeId = ref(0)
@@ -45,14 +46,14 @@ interface Emit {
   (e: 'showSelectTree'): void
 }
 
-const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApiFake<GridResult<ISimpleTreeActionable>>(createUrl('/apps/maintree',
+const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi<ISimpleTreeActionable[]>(createUrl('app/node/hierarchy',
   { query: { treeid: currentTreeId } }), { immediate: false })
 
 onFetchResponse(() => {
   if (resultData.value) {
     activatedNode.value.splice(0)
     clearTreeData()
-    treeData.push(resultData.value.items)
+    treeData.push(...resultData.value)
     updateTreeIndex(treeData)
 
     // console.log('loadtree')
@@ -64,6 +65,7 @@ onFetchResponse(() => {
 })
 onFetchError(() => {
   toast.error(t('alert.dataActionFailed'))
+  isLoading.value = false
 })
 watch(loadingdata, () => {
   if (loadingdata.value)
@@ -221,9 +223,52 @@ function gotoNode(nodeId: number) {
     })
   }
 }
-
+const deleteSelectedNode=(nodeItem:ISimpleTreeActionable)=>{
+    Swal.fire({
+    titleText:  formatString(t('alert.specificItemDeleted'), nodeItem.title),
+    confirmButtonText: t('$vuetify.confirmEdit.ok'),
+    cancelButtonText: t('$vuetify.confirmEdit.cancel'),
+    showConfirmButton: true,
+    showCancelButton: true,
+    showLoaderOnConfirm: true,
+    showCloseButton: true,
+    preConfirm: async () => {
+      const serviceError = shallowRef()
+      try {
+        await $api(('app/node/').replace('//', '/') + nodeItem.id, {
+          method: 'DELETE',
+        })
+        deleteNode(nodeItem)
+      }
+      catch (error) {
+        serviceError.value = error
+      }
+      return { serviceError }
+    },
+    allowOutsideClick: false,
+  }).then(value => {
+    if (value.isConfirmed) {
+      if (value.value?.serviceError.value) {
+        if (value.value?.serviceError.value instanceof CustomFetchError && value.value?.serviceError.value.code > 0)
+          toast.error(value.value?.serviceError.value.message)
+        else toast.error(t('httpstatuscodes.0'))
+      }
+      else {
+        toast.success(t('alert.deleteDataSuccess'))
+      }
+    }
+  })
+}
 const nodeItemAdded = (nodeItem: ISimpleTreeActionable) => {
   toast.success(formatString(t('alert.specificNodeAdded'), nodeItem.title))
+}
+
+const nodeaddfailed = (message: string) => {
+  toast.error(message)
+}
+
+const refreshTree = async () => {
+  await fetchData()
 }
 
 const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
@@ -241,6 +286,14 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
         onClick: () => {
           selectTreeNode(nodeItem)
           dialogAddNewNodeVisible.value = true
+        },
+      },
+      {
+        label: t('tree.deletenode'),
+        icon: 'tabler-trash',
+        customClass:'error',
+        onClick: () => {
+          deleteSelectedNode(nodeItem)
         },
       },
       {
@@ -307,7 +360,10 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
 <template>
   <div class="mc-main-tree" @keydown="handleKeydown">
     <MCLoading :showloading="isLoading" />
-    <MCDialogAddNewNode v-if="dialogAddNewNodeVisible" v-model:is-dialog-visible="dialogAddNewNodeVisible" :selected-node="treeIndex[activatedNode[0]]" @node-added="nodeItemAdded" />
+    <MCDialogAddNewNode
+      v-if="dialogAddNewNodeVisible" v-model:is-dialog-visible="dialogAddNewNodeVisible" :selected-tree-id="currentTreeId" :selected-node="activatedNode.length > 0 ? treeIndex[activatedNode[0]] : new SimpleTreeAcionableModel(-1, '', -1)"
+      @node-added="nodeItemAdded" @node-added-failed="nodeaddfailed"
+    />
 
     <VRow no-gutters class="btn-box toolbar">
       <VCol md="12">
@@ -320,7 +376,7 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
           <VBtn icon="tabler-trash-x" size="small" variant="text" />
           <VBtn icon="tabler-plug-connected" size="small" variant="text" />
           <VBtn icon="tabler-eraser" size="small" variant="text" />
-          <VBtn icon="tabler-refresh" size="small" variant="text" />
+          <VBtn icon="tabler-refresh" size="small" variant="text" @click="refreshTree" />
         </div>
       </VCol>
     </VRow>

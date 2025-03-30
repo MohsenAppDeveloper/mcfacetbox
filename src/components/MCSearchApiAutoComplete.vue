@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 // !SECTION این دیالوگ برای جستجو لیست های تک سطحی و انتخاب یک یا چند مورد میباشد
 
-import type { GridResult, ISimpleSelectableDTO } from '@/types/baseModels'
+import type { GridResult, ISimpleDTO, ISimpleSelectableDTO } from '@/types/baseModels'
 import { SelectionType } from '@/types/baseModels'
 
 interface Prop {
@@ -27,6 +27,8 @@ const page = ref(1)
 const selectedItemsLocal = ref<number[]>([])
 const searchResult = reactive<ISimpleSelectableDTO<number>[]>([])
 const searchPhrase = ref('')
+const actionInprogress = ref(false)
+let timeout: ReturnType<typeof setTimeout> | null = null
 
 // const onReset = () => {
 //   // Reset all predefined properties
@@ -44,7 +46,7 @@ const selectionStrategy = computed(() => {
 
 const { execute: fetchData, isFetching: loadingdata, data: searchResultFirst, onFetchResponse, onFetchError } = useApi<GridResult<ISimpleSelectableDTO<number>>>(createUrl(props.apiUrl ?? '', {
   query: {
-    phrase: searchPhrase,
+    filter: searchPhrase,
     itemsPerPage,
     page,
   },
@@ -58,6 +60,7 @@ onFetchResponse(response => {
     searchResult.splice(0)
     if (searchResultFirst.value)
       searchResult.push(...searchResultFirst.value.items)
+    actionInprogress.value = false
   })
 })
 
@@ -76,12 +79,16 @@ watch(selectedItemsLocal, () => {
   emit('update:selectedItems', selectedItemsLocal.value)
 })
 watch(searchPhrase, () => {
+  if (searchPhrase.value.length > 2) {
+    if (timeout)
+      clearTimeout(timeout)
+
+    timeout = setTimeout(() => {
+      fetchData(false)
+    }, 2000)
+  }
+
   emit('searchPhraseChanged', searchPhrase.value)
-
-  if (searchPhrase.value.length >= 2)
-    fetchData(false)
-
-  else searchResult.splice(0)
 })
 watch(searchResult, () => {
   emit('loadingStateChanged', loadingdata.value, searchResult.length)

@@ -23,8 +23,6 @@ export function convertSimpleTreeToSimpleDtoArray(tree: ISimpleTree[]): ISimpleD
 }
 
 export function formatString(template: string, ...values: string[]): string {
-  console.log('formatstring', template, values)
-
   return template.replace(/\((\d+)\)/g, (match, index) => {
     return typeof values[index] !== 'undefined' ? values[index] : match
   })

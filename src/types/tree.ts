@@ -14,7 +14,28 @@ export function createTreeIndex(tree: ISimpleTree[]): Record<number, ISimpleTree
 
   return index
 }
-
+export enum NodeType {
+  Sibling = 2,
+  Children = 1,
+}
+export interface INodeNew {
+  treeId: number
+  selectedId: number
+  type: number
+  title: string
+}
+export class NodeNewModel implements INodeNew {
+  treeId: number = 0
+  selectedId: number = 0
+  type: NodeType = NodeType.Sibling
+  title: string = ''
+  constructor(treeid: number, selectedid: number, type: NodeType, title: string) {
+    this.title = title
+    this.treeId = treeid
+    this.selectedId = selectedid
+    this.type = type
+  }
+}
 export interface ITreeTitle extends Record<string, any>, baseItemState {
   id: number
   title: string

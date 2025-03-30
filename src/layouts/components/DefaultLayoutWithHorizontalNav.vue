@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { isNumber } from '@sindresorhus/is'
 import { researchSoftwareItems, userManagementItems } from '@/navigation/horizontal'
 
 import { themeConfig } from '@themeConfig'

@@ -19,15 +19,41 @@ const treeIndex = reactive<Record<number, ISimpleTreeActionable>>({})
 const selectedNode = reactive<ISimpleTreeActionable>(new SimpleTreeAcionableModel())
 export function useTree() {
   const addNode = (nodeItem: ISimpleTreeActionable): boolean => {
-    if (nodeItem.parentId === -1)
-      return false
-    if (isUndefined(treeIndex[nodeItem.parentId].children))
-      treeIndex[nodeItem.parentId].children = []
+    console.log('newnode', nodeItem)
 
-    treeIndex[nodeItem.parentId].children?.push(nodeItem)
+    // console.log('treeindex', treeIndex)
+    if (nodeItem.parentId && nodeItem.parentId !== -1) {
+      if (!treeIndex[nodeItem.parentId].children)
+        treeIndex[nodeItem.parentId].children = []
+
+      treeIndex[nodeItem.parentId].children?.push(nodeItem)
+    }
+    else { treeData.push(nodeItem) }
     treeIndex[nodeItem.id] = nodeItem
+    console.log('treedata', treeData)
+    console.log('treeindex', treeIndex)
 
     return true
+  }
+
+  const deleteNode = (nodeItem: ISimpleTreeActionable) => {
+    if (treeIndex[nodeItem.id]) {
+      if (nodeItem.parentId && nodeItem.parentId > 1 && treeIndex[nodeItem.parentId].children) {
+        const findindex = treeIndex[nodeItem.parentId].children?.findIndex(item => item.id === nodeItem.id)
+
+        treeIndex[nodeItem.parentId].children?.splice(findindex ?? 0, 1)
+        if (treeIndex[nodeItem.parentId].children?.length === 0)
+          treeIndex[nodeItem.parentId].children = null
+      }
+      else if (!nodeItem.parentId && nodeItem.parentId < 1) {
+        const findindex = treeData.findIndex(item => item.id === nodeItem.id)
+
+        treeData.splice(findindex ?? 0, 1)
+      }
+      delete treeIndex[nodeItem.id]
+    }
+    console.log('treedata', treeData)
+    console.log('treeindex', treeIndex)
   }
 
   //   function createTreeIndex(tree: ISimpleTree[]): Record<number, ISimpleTree> {
@@ -73,6 +99,7 @@ export function useTree() {
     selectNode,
     clearTreeData,
     deselectAllTreeNodes,
+    deleteNode,
   }
 }
 

@@ -82,6 +82,7 @@
     'selectnode':'انتخاب درخت',
     'newnode':'نود جدید',
     'editnode':'ویرایش',
+    "deletenode":"حذف نود",
     'addcomment':'افزودن توضیحات',
     'merge':'ادغام',
     'transfernode':'انتقال',
@@ -281,9 +282,12 @@
     'probleminGetInformation': 'مشکل در دریافت اطلاعات وجود دارد',
     "probleminLoadInformation":"مشکل در بارگذاری اطلاعات بوجود آمد.",
     'specificNodeAdded':"نود (0) اضافه شد",
+    "specificItemDeleted":"آیا مورد '(0)' حذف شود",
+
     'tryagainmin':"چند دقیقه دیگر تلاش کنید",
     "youmustselectoneperm":"باید حتما یک دسترسی را انتخاب کنید",
-    "nothaveselecttree":"هیچ پروژه و درختی انتخاب نشده است"
+    "nothaveselecttree":"هیچ پروژه و درختی انتخاب نشده است",
+    "probleminnodeaddrefreshpage":"مشکلی در افزودن نود بوجود آمده است، درخت را بروزرسانی کنید"
   },
   '$vuetify': {
     'badge': 'نشان',

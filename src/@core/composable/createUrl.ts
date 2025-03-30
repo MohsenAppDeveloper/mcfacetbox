@@ -16,5 +16,5 @@ export const createUrl = (url: MaybeRefOrGetter<string>, options?: Options) => c
     Object.entries(_query).map(([key, val]) => [key, toValue(val)]),
   )
 
-  return `${_url}${queryObj ? `?${stringifyQuery(queryObj)}` : ''}`
+  return `${_url}${queryObj ? `${_url.includes('?') ? '&' : '?'}${stringifyQuery(queryObj)}` : ''}`
 })
