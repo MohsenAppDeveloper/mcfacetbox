@@ -30,6 +30,10 @@ const searchResult = reactive<ISimpleSelectableDTO<number>[]>([])
 const searchPhrase = ref('')
 const actionInprogress = ref(false)
 const showReplace = ref(false)
+const isRegex = ref(false)
+const iswholeWord = ref(false)
+const ismatchCase = ref(false)
+
 let timeout: ReturnType<typeof setTimeout> | null = null
 
 // const onReset = () => {
@@ -107,6 +111,10 @@ watch(searchResult, () => {
         clearable density="compact" :loading="loadingdata" @click:clear="onReset"
       >
         <template #append>
+          <VBtn :variant="isRegex ? 'tonal' : 'plain'" icon="tabler-regex" size="small" rounded="lg" @click="isRegex = !isRegex" />
+          <VBtn :variant="ismatchCase ? 'tonal' : 'plain'" icon="tabler-abc" size="small" rounded="lg" @click="ismatchCase = !ismatchCase" />
+          <VBtn :variant="iswholeWord ? 'tonal' : 'plain'" icon="tabler-alphabet-latin" size="small" rounded="lg" @click="iswholeWord = !iswholeWord" />
+          <VDivider vertical />
           <VBtn variant="plain" :icon="showReplace ? 'tabler-chevron-down' : 'tabler-chevron-right'" size="small" @click="showReplace = !showReplace" />
         </template>
       </VTextField>
@@ -115,7 +123,12 @@ watch(searchResult, () => {
           v-if="showReplace"
           v-model:model-value="searchPhrase" :placeholder="$t('replace')"
           clearable density="compact" @click:clear="onReset"
-        />
+        >
+          <template #append>
+            <VBtn variant="plain" icon="tabler-replace" rounded="lg" size="small" />
+            <VBtn variant="plain" icon="tabler-replace-filled" rounded="lg" size="small" />
+          </template>
+        </VTextField>
       </VExpandTransition>
     </div>
 

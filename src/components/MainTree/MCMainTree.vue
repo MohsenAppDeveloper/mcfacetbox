@@ -8,18 +8,16 @@ import MCLoading from '../MCLoading.vue'
 import MCDialogTransferNode from '../dialogs/MCDialogTransferNode.vue'
 import { type ISimpleDTO, type ISimpleTree, type ISimpleTreeActionable, SimpleTreeAcionableModel } from '@/types/baseModels'
 import type { INodeView } from '@/types/tree'
-import { createTreeIndex } from '@/types/tree'
+import { NodeType, createTreeIndex, getNodeTypeNameSpace } from '@/types/tree'
 import { useSelectedTree, useTree } from '@/store/treeStore'
 import { SelectionType } from '@/types/baseModels'
 
-// watch(activatedNode, (newvalue, oldvalue) => {
-//     roleData.projects = convertSimpleTreeToSimpleDtoArray(projectList).filter((item) => activatedNode.value.includes(item.id))
-// })
 const props = defineProps({
   title: { type: String },
 })
 
 const emit = defineEmits<Emit>()
+
 const router = useRouter()
 const route = useRoute()
 
@@ -32,10 +30,15 @@ const activatedNode = ref<number[]>([])
 const openedNode = ref<number[]>([])
 const isLoading = ref(false)
 const selecteTreeStore = useSelectedTree()
-const { treeData, treeIndex, selectNode, selectedNode, clearTreeData, deselectAllTreeNodes, deleteNode } = useTree()
+const { treeData, treeIndex, selectNode, selectedNode, clearTreeData, deselectAllTreeNodes, deleteNode, transferNode, isLastNode } = useTree()
 const currentTreeId = ref(0)
 const nodeTempTitleForEdit = ref('')
 const searchResultSelectedNodes = ref<number[]>([])
+const hasDraggableState = ref(false)
+const hasDividerDraggableBefore = ref(false)
+const hasDividerDraggableAfter = ref(false)
+const sourceDraggableItem = ref<ISimpleTreeActionable | null>(null)
+const activeDraggableItem = ref<ISimpleTreeActionable | null>(null)
 
 // const currentNodeId = ref(0)
 
@@ -52,6 +55,10 @@ interface Emit {
   (e: 'open'): void
   (e: 'showSelectTree'): void
 }
+
+// watch(activatedNode, (newvalue, oldvalue) => {
+//   console.log('activenode', activatedNode.value)
+// })
 
 const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi<ISimpleTreeActionable[]>(createUrl('app/node/hierarchy',
   { query: { treeid: currentTreeId } }), { immediate: false })
@@ -97,7 +104,6 @@ watch(searchResultSelectedNodes, () => {
 })
 watch(route, newval => {
   checkTreeRoute(true)
-  console.log('currentroute1', newval.query.snd)
 }, { immediate: true })
 
 function checkTreeRoute(deselectAll: boolean) {
@@ -113,8 +119,6 @@ function checkTreeRoute(deselectAll: boolean) {
 
     return
   }
-  console.log('checkroute2', gtd, currentTreeId.value)
-
   if (currentTreeId.value === useToNumber(gtd).value && route.query.snd) {
     const snd = atob(route.query.snd.toString())
     if (isNumericString(snd) && selectedNode.id.toString() !== snd && treeIndex[snd]) {
@@ -166,9 +170,11 @@ const openParents = (nodeItems: ISimpleTree[], id: number) => {
 function handleKeydown(event: KeyboardEvent) {
   if (event.key === 'F2' && activatedNode.value.length > 0)
     nodeEditStart()
+  if (event.key === 'Escape')
+    resetMouseDraggable()
 }
 function nodeEditStart() {
-  if (activatedNode.value.length > 0) {
+  if (isValidActivateNode()) {
     nodeTempTitleForEdit.value = treeIndex[activatedNode.value[0]].title
     treeIndex[activatedNode.value[0]].editing = true
     treeIndex[activatedNode.value[0]].tempData = useCloned(treeIndex[activatedNode.value[0]].title).cloned.value
@@ -271,11 +277,19 @@ const deleteSelectedNode = (nodeItem: ISimpleTreeActionable) => {
         else toast.error(t('httpstatuscodes.0'))
       }
       else {
-        selectNode({ id: -1, parentId: -1, priority: 0, title: '' })
+        clearActivateNode()
         toast.success(t('alert.deleteDataSuccess'))
       }
     }
   })
+}
+
+function clearActivateNode() {
+  selectNode({ id: -1, parentId: -1, priority: 0, title: '' })
+  activatedNode.value.splice(0)
+}
+function isValidActivateNode(): boolean {
+  return !!(activatedNode.value.length > 0 && treeIndex[activatedNode.value[0]])
 }
 
 const nodeItemAdded = (nodeItem: ISimpleTreeActionable) => {
@@ -305,6 +319,98 @@ const nodeTransfered = (sourceNodeId: number, destinationNodeID: number) => {
 //     selectNode({ id: treeIndex[destinationNodeID].id, parentId: treeIndex[destinationNodeID].parentId, title: treeIndex[destinationNodeID].title, priority: treeIndex[destinationNodeID].priority })
 //     gotoNode(destinationNodeID)
 //   }
+}
+
+function treeDividerMouseDown(mouseEvent: MouseEvent) {
+}
+function treeDividerMouseLeave(mouseEvent: MouseEvent, transfertype: NodeType) {
+  if (transfertype === NodeType.SiblingBefore)
+    hasDividerDraggableBefore.value = false
+
+  if (transfertype === NodeType.SiblingAfter)
+    hasDividerDraggableAfter.value = false
+}
+function treeDividerMouseEnter(transfertype: NodeType) {
+  if (transfertype === NodeType.SiblingBefore)
+    hasDividerDraggableBefore.value = true
+
+  if (transfertype === NodeType.SiblingAfter)
+    hasDividerDraggableAfter.value = true
+}
+function treeDividerMouseUp(mouseEvent: MouseEvent, treeItem: ISimpleTreeActionable, transfertype: NodeType) {
+  if (sourceDraggableItem.value && sourceDraggableItem.value.id !== treeItem.id && activeDraggableItem.value)
+    transferNodeWithDraggableMouse(transfertype, sourceDraggableItem.value, activeDraggableItem.value)
+}
+function treeItemMouseDown(mouseEvent: MouseEvent, treeItem: ISimpleTreeActionable) {
+  hasDraggableState.value = true
+
+  sourceDraggableItem.value = treeItem
+}
+function treeItemMouseLeave(mouseEvent: MouseEvent, treeItem: ISimpleTreeActionable) {
+  if (mouseEvent.buttons === 0)
+    resetMouseDraggable()
+
+  if (sourceDraggableItem.value && sourceDraggableItem.value.id === treeItem.id) {
+    activatedNode.value.splice(0)
+    activatedNode.value.push(treeItem.id)
+  }
+}
+function treeItemMouseEnter(mouseEvent: MouseEvent, treeItem: ISimpleTreeActionable) {
+  if (mouseEvent.buttons === 0)
+    resetMouseDraggable()
+  if (hasDraggableState.value) {
+    activeDraggableItem.value = treeItem
+    setTimeout(() => {
+      if (activeDraggableItem.value?.id === treeItem.id && !openedNode.value.includes(treeItem.id))
+        openedNode.value.push(treeItem.id)
+    }, 2000)
+  }
+}
+function treeItemMouseUp(mouseEvent: MouseEvent, treeItem: ISimpleTreeActionable) {
+  if (sourceDraggableItem.value && sourceDraggableItem.value.id !== treeItem.id && activeDraggableItem.value)
+    transferNodeWithDraggableMouse(NodeType.Children, sourceDraggableItem.value, activeDraggableItem.value)
+}
+function transferNodeWithDraggableMouse(transfertype: NodeType, sourceNodeItem: ISimpleTreeActionable, destinationNodeItem: ISimpleTreeActionable) {
+  Swal.fire({
+    titleText: formatString(t(`${transfertype === NodeType.Children ? 'alert.transfernodeaschild' : (transfertype === NodeType.SiblingAfter ? 'alert.transfernodeasbrotherafter' : 'alert.transfernodeasbrotherbefore')}`), sourceNodeItem.title, destinationNodeItem.title),
+    confirmButtonText: t('$vuetify.confirmEdit.ok'),
+    cancelButtonText: t('$vuetify.confirmEdit.cancel'),
+    showConfirmButton: true,
+    showCancelButton: true,
+    showLoaderOnConfirm: true,
+    showCloseButton: true,
+    preConfirm: async () => {
+      const serviceError = shallowRef()
+      try {
+        await $api(`app/node/${sourceNodeItem.id}/move/${getNodeTypeNameSpace(transfertype)}/${destinationNodeItem.id}`, {
+          method: 'PUT',
+          ignoreResponseError: false,
+        })
+
+        transferNode(sourceNodeItem.id, destinationNodeItem.id, transfertype)
+      }
+      catch (error) {
+        serviceError.value = error
+      }
+
+      return { serviceError }
+    },
+    allowOutsideClick: false,
+  }).then(value => {
+    if (value.isConfirmed && value.value?.serviceError.value) {
+      if (value.value?.serviceError.value instanceof CustomFetchError && value.value?.serviceError.value.code > 0)
+        toast.error(value.value?.serviceError.value.message)
+      else toast.error(t('alert.probleminnodeaddrefreshpage'))
+    }
+    resetMouseDraggable()
+  })
+}
+function resetMouseDraggable() {
+  hasDraggableState.value = false
+  hasDividerDraggableBefore.value = false
+  hasDividerDraggableAfter.value = false
+  sourceDraggableItem.value = null
+  activeDraggableItem.value = null
 }
 
 const refreshTree = async () => {
@@ -383,6 +489,8 @@ const addcomment = (nodeItem: ISimpleTreeActionable) => {
 }
 
 const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
+  resetMouseDraggable()
+
   // prevent the browser's default menu
   e.preventDefault()
   activatedNode.value = [nodeItem.id]
@@ -467,15 +575,15 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
   <div class="mc-main-tree" @keydown="handleKeydown">
     <MCLoading :showloading="isLoading" />
     <MCDialogAddNewNode
-      v-if="dialogAddNewNodeVisible" v-model:is-dialog-visible="dialogAddNewNodeVisible" :selected-tree-id="currentTreeId" :selected-node="activatedNode.length > 0 ? treeIndex[activatedNode[0]] : new SimpleTreeAcionableModel(-1, '', -1)"
+      v-if="dialogAddNewNodeVisible" v-model:is-dialog-visible="dialogAddNewNodeVisible" :selected-tree-id="currentTreeId" :selected-node="isValidActivateNode() ? treeIndex[activatedNode[0]] : new SimpleTreeAcionableModel(-1, '', -1)"
       @node-added="nodeItemAdded" @node-added-failed="nodeaddfailed"
     />
     <MCDialogMergeNode
-      v-if="dialogMergeNodeVisible" v-model:is-dialog-visible="dialogMergeNodeVisible" :selected-tree-id="currentTreeId" :parent-node-title="parentNodeTitle(activatedNode.length > 0 ? activatedNode[0] : null)" :selected-node="activatedNode.length > 0 ? treeIndex[activatedNode[0]] : new SimpleTreeAcionableModel(-1, '', -1)"
+      v-if="dialogMergeNodeVisible" v-model:is-dialog-visible="dialogMergeNodeVisible" :selected-tree-id="currentTreeId" :parent-node-title="parentNodeTitle(activatedNode.length > 0 ? activatedNode[0] : null)" :selected-node="isValidActivateNode() ? treeIndex[activatedNode[0]] : new SimpleTreeAcionableModel(-1, '', -1)"
       @nodemerged="nodeMerged" @node-merge-failed="nodeaddfailed"
     />
     <MCDialogTransferNode
-      v-if="dialogTransferNodeVisible" v-model:is-dialog-visible="dialogTransferNodeVisible" :selected-tree-id="currentTreeId" :parent-node-title="parentNodeTitle(activatedNode.length > 0 ? activatedNode[0] : null)" :selected-node="activatedNode.length > 0 ? treeIndex[activatedNode[0]] : new SimpleTreeAcionableModel(-1, '', -1)"
+      v-if="dialogTransferNodeVisible" v-model:is-dialog-visible="dialogTransferNodeVisible" :selected-tree-id="currentTreeId" :parent-node-title="parentNodeTitle(activatedNode.length > 0 ? activatedNode[0] : null)" :selected-node="isValidActivateNode() ? treeIndex[activatedNode[0]] : new SimpleTreeAcionableModel(-1, '', -1)"
       @node-transfered="nodeTransfered" @node-transfer-faild="nodeaddfailed"
     />
     <VRow no-gutters class="btn-box toolbar">
@@ -518,9 +626,17 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
         activatable :items="treeData" expand-icon="mdi-menu-left" item-value="id"
         item-title="title" density="compact" :lines="false" @keydown="handleTreeViewKeydown"
       >
+        <!--
+          <template #item=>
+          <div class="w-100 h-100 my-2" @mouseup="treeDividerMouseUp">
+          <VDivider />
+          </div>
+          </template>
+        -->
         <template #title="{ item }">
           <div
-            :class="`no-select ${item.selected ? 'selected' : ''}`" :style="item.selected ? 'color:red' : ''"
+            :class="`no-select ${item.selected ? 'selected' : ''}`"
+            :style="`${item.selected ? 'color:red' : ''};cursor:${hasDraggableState ? 'move' : 'default'}`"
             @dblclick="selectTreeNode(item)" @contextmenu="onContextMenu($event, item)"
           >
             <!--
@@ -528,15 +644,34 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
               <template #activator="{ props }">
             -->
             <VRow dense class="mx-0">
-              <VCol class="tree-title d-flex align-center">
-                <VIcon v-if="item.hasDescription" size="16" icon="tabler-message" class="ml-1" />
-                <span v-if="!(item.editing ?? false)">{{ item.title }}</span>
-                <VTextField
-                  v-else ref="editableNode" v-model:model-value="nodeTempTitleForEdit" :color="item.failed ? 'error' : 'primary'" autofocus :placeholder="item.title"
-                  :loading="item.loading"
-                  :focused="!(item.loading ?? false)" :readonly="item.loading ?? false"
-                  @blur="nodeEditCancel(item)" @keydown="handleEditableNodeKeydown($event, item)"
-                />
+              <VCol class="tree-title d-flex flex-column">
+                <div
+                  v-if="(activeDraggableItem && activeDraggableItem.id === item.id)"
+                  class="d-flex align-center" style="height: 10px;" @mouseup="treeDividerMouseUp($event, item, NodeType.SiblingBefore)" @mouseenter="treeDividerMouseEnter(NodeType.SiblingBefore)"
+                  @mouseleave="treeDividerMouseLeave($event, NodeType.SiblingBefore)"
+                >
+                  <div :class="`w-100 ${hasDividerDraggableBefore ? 'draggablebox' : ''}`" style="height: 5px;" />
+                </div>
+                <div
+                  :class="`d-flex ${(activeDraggableItem && activeDraggableItem.id === item.id && (!hasDividerDraggableBefore && !hasDividerDraggableAfter)) ? 'draggablebox' : ''}`" @mouseleave="treeItemMouseLeave($event, item)"
+                  @mouseenter="treeItemMouseEnter($event, item)" @mouseup="treeItemMouseUp($event, item)" @mousedown="treeItemMouseDown($event, item)"
+                >
+                  <VIcon v-if="item.hasDescription" size="16" icon="tabler-message" class="ml-1" />
+                  <span v-if="!(item.editing ?? false)">{{ item.title }}</span>
+                  <VTextField
+                    v-else ref="editableNode" v-model:model-value="nodeTempTitleForEdit" :color="item.failed ? 'error' : 'primary'" autofocus :placeholder="item.title"
+                    :loading="item.loading"
+                    :focused="!(item.loading ?? false)" :readonly="item.loading ?? false"
+                    @blur="nodeEditCancel(item)" @keydown="handleEditableNodeKeydown($event, item)"
+                  />
+                </div>
+                <div
+                  v-if="(activeDraggableItem && activeDraggableItem.id === item.id && isLastNode(item))"
+                  class="d-flex align-center" style="height: 10px;" @mouseup="treeDividerMouseUp($event, item, NodeType.SiblingAfter)" @mouseenter="treeDividerMouseEnter(NodeType.SiblingAfter)"
+                  @mouseleave="treeDividerMouseLeave($event, NodeType.SiblingAfter)"
+                >
+                  <div :class="`w-100 ${hasDividerDraggableAfter ? 'draggablebox' : ''}`" style="height: 5px;" />
+                </div>
                 <!-- <span>{{ item.title }}</span> -->
               </VCol>
               <VCol cols="auto" class="tree-node">

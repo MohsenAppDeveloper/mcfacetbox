@@ -4,6 +4,7 @@
 import { useTree } from '@/store/treeStore'
 import type { ISimpleTreeActionable } from '@/types/baseModels'
 import { SelectionType } from '@/types/baseModels'
+import { NodeType, getNodeTypeNameSpace } from '@/types/tree'
 
 interface Prop {
   isDialogVisible: boolean
@@ -19,6 +20,7 @@ const activeActions = ref(false)
 const nodeTitle = ref('')
 const loading = ref(false)
 const { transferNode } = useTree()
+const transfertype = ref(NodeType.SiblingAfter)
 const { t } = useI18n({ useScope: 'global' })
 
 interface Emit {
@@ -46,13 +48,12 @@ function dataEntryChanged(phrase: string) {
 const transferNodeLocal = async () => {
   loading.value = true
   try {
-    await $api(`app/node/${props.selectedNode.id}/move`, {
+    await $api(`app/node/${props.selectedNode.id}/move/${getNodeTypeNameSpace(transfertype.value)}/${selectedNodes.value[0]}`, {
       method: 'PUT',
-      body: JSON.parse(JSON.stringify({ selectedId: selectedNodes.value[0], type: 1 })),
       ignoreResponseError: false,
     })
 
-    transferNode(props.selectedNode.id, selectedNodes.value[0])
+    transferNode(props.selectedNode.id, selectedNodes.value[0], transfertype.value)
     loading.value = false
     emit('update:isDialogVisible', false)
 
@@ -89,12 +90,13 @@ const transferNodeLocal = async () => {
 
       <template #actions>
         <div v-if="selectedNodes.length > 0" class="w-100 d-flex justify-center py-2 px-2">
-          <!--
-            <VRadioGroup v-model="nodeAddingType" inline>
-            <VRadio :label="$t('tree.samelevelnode')" value="Sibling" false-icon="tabler-circle" true-icon="tabler-circle-filled" />
-            <VRadio :label="$t('tree.childnode')" value="Children" false-icon="tabler-circle" true-icon="tabler-circle-filled" :disabled="selectedNode.id === -1" />
-            </VRadioGroup>
-          -->
+          <VRadioGroup v-model="transfertype" inline>
+            <VRadio :label="$t('before')" :value="NodeType.SiblingBefore" false-icon="tabler-circle" true-icon="tabler-circle-filled" />
+            <VRadio :label="$t('after')" :value="NodeType.SiblingAfter" false-icon="tabler-circle" true-icon="tabler-circle-filled" />
+
+            <VRadio :label="$t('tree.childnode')" :value="NodeType.Children" false-icon="tabler-circle" true-icon="tabler-circle-filled" :disabled="selectedNode.id === -1" />
+          </VRadioGroup>
+
           <VBtn type="submit" class="me-3" :loading="loading" @click="transferNodeLocal">
             <span>
               {{ $t('accept') }}

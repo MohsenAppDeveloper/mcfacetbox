@@ -17,7 +17,23 @@ export function createTreeIndex(tree: ISimpleTree[]): Record<number, ISimpleTree
 export enum NodeType {
   Sibling = 2,
   Children = 1,
+  SiblingAfter = 3,
+  SiblingBefore = 4,
 }
+export function getNodeTypeNameSpace(nodetype: NodeType) {
+  if (nodetype === NodeType.Children)
+    return 'children'
+
+  else if (nodetype === NodeType.SiblingAfter)
+    return 'after'
+
+  else if (nodetype === NodeType.SiblingBefore)
+    return 'before'
+
+  else
+    return 'sibling'
+}
+
 export interface INodeNew {
   treeId: number
   selectedId: number

@@ -257,6 +257,15 @@
     margin-block-start: 5px;
 }
 
+.draggablebox {
+
+    border: 1px solid transparent;
+    transition: background 0.3s, border-color 0.3s;
+    border-radius: 3px;
+    background: rgba(var(--v-theme-success), 0.6);
+    border-color: rgba(var(--v-border-color), 0.3);
+}
+
 .footenote-index {
     color: #1a5cc0;
     font-size: smaller;
