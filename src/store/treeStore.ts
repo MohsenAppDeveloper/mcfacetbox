@@ -208,20 +208,6 @@ export function useTree() {
       //   }, 2000)
 
       //   }, 1000)
-
-      return
-
-      //   }
-      if (!treeIndex[destinationNodeID].children)
-        treeIndex[destinationNodeID].children = []
-
-      // treeIndex[sourceNodeID] = tempdata
-
-      deleteSingleLevelNodeFromParent(treeIndex[sourceNodeID])
-      treeIndex[sourceNodeID].parentId = destinationNodeID
-      setTimeout(() => {
-        treeIndex[destinationNodeID].children?.push(treeIndex[sourceNodeID])
-      }, 1000)
     }
   }
 
