@@ -294,8 +294,8 @@
     "youmustselectoneperm":"باید حتما یک دسترسی را انتخاب کنید",
     "nothaveselecttree":"هیچ پروژه و درختی انتخاب نشده است",
     "probleminnodeaddrefreshpage":"مشکلی در افزودن نود بوجود آمده است، درخت را بروزرسانی کنید",
-    "transfernodeasbrotherafter":"آیا نود '(0)' یه بعد از نود '(1)' منتقل شود؟",
-    "transfernodeasbrotherbefore":"آیا نود '(0)' یه قبل از نود '(1)' منتقل شود؟",
+    "transfernodeasbrotherafter":"آیا نود '(0)' به بعد از نود '(1)' منتقل شود؟",
+    "transfernodeasbrotherbefore":"آیا نود '(0)' به قبل از نود '(1)' منتقل شود؟",
 
     "transfernodeaschild":"آیا نود '(0)' بعنوان فرزند '(1)' منتقل شود؟"
   },

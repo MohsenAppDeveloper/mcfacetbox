@@ -4,7 +4,7 @@
 import { useTree } from '@/store/treeStore'
 import type { ISimpleTreeActionable } from '@/types/baseModels'
 import { SelectionType, SimpleTreeAcionableModel } from '@/types/baseModels'
-import { NodeNewModel, NodeType } from '@/types/tree'
+import { NodeNewModel, NodeType, getNodeTypeNameSpace } from '@/types/tree'
 
 interface Prop {
   isDialogVisible: boolean
@@ -16,7 +16,7 @@ const props = defineProps<Prop>()
 const emit = defineEmits<Emit>()
 const selectedNodes = ref<number[]>([])
 const activeActions = ref(false)
-const nodeAddingType = ref('Sibling')
+const nodeAddingType = ref(NodeType.SiblingAfter)
 const nodeTitle = ref('')
 const loading = ref(false)
 const { addNode } = useTree()
@@ -36,9 +36,9 @@ const onReset = (closedialog: boolean = false) => {
   activeActions.value = false
 }
 
-watch(selectedNodes, () => {
-  console.log('selectednode', selectedNodes.value)
-})
+// watch(selectedNodes, () => {
+//   console.log('selectednode', selectedNodes.value)
+// })
 function dataEntryChanged(phrase: string) {
   nodeTitle.value = phrase
   if (phrase.length > 0)
@@ -52,22 +52,23 @@ const addNewNode = async () => {
 
   loading.value = true
   try {
-    const resultid = await $api('app/node', {
+    const resultid = await $api(`app/node/${getNodeTypeNameSpace(nodeAddingType.value)}`, {
       method: 'POST',
-      body: JSON.parse(JSON.stringify(new NodeNewModel(props.selectedTreeId, props.selectedNode.id, nodeAddingType.value === 'Children' ? NodeType.Children : NodeType.Sibling, nodeTitle.value))),
+      body: JSON.parse(JSON.stringify(new NodeNewModel(props.selectedTreeId, props.selectedNode.id, nodeTitle.value))),
       ignoreResponseError: false,
     })
 
-    if (nodeAddingType.value === 'Children')
-      result.value = addNode({ id: resultid, title: nodeTitle.value, parentId: props.selectedNode.id, tempData: null, priority: 0 })
-    else
-      result.value = addNode({ id: resultid, title: nodeTitle.value, parentId: props.selectedNode.parentId, tempData: null, priority: 0 })
+    addNode({ id: resultid, title: nodeTitle.value, parentId: props.selectedNode.id, tempData: null, priority: 0 }, props.selectedNode.id, nodeAddingType.value)
+
+    // if (nodeAddingType.value === 'Children')
+    //   result.value = addNode({ id: resultid, title: nodeTitle.value, parentId: props.selectedNode.id, tempData: null, priority: 0 })
+    // else
+    //   result.value = addNode({ id: resultid, title: nodeTitle.value, parentId: props.selectedNode.parentId, tempData: null, priority: 0 })
     emit('nodeAdded', new SimpleTreeAcionableModel(resultid, nodeTitle.value, props.selectedNode.id))
     loading.value = false
   }
   catch (error) {
     loading.value = false
-    console.log('erroraddnode', error.message)
 
     if (error instanceof CustomFetchError && error.code > 0)
       emit('nodeAddedFailed', error.message)
@@ -99,8 +100,10 @@ defineExpose({ addRootNode })
       <template #actions>
         <div v-if="activeActions" class="w-100 d-flex justify-center py-2 px-2">
           <VRadioGroup v-model="nodeAddingType" inline>
-            <VRadio :label="$t('tree.samelevelnode')" value="Sibling" false-icon="tabler-circle" true-icon="tabler-circle-filled" />
-            <VRadio :label="$t('tree.childnode')" value="Children" false-icon="tabler-circle" true-icon="tabler-circle-filled" :disabled="selectedNode.id === -1" />
+            <VRadio :label="$t('before')" :value="NodeType.SiblingBefore" false-icon="tabler-circle" true-icon="tabler-circle-filled" />
+            <VRadio :label="$t('after')" :value="NodeType.SiblingAfter" false-icon="tabler-circle" true-icon="tabler-circle-filled" />
+
+            <VRadio :label="$t('tree.childnode')" :value="NodeType.Children" false-icon="tabler-circle" true-icon="tabler-circle-filled" :disabled="selectedNode.id === -1" />
           </VRadioGroup>
           <VBtn type="submit" class="me-3" :loading="loading" @click="addNewNode">
             <span>

@@ -37,19 +37,16 @@ export function getNodeTypeNameSpace(nodetype: NodeType) {
 export interface INodeNew {
   treeId: number
   selectedId: number
-  type: number
   title: string
 }
 export class NodeNewModel implements INodeNew {
   treeId: number = 0
   selectedId: number = 0
-  type: NodeType = NodeType.Sibling
   title: string = ''
-  constructor(treeid: number, selectedid: number, type: NodeType, title: string) {
+  constructor(treeid: number, selectedid: number, title: string) {
     this.title = title
     this.treeId = treeid
     this.selectedId = selectedid
-    this.type = type
   }
 }
 export interface INodeView {
