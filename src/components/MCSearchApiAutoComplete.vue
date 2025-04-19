@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 // !SECTION این دیالوگ برای جستجو لیست های تک سطحی و انتخاب یک یا چند مورد میباشد
 
-import type { GridResult, ISimpleSelectableDTO } from '@/types/baseModels'
+import type { GridResult, ISimpleSelectableDTO, SizeType } from '@/types/baseModels'
 import { SelectionType } from '@/types/baseModels'
 
 interface Prop {
@@ -11,6 +11,8 @@ interface Prop {
   maxHeight?: number
   fillSearchPhraseWithSelected?: boolean
   showParentTitle?: boolean
+  listItemSize?: SizeType
+  loadAllList?: boolean
 }
 
 const props = defineProps<Prop>()
@@ -23,7 +25,7 @@ interface Emit {
   (e: 'searchPhraseChanged', searchPhrase: string): void
 
 }
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(10000)
 const page = ref(1)
 const selectedItemsLocal = ref<number[]>([])
 const searchResult = reactive<ISimpleSelectableDTO<number>[]>([])
@@ -61,17 +63,28 @@ onFetchResponse(response => {
     searchResult.splice(0)
     if (searchResultFirst.value)
       searchResult.push(...searchResultFirst.value.items)
-    actionInprogress.value = false
+    actionInprogress.value = true
   })
 })
 
+onMounted(() => {
+  if (props.loadAllList) {
+    setTimeout(() => {
+      fetchData()
+    }, 1000)
+  }
+})
 onFetchError(() => {
+  actionInprogress.value = true
   emit('errorHasOccured', 'probleminGetInformation')
 })
 
 const onReset = () => {
+  actionInprogress.value = false
   searchPhrase.value = ''
   searchResult.splice(0)
+  if (props.loadAllList)
+    fetchData()
 }
 
 watch(selectedItemsLocal, () => {
@@ -85,6 +98,7 @@ watch(searchPhrase, () => {
       clearTimeout(timeout)
 
     timeout = setTimeout(() => {
+      actionInprogress.value = false
       fetchData(false)
     }, 2000)
   }
@@ -107,11 +121,13 @@ watch(searchResult, () => {
     </div>
 
     <VList
-      v-model:selected="selectedItemsLocal" item-value="key" item-title="title"
+      v-if="searchResult.length > 0"
+      v-model:selected="selectedItemsLocal"
+      :class="`${props.listItemSize ? `v-list-${props.listItemSize}` : ''}`" item-value="key" item-title="title"
       lines="one"
       :select-strategy="selectionStrategy"
       :return-object="false"
-      :max-height="`${props.maxHeight ?? 500}px`"
+      :max-height="`${props.maxHeight ?? 400}px`"
     >
       <!-- <VVirtualScroll :items="filteredItems" :height="(props.scrollItemCount ?? 10) * 20"> -->
       <VListItem v-for="item in searchResult" :key="item.id" :title="item.title" :value="item.id">
@@ -126,6 +142,11 @@ watch(searchResult, () => {
         </template>
       </VListItem>
     </VList>
+    <div v-else-if="actionInprogress" class="w-100 h-100 py-2" style="text-align: center;">
+      <span>
+        {{ $t('thereisnoitem') }}
+      </span>
+    </div>
   </VCard>
   <!-- </PerfectScrollbar> -->
 </template>

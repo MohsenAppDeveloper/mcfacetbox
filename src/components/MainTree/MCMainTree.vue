@@ -6,7 +6,7 @@ import ContextMenu from '@imengyu/vue3-context-menu'
 import Swal from 'sweetalert2'
 import MCLoading from '../MCLoading.vue'
 import MCDialogTransferNode from '../dialogs/MCDialogTransferNode.vue'
-import { type ISimpleDTO, type ISimpleTree, type ISimpleTreeActionable, SimpleTreeAcionableModel } from '@/types/baseModels'
+import { type ISimpleDTO, type ISimpleTree, type ISimpleTreeActionable, SimpleTreeAcionableModel, SizeType } from '@/types/baseModels'
 import type { INodeView } from '@/types/tree'
 import { NodeType, createTreeIndex, getNodeTypeNameSpace } from '@/types/tree'
 import { useSelectedTree, useTree } from '@/store/treeStore'
@@ -573,7 +573,7 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
 
 <template>
   <div class="mc-main-tree" @keydown="handleKeydown">
-    <MCLoading :showloading="isLoading" />
+    <MCLoading :showloading="isLoading" :loadingsize="SizeType.XL" />
     <MCDialogAddNewNode
       v-if="dialogAddNewNodeVisible" v-model:is-dialog-visible="dialogAddNewNodeVisible" :selected-tree-id="currentTreeId" :selected-node="isValidActivateNode() ? treeIndex[activatedNode[0]] : new SimpleTreeAcionableModel(-1, '', -1)"
       @node-added="nodeItemAdded" @node-added-failed="nodeaddfailed"

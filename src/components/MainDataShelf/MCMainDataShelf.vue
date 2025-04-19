@@ -60,7 +60,7 @@ const { stop } = useIntersectionObserver(
   loadmore,
   ([entry], observerElement) => {
     if (entry?.isIntersecting) {
-      if (resultdataItems.value.length === totalItems.value)
+      if (resultdataItems.value.length >= totalItems.value)
         return
       page.value += 1
     }
@@ -167,6 +167,9 @@ const decreaseOrder = () => {
   }
 }
 
+function handleDataBoxMessages(messsage: string, messageType: MessageType) {
+
+}
 function databoxOrderChanged(databoxItemId: number) {
   const itemIndex = resultdataItemsSort.value.findIndex(item => item.id === databoxItemId)
   if (decreasebtn.value && increasebtn.value) {
@@ -317,7 +320,7 @@ function dataBoxItemAddTag(databoxId: number) {
             v-for="(item, i) in resultdataItemsSort" :key="item.id" :ref="(el) => setdataboxref(el, item)" v-model="resultdataItemsSort[i]" :item-index="i"
             :prev-item-order="i > 0 ? resultdataItemsSort[i - 1].order : -100"
             :next-item-order="i < resultdataItemsSort.length - 1 ? resultdataItemsSort[i + 1].order : -100" @addtag="dataBoxItemAddTag"
-            @selectedchanged="checkSelectAllState" @orderchanged="databoxOrderChanged"
+            @selectedchanged="checkSelectAllState" @orderchanged="databoxOrderChanged" @handlemessage="handleDataBoxMessages"
           />
           <div v-show="!loadingdata" ref="loadmore" />
         </div>
@@ -328,6 +331,17 @@ function dataBoxItemAddTag(databoxId: number) {
       <div v-show="loadingdata" class="loading-container">
         <VProgressCircular size="20" width="2" indeterminate />
       </div>
+    </VRow>
+    <VRow dense>
+      <VCol md="12">
+        <TablePagination
+          v-if="resultdataItems.length > 0"
+          v-model:page="page"
+          :divider="false" class="paging-container"
+          :items-per-page="itemsPerPage"
+          :total-items="resultData?.totalCount === undefined ? 0 : resultData?.totalCount"
+        />
+      </VCol>
     </VRow>
   </VContainer>
 </template>

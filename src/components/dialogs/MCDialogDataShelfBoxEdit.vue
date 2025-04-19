@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // !SECTION این دیالوگ برای افزودن و یا ویرایش یک پنل یا درگاه کاربری میباشد
 
+import { v4 as uuidV4 } from 'uuid'
 import { useToast } from 'vue-toastification'
 import { DataShelfBoxModel, type IDataShelfBox, type IFootNote } from '@/types/dataShelf'
 
@@ -66,8 +67,8 @@ const refreshfootnote = () => {
 
     // NOTE - اندیس های بعد از اندیس حذف شده را منهای یک میکنیم
     for (let footnoteIndex = 0; footnoteIndex < sups.length; footnoteIndex++) {
-      const footnoteid = Number.parseInt(sups[footnoteIndex].attributes[1].value)
-
+    //   const footnoteid = Number.parseInt(sups[footnoteIndex].attributes[1].value)
+      const footnoteid = sups[footnoteIndex].attributes[1].value
       const footnoteItem = footnotes.find(item => item.id === footnoteid)
       if (footnoteItem)
         footnoteItem.index = footnoteIndex + 1
@@ -85,15 +86,16 @@ const addFootnote = () => {
     const parent = range?.startContainer.parentNode
     if (selectedText && !(parent?.nodeName === 'SUP')) {
       const sup = document.createElement('sup')
+      const uuid = uuidV4()
 
       sup.innerText = (footnotes.length + 1).toString()
       sup.className = 'footenote-index'
-      sup.setAttribute('footnote-id', (footnotes.length + 1).toString())
+      sup.setAttribute('footnote-id', uuid.toString())
 
       //   sup.addEventListener('click', (event: MouseEvent) => {})
       range?.collapse(false)
       range?.insertNode(sup) // افزودن <sup> به محتوای div
-      footnotes.push({ title: '', id: footnotes?.length + 1, editing: true, index: footnotes.length + 1 })
+      footnotes.push({ title: '', id: uuid.toString(), editing: true, index: footnotes.length + 1 })
       refreshfootnote()
     }
   }
@@ -103,7 +105,7 @@ const footnoteSort = computed(() => {
   return footnotes.sort((a, b) => a.index - b.index)
 })
 
-const deletefootnote = (footnoteId: number) => {
+const deletefootnote = (footnoteId: string) => {
   if (editor.value) {
     const removedsup = editor.value.querySelector(`sup[footnote-id="${footnoteId}"]`)
 

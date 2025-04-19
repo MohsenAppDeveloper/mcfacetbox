@@ -50,6 +50,7 @@
         "swiper": "11.0.7",
         "ufo": "1.4.0",
         "unplugin-vue-define-options": "1.4.2",
+        "uuid": "^11.1.0",
         "vue": "3.4.21",
         "vue-chartjs": "5.3.0",
         "vue-flatpickr-component": "11.0.3",

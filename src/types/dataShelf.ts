@@ -27,6 +27,35 @@ export interface IDataShelfBox {
   refrenceId: number
 }
 
+export interface IDataShelfBoxNew {
+  id: number
+  treeId: number
+  nodeId: number
+  content: string
+  description: string
+  footNotes: IFootNote[]
+  labels: number[]
+}
+
+export class DataShelfBoxModelNew implements IDataShelfBoxNew {
+  id: number = 0
+  treeId: number = 0
+  nodeId: number = 0
+  content: string = ''
+  description: string = ''
+  footNotes: IFootNote[] = []
+  labels: number[] = []
+  constructor(id: number, treeId: number, nodeId: number, content: string, description: string, footNotes: IFootNote[], labels: number[]) {
+    this.id = id
+    this.treeId = treeId
+    this.nodeId = nodeId
+    this.content = content
+    this.description = description
+    this.footNotes = footNotes
+    this.labels = labels
+  }
+}
+
 export class DataShelfBoxModel implements IDataShelfBox {
   id: number = 0
   text: string = ''
@@ -43,6 +72,6 @@ export class DataShelfBoxModel implements IDataShelfBox {
   refrenceId: number = 0
 }
 
-export interface IFootNote extends ISimpleDTO<number>, baseItemState {
+export interface IFootNote extends ISimpleDTO<string>, baseItemState {
   index: number
 }

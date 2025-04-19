@@ -13,6 +13,7 @@ declare global {
   const CustomFetchError: typeof import('./src/utils/api')['CustomFetchError']
   const DialogSizeMD: typeof import('./src/utils/constants')['DialogSizeMD']
   const DialogSizeSM: typeof import('./src/utils/constants')['DialogSizeSM']
+  const DialogSizeXS: typeof import('./src/utils/constants')['DialogSizeXS']
   const EffectScope: typeof import('vue')['EffectScope']
   const HttpStatusCodesWasHandled: typeof import('./src/utils/constants')['HttpStatusCodesWasHandled']
   const MainPage: typeof import('./src/utils/constants')['MainPage']
@@ -406,6 +407,7 @@ declare module 'vue' {
     readonly CustomFetchError: UnwrapRef<typeof import('./src/utils/api')['CustomFetchError']>
     readonly DialogSizeMD: UnwrapRef<typeof import('./src/utils/constants')['DialogSizeMD']>
     readonly DialogSizeSM: UnwrapRef<typeof import('./src/utils/constants')['DialogSizeSM']>
+    readonly DialogSizeXS: UnwrapRef<typeof import('./src/utils/constants')['DialogSizeXS']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly HttpStatusCodesWasHandled: UnwrapRef<typeof import('./src/utils/constants')['HttpStatusCodesWasHandled']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>

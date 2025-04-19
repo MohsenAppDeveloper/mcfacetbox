@@ -2,14 +2,25 @@
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { isUndefined } from '@sindresorhus/is'
 import type { ISearchResultTabBox } from '@/types/SearchResult'
-import { useTree } from '@/store/treeStore'
+import type { ISimpleDTO, ISimpleTreeActionable } from '@/types/baseModels'
+import { MessageType, SizeType } from '@/types/baseModels'
+import type { IDataShelfBoxNew } from '@/types/dataShelf'
 
 const props = defineProps<Props>()
+const emit = defineEmits<Emit>()
 const { t } = useI18n({ useScope: 'global' })
-const { selectedNode } = useTree()
+
+// const { selectedNode } = useTree()
 const dialogSelectNodeVisible = ref(false)
+const loadinglocal = ref(false)
 interface Props {
   dataitems: ISearchResultTabBox
+  selectedTreeId: number
+  selectedNode: ISimpleTreeActionable
+}
+interface Emit {
+  (e: 'messageHasOccured', message: string, type: MessageType): void
+  (e: 'contentToNodeAdded'): void
 }
 
 // const props = defineProps<>({
@@ -23,20 +34,28 @@ interface Props {
 // })
 
 const tabdatamodel = ref()
-
-// const menusearchResultBox = ref(VMenu)
-// const showcontextmenu = ref(false)
-// const contextmenuItems = [{ title: 'اتصال به نود ...', value: 'Option 1' }, { title: 'اتصال به نود چک نویس', value: 'Option 2' }, { title: 'کپی', value: 'Option 3' }]
-// const xpos = ref(0)
-// const ypos = ref(0)
-
-// const emit = defineEmits<Emit>()
+async function addContentToNode(datashelfbox: IDataShelfBoxNew) {
+  try {
+    await $api('app/excerpt', {
+      method: 'POST',
+      body: datashelfbox,
+      ignoreResponseError: false,
+    })
+    emit('contentToNodeAdded')
+  }
+  catch (error) {
+    if (error instanceof CustomFetchError && error.code > 0)
+      emit('messageHasOccured', error.message, MessageType.error)
+    else emit('messageHasOccured', t('httpstatuscodes.0'), MessageType.error)
+  }
+  loadinglocal.value = false
+}
 
 // interface Emit {
 //   (e: 'close'): void // ایونت جدید close اضافه شد
 //   (e: 'open'): void // ایونت جدید close اضافه شد
 // }
-const onContextMenu = (e: MouseEvent) => {
+const onContextMenu = (e: MouseEvent, selectedItem: ISimpleDTO<number>) => {
   // prevent the browser's default menu
   e.preventDefault()
 
@@ -45,7 +64,7 @@ const onContextMenu = (e: MouseEvent) => {
     y: e.y,
     items: [
       {
-        disabled: selectedNode.id <= 0,
+        disabled: props.selectedNode.id <= 0,
         icon: h('i', {
           class: 'tabler-plug-connected icon iconfont',
           style: {
@@ -55,7 +74,8 @@ const onContextMenu = (e: MouseEvent) => {
         }),
         label: t('datagathering.connecttoselectednode'),
         onClick: () => {
-          alert('You click a menu item')
+          loadinglocal.value = true
+          addContentToNode({ content: selectedItem.title, description: '', labels: [], nodeId: props.selectedNode.id, treeId: 0, footNotes: [], id: 0 })
         },
       },
       {
@@ -113,6 +133,7 @@ const onContextMenu = (e: MouseEvent) => {
 
 <template>
   <VCard v-if="props.dataitems.content.length > 0" v-no-context-menu class="mc-search-result">
+    <MCLoading :showloading="loadinglocal" :loadingsize="SizeType.MD" />
     <VTabsWindow v-model="tabdatamodel">
       <VTabsWindowItem v-for="item in props.dataitems.content" :key="item.id" :value="item.id">
         <VCard variant="text">
@@ -122,7 +143,7 @@ const onContextMenu = (e: MouseEvent) => {
               <template #default="{ items }">
                 <VRow
                   v-for="(textData, j) in items" :key="j" no-gutters class="justify-start align-start box"
-                  @contextmenu="onContextMenu($event)"
+                  @contextmenu="onContextMenu($event, { id: j, title: textData.raw.text })"
                 >
                   <VCheckbox
                     v-if="(isUndefined(textData.raw.selectable) && item.content.length > 1) || (textData.raw.selectable)"

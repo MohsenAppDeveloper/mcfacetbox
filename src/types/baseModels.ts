@@ -140,3 +140,30 @@ export enum LoginState {
   MustLogin = 3,
 
 }
+
+export enum MessageType {
+  warning = 0,
+  error = 1,
+  success = 2,
+  info = 4,
+}
+export enum SizeType {
+  XL = 'xl',
+  LG = 'lg',
+  MD = 'md',
+  SM = 'sm',
+  XS = 'xs',
+}
+
+export enum InfiniteScrollSide {
+  start = 'start',
+  end = 'end',
+  both = 'both',
+}
+
+export enum InfiniteScrollStatus {
+  error = 'error',
+  loading = 'loading',
+  empty = 'empty',
+  ok = 'ok',
+}

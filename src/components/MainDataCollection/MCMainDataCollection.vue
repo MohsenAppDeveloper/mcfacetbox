@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { VCol } from 'vuetify/lib/components/index.mjs'
+import { useToast } from 'vue-toastification'
 import MCDialogBookSelect from '../dialogs/MCDialogBookSelect.vue'
+import { InfiniteScrollSide, InfiniteScrollStatus, MessageType } from '@/types/baseModels'
 import type { GridResult } from '@/types/baseModels'
 import type { IFacetBox, ISearchResultTabBox } from '@/types/SearchResult'
 import { useApiFake } from '@/composables/useApi'
+import { useSelectedTree, useTree } from '@/store/treeStore'
 
 const itemsPerPage = ref(5)
 const page = ref(1)
@@ -12,6 +15,9 @@ const sortBy = ref()
 const orderBy = ref()
 const searchQuery = ref('')
 const resultdataItems = ref<ISearchResultTabBox[]>([])
+const { selectedNode } = useTree()
+const selectedTreeItem = useSelectedTree()
+const ispaginationFullSize = ref(false)
 
 const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse } = useApiFake<GridResult<ISearchResultTabBox>>(createUrl('/apps/DC', {
   query: {
@@ -33,6 +39,7 @@ setTimeout(async () => {
 }, 1000)
 
 const loadmore = ref(null)
+const toast = useToast()
 const isDialogSelectBookVisible = ref(false)
 const infoSearch = ref()
 const loading = ref(false)
@@ -44,7 +51,9 @@ const { stop } = useIntersectionObserver(
   loadmore,
   ([entry], observerElement) => {
     if (entry?.isIntersecting) {
-      if (resultdataItems.value.length === totalItems.value)
+      console.log('total', resultdataItems.value.length, totalItems.value)
+
+      if (resultdataItems.value.length >= totalItems.value)
         return
       page.value += 1
     }
@@ -66,7 +75,8 @@ watch(selectedFacetItems, newval => {
 
 onFetchResponse(response => {
   response.json().then(value => {
-    totalItems.value = value.totalItems
+    totalItems.value = value.totalCount
+    resultdataItems.value.splice(0)
     resultData.value?.items.forEach(element => {
       resultdataItems.value.push(element)
     })
@@ -74,6 +84,45 @@ onFetchResponse(response => {
   })
 })
 
+// function loadMoreCollectingData(options: { side: InfiniteScrollSide; done: (status: InfiniteScrollStatus) => void }) {
+//   if (options.side === InfiniteScrollSide.start) {
+//     if (page.value > 1)
+//       page.value -= 1
+//     else
+//       options.done(InfiniteScrollStatus.ok)
+//   }
+//   else {
+//     if (resultdataItems.value.length < totalItems.value)
+//       page.value += 1
+//     else
+//       options.done(InfiniteScrollStatus.ok)
+//   }
+// }
+function paginationMouseEnter() {
+}
+function paginationMouseLeave() {
+}
+function contentToNodeAdded() {
+
+}
+function searchResultBoxMessageHandle(message: string, messagetype: MessageType) {
+  switch (messagetype) {
+    case MessageType.error:
+      toast.error(message)
+      break;
+    case MessageType.info:
+      toast.info(message)
+      break;
+    case MessageType.warning:
+      toast.warning(message)
+      break;
+    case MessageType.success:
+      toast.success(message)
+      break;
+    default:
+      break;
+  }
+}
 function getInfoSearch() { }
 
 const dataTabValue = ref(null)
@@ -106,10 +155,7 @@ const dataTabValue = ref(null)
           -->
         </VTextField>
       </VCol>
-
-      <VCol cols="12" md="3" class="number-found">
-        موارد یافت شده
-      </VCol>
+      <VCol cols="12" md="3" />
     </VRow>
     <!-- v-for="(item, i) in testfacetlist" :key="i"  -->
     <VRow no-gutters dense class="align-center" justify="space-between">
@@ -143,10 +189,20 @@ const dataTabValue = ref(null)
             </div>
           </VCol>
           <VCol md="9">
-            <div>
-              <MCSearchResultTabBox v-for="(item, i) in resultdataItems" :key="i" :dataitems="item" />
+            <!-- <VInfiniteScroll side="end" height="500px" @load="loadMoreCollectingData"> -->
+            <!-- <div> -->
+            <!-- <template v-for="(item, index) in resultdataItems" :key="item"> -->
+            <MCSearchResultTabBox
+              v-for="(item, index) in resultdataItems" :key="item.id"
+              :dataitems="item" :selected-node="selectedNode" :selected-tree-id="selectedTreeItem.id"
+              @message-has-occured="searchResultBoxMessageHandle" @content-to-node-added="contentToNodeAdded"
+            />
+            <!-- </template> -->
+            <!--
               <div v-show="!loadingdata" ref="loadmore" />
-            </div>
+              </div>
+            -->
+            <!-- </VInfiniteScroll> -->
           </VCol>
         </VRow>
       </VTabsWindowItem>
@@ -157,6 +213,18 @@ const dataTabValue = ref(null)
       <div v-show="loadingdata" class="loading-container">
         <VProgressCircular size="20" width="2" indeterminate />
       </div>
+    </VRow>
+    <VRow dense>
+      <VCol md="12">
+        <MCTablePagination
+          v-if="resultdataItems.length > 0"
+          v-model:page="page"
+          v-model:full-size="ispaginationFullSize" v-model:items-per-page="itemsPerPage"
+          :divider="false"
+          class="paging-container" :total-items="resultData?.totalCount === undefined ? 0 : resultData?.totalCount"
+          @mouseenter="paginationMouseEnter" @mouseleave="paginationMouseLeave"
+        />
+      </VCol>
     </VRow>
   </VContainer>
 </template>

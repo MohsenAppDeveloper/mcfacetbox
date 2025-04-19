@@ -1,9 +1,38 @@
 <script lang="ts" setup>
+import { SizeType } from '@/types/baseModels'
+
 interface Props {
   showloading: boolean
+  loadingsize: SizeType
 }
 
 const props = defineProps<Props>()
+
+const loaderSize = computed(() => {
+  switch (props.loadingsize) {
+    case SizeType.XS:
+    case SizeType.SM:
+      return 16
+    case SizeType.MD:
+    case SizeType.LG:
+      return 24
+    default:
+      return 36
+  }
+})
+
+const widthSize = computed(() => {
+  switch (props.loadingsize) {
+    case SizeType.XS:
+    case SizeType.SM:
+      return 1
+    case SizeType.MD:
+    case SizeType.LG:
+      return 3
+    default:
+      return 5
+  }
+})
 </script>
 
 <template>
@@ -16,7 +45,8 @@ const props = defineProps<Props>()
       </svg>
     -->
     <VProgressCircular
-      :size="36"
+      :size="loaderSize"
+      :width="widthSize"
       color="primary"
       indeterminate
     />

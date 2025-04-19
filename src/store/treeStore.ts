@@ -17,6 +17,8 @@ export const useSelectedTree = createGlobalState(() => {
 const treeData = reactive<ISimpleTreeActionable[]>([])
 const treeIndex = reactive<Record<number, ISimpleTreeActionable>>({})
 const selectedNode = reactive<ISimpleTreeActionable>(new SimpleTreeAcionableModel())
+
+// const selecedTree = reactive<ISimpleDTO<number>>({id:0,title:0})
 export function useTree() {
   const addNewNode = (nodeItem: ISimpleTreeActionable, destinationNodeID: number, newNodeType: NodeType) => {
     /**

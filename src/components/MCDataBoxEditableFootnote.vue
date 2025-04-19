@@ -5,12 +5,12 @@ interface Props {
   editing?: boolean
   text: string
   index: number
-  id: number
+  id: string
 }
 interface Emit {
   (e: 'update:text', text: string): void
   (e: 'update:editing', editing: boolean): void
-  (e: 'deletefootnote', footnoteId: number): void
+  (e: 'deletefootnote', footnoteId: string): void
 
 }
 

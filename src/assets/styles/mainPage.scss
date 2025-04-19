@@ -66,6 +66,17 @@
                 padding-inline: 0;
                 text-align: center;
             }
+
+            .paging-container {
+                position: absolute;
+                background: rgba(white, 0.95);
+                inset-block-end: 0;
+                inset-inline-end: 24px;
+                padding-inline: 0;
+                text-align: center;
+                border-radius: 7px;
+                box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+            }
         }
     }
 
@@ -242,6 +253,13 @@
     }
 }
 
+.close-btn {
+    position: absolute;
+    inset-inline-end: -5px;
+    inset-block-start: -5px;
+    z-index: 1;
+}
+
 .fish-editor {
     padding: 10px;
     border: 1px solid #ccc;
@@ -373,6 +391,62 @@
                 .v-list-item__spacer {
                     inline-size: 0;
                 }
+            }
+        }
+    }
+}
+
+.v-list-sm {
+    padding-block: 4px;
+    padding-inline: 0;
+
+    &::-webkit-scrollbar {
+        inline-size: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        border-radius: 2.5px;
+        background: #ccd0dc;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 2.5px;
+        background: #576363;
+    }
+
+    .v-input {
+        .v-selection-control {
+            margin-inline-end: 0;
+
+            input {
+                block-size: 13px;
+                inline-size: 13px;
+            }
+        }
+    }
+
+    .v-list-item {
+        min-block-size: 28px;
+
+        .v-list-item-title {
+            font-size: 0.9em;
+        }
+
+        .v-list-item__prepend {
+            .v-list-item__spacer {
+                inline-size: 0;
+            }
+        }
+    }
+}
+
+.v-card-sm {
+    .v-card-item {
+        padding: 12px !important;
+
+        .v-card-item__content {
+            .v-card-title {
+                font-size: .9em;
             }
         }
     }

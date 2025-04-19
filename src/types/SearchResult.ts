@@ -69,7 +69,7 @@ export interface IFacetBox {
 export interface ISearchResultTabBoxItem {
   id: number
   title: string
-  content: ISimpleSelectableDTO[]
+  content: ISimpleSelectableDTO<number>[]
 
 }
 export interface ISearchResultTabBox extends Record<string, any> {
@@ -84,5 +84,5 @@ export class SearchResultTabBoxModel implements ISearchResultTabBox {
 export class SearchResultTabBoxItemModel implements ISearchResultTabBoxItem {
   id: number = 0
   title: string = ''
-  content: ISimpleSelectableDTO[] = []
+  content: ISimpleSelectableDTO<number>[] = []
 }

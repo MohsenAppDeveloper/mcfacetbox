@@ -1,18 +1,25 @@
 <script setup lang="ts">
 import ContextMenu from '@imengyu/vue3-context-menu'
 import Swal from 'sweetalert2'
-import { useToast } from 'vue-toastification'
+import MCDialogAddTag from '../dialogs/MCDialogAddTag.vue'
 import { type IDataShelfBox } from '@/types/dataShelf'
+import { MessageType } from '@/types/baseModels'
 
 const props = defineProps<{ itemIndex: number;nextItemOrder: number;prevItemOrder: number }>()
 const emits = defineEmits<Emits>()
 const isDialogDataShelfBoxEdit = ref(false)
+const dialogAddTagVisible = ref(false)
 const databoxItem = defineModel<IDataShelfBox>()
 const { t } = useI18n({ useScope: 'global' })
-const toast = useToast()
+
+// const toast = useToast()
 const databox = ref()
 const highlightClass = ref(['mc-data-shelf-box'])
 const lastPointerPos = ref({ x: 0, y: 0 })
+const btnTag = ref()
+
+const { x: btntagX, y: btntagY }
+        = useElementBounding(btnTag)
 
 // interface Props {
 //   databoxitem: IDataShelfBox
@@ -22,6 +29,7 @@ interface Emits {
   (e: 'editdataboxcontent', dataBoxId: IDataShelfBox): void
   (e: 'selectedchanged', isSelected: boolean): void
   (e: 'orderchanged', itemId: number): void
+  (e: 'handlemessage', message: string, type: MessageType): void
 
 }
 
@@ -71,6 +79,10 @@ const onContextMenu = (e: MouseEvent) => {
   })
 }
 
+const addtag = () => {
+  dialogAddTagVisible.value = true
+}
+
 const addcomment = () => {
   Swal.fire({
     input: 'textarea',
@@ -97,13 +109,14 @@ const addcomment = () => {
     allowOutsideClick: false,
   }).then(value => {
     if (value.isConfirmed) {
-      console.log('deletevalue', value)
+    //   console.log('deletevalue', value)
 
       if (value.value?.serviceError.value)
-        toast.error(t('alert.dataActionFailed'))
+        emits('handlemessage', t('alert.dataActionFailed'), MessageType.error)
 
       if (value.value?.serviceData.value) {
-        toast.success(t('alert.dataActionSuccess'))
+        emits('handlemessage', t('alert.dataActionSuccess'), MessageType.success)
+
         if (databoxItem.value)
           databoxItem.value.comment = value.value?.serviceData.value
       }
@@ -111,7 +124,7 @@ const addcomment = () => {
       // emit('deletedItem', true)
     }
     else {
-      toast.warning(t('alert.dataActionFailed'))
+      emits('handlemessage', t('alert.dataActionSuccess'), MessageType.info)
     }
   })
 }
@@ -169,6 +182,28 @@ defineExpose({ increaseOrder, decreaseOrder })
 
 <template>
   <VCard ref="databox" :class="[highlightClass]">
+    <!--
+      <VDialog
+      v-model="dialogAddTagVisible" location-strategy="static" location="top center" target="cursor"
+      width="auto"
+      >
+      <VCard
+      max-width="400"
+      prepend-icon="mdi-update"
+      text="Your application will relaunch automatically after the update is complete."
+      title="Update in progress"
+      >
+      <template #actions>
+      <VBtn
+      class="ms-auto"
+      text="Ok"
+      @click="dialogAddTagVisible = false"
+      />
+      </template>
+      </VCard>
+      </VDialog>
+    -->
+
     <VCardText class="h-auto">
       <VRow no-gutters class="justify-start align-start box">
         <VCheckbox v-model="isSelected" density="compact" />
@@ -211,7 +246,7 @@ defineExpose({ increaseOrder, decreaseOrder })
               {{ $t('datashelfbox.about') }}
             </VTooltip>
           </VBtn>
-          <VBtn icon size="25" variant="text" @click="isDialogDataShelfBoxEdit = true">
+          <VBtn icon size="25" variant="text" @click="addtag">
             <VIcon icon="tabler-edit" size="22" />
             <VTooltip
               activator="parent"
@@ -247,7 +282,7 @@ defineExpose({ increaseOrder, decreaseOrder })
               {{ $t('datashelfbox.delete') }}
             </VTooltip>
           </VBtn>
-          <VBtn icon size="25" variant="text" @click="$emit('addtag', databoxItem?.id ?? 0)">
+          <VBtn ref="btnTag" icon size="25" variant="text" @click="addtag">
             <VIcon icon="tabler-tag" size="22" />
             <VTooltip
               activator="parent"
@@ -309,6 +344,8 @@ defineExpose({ increaseOrder, decreaseOrder })
         </VRow>
       </div>
       <MCDialogDataShelfBoxEdit v-if="isDialogDataShelfBoxEdit" v-model:is-dialog-visible="isDialogDataShelfBoxEdit" v-model:databox-item="databoxItem" />
+      <MCDialogAddTag v-if="dialogAddTagVisible" v-model:is-dialog-visible="dialogAddTagVisible" :selected-data-box-id="databoxItem.id ?? 0" :loc-x="btntagX" :loc-y="btntagY - 60" />
+      <!-- @node-added="nodeItemAdded" @node-added-failed="nodeaddfailed" -->
     </VRow>
   </VCard>
 </template>
