@@ -173,6 +173,23 @@
                 padding: 0;
             }
         }
+
+        .box-state-container {
+            position: absolute;
+            top: 7px;
+            left: -10px;
+            /* کمی از کارت بیرون بیاد */
+            background: rgba(255, 255, 255, 0.95);
+            padding: 4px;
+            border-radius: 4px;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
     }
 
     .mc-search-result {

@@ -139,6 +139,7 @@ onFetchResponse(() => {
   try {
     const result = resultData.value as GridResultFacet<IDataShelfBoxView>
 
+    resetData()
     totalItems.value = result.totalCount
     resultdataItems.value.splice(0)
 
@@ -203,7 +204,7 @@ watch(selectAll.value, () => {
 })
 
 async function refreshDataShelf() {
-  resetData()
+  // resetData()
   await fetchData()
 
 //   console.log('startfetching', entry)
@@ -450,7 +451,7 @@ function databoxOrderChanged(databoxItemId: number) {
                 v-for="(item, i) in resultdataItemsSort" :key="item.id" :ref="(el) => setdataboxref(el, item)" v-model="resultdataItemsSort[i]" :item-index="i"
                 :prev-item-order="i"
                 :next-item-order="i"
-                @selectedchanged="checkSelectAllState" @orderchanged="databoxOrderChanged" @handlemessage="handleDataBoxMessages"
+                @selectedchanged="checkSelectAllState" @orderchanged="databoxOrderChanged" @handlemessage="handleDataBoxMessages" @refreshdatashelf="refreshDataShelf"
               />
               <!--
                 :prev-item-order="i > 0 ? resultdataItemsSort[i - 1].order : -100"
