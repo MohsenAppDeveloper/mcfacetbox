@@ -1,65 +1,108 @@
 <script setup lang="ts">
-// !SECTION این دیالوگ برای افزودن و یا ویرایش یک پنل یا درگاه کاربری میباشد
-
 import { v4 as uuidV4 } from 'uuid'
-import { useToast } from 'vue-toastification'
-import { DataShelfBoxModelView } from '@/types/dataShelf'
+import { DataShelfBoxModelNew, DataShelfBoxModelView } from '@/types/dataShelf'
 import type { IDataShelfBoxView, IFootNote } from '@/types/dataShelf'
+import { MessageType, SizeType } from '@/types/baseModels'
 
 interface Props {
   isDialogVisible: boolean
-  databoxItem?: IDataShelfBoxView
+  datashelfboxid: number
+  treeid?: number
+  nodeid?: number
 }
 
 const props = defineProps<Props>()
 
-const emit = defineEmits<Emit>()
+const emits = defineEmits<Emit>()
 const { t } = useI18n({ useScope: 'global' })
-const toast = useToast()
 const tempdataItem = reactive<IDataShelfBoxView>(new DataShelfBoxModelView())
-const footnotes = reactive<IFootNote[]>([])
+const footNotes = reactive<IFootNote[]>([])
+const opening = ref(false)
 
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'update:databoxItem', databoxItem: IDataShelfBoxView): void
+  (e: 'updatedataboxItem', databoxItem: IDataShelfBoxView): void
+  (e: 'insertdataboxItem'): void
+
+  (e: 'handlemessage', message: string, type: MessageType): void
+
 }
 
 const isloading = ref(false)
 const editor = ref<HTMLDivElement>()
 
 // const editableContent = ref('')
-// const footnotes = reactive<IFootNote[]>([])
+// const footNotes = reactive<IFootNote[]>([])
 
 // // const { focused } = useFocus(target)
-// watch(footnotes, () => {
-//   console.log('footnotechanged', footnotes)
+// watch(footNotes, () => {
+//   console.log('footnotechanged', footNotes)
 // })
 onMounted(() => {
-  Object.assign(tempdataItem, props.databoxItem)
-  footnotes.push(...tempdataItem.footnotes)
+  if (props.datashelfboxid > 0)
+    getDataBoxItem()
 
 //   editableContent.value = props.dataItem.text
-//   footnotes.push(...props.dataItem.footnote ?? [])
+//   footNotes.push(...props.dataItem.footnote ?? [])
 })
 
-const onReset = () => {
-  isloading.value = false
-  emit('update:isDialogVisible', false)
+async function getDataBoxItem() {
+  opening.value = true
+  try {
+    const result = await $api <IDataShelfBoxView>(`app/excerpt/${props.datashelfboxid}`, {
+      method: 'GET',
+    })
+
+    Object.assign(tempdataItem, result)
+    if (result.footNotes && result.footNotes.length > 0)
+      footNotes.push(...result.footNotes)
+
+    opening.value = false
+  }
+  catch (error) {
+    console.log('error', error)
+
+    opening.value = false
+    if (error instanceof CustomFetchError && error.code > 0)
+      emits('handlemessage', error.message, MessageType.error)
+    else emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
+    emits('update:isDialogVisible', false)
+  }
 }
 
-const acceptchanged = () => {
+const acceptchanged = async () => {
 //   console.log('htmlbefore', editor.value?.innerHTML)
   isloading.value = true
-  setTimeout(() => {
-    tempdataItem.content = editor.value?.innerHTML ?? ''
-    tempdataItem.footnotes.splice(0)
-    tempdataItem.footnotes.push(...footnotes)
 
-    //   console.log('htmlafter', tempdataItem.text)
+  tempdataItem.content = editor.value?.innerHTML ?? ''
+  tempdataItem.footNotes.splice(0)
+  tempdataItem.footNotes.push(...footNotes)
+  try {
+    const result = await $api<IDataShelfBoxView>(`app/excerpt${props.datashelfboxid !== 0 ? `/${tempdataItem.id}` : ''}/text`, {
+      method: props.datashelfboxid === 0 ? 'POST' : 'PUT',
+      body: JSON.stringify(new DataShelfBoxModelNew(tempdataItem.id, props.datashelfboxid === 0 ? props.treeid ?? 0 : tempdataItem.treeId, props.datashelfboxid === 0 ? props.nodeid ?? 0 : tempdataItem.node?.id ?? 0, tempdataItem.content, tempdataItem.description, tempdataItem.footNotes, tempdataItem.labels.map(item => item.id))),
+    })
 
-    emit('update:databoxItem', tempdataItem)
-    onReset()
-  }, 3000)
+    if (result && result.id > 0) {
+      emits('handlemessage', t('alert.dataActionSuccess'), MessageType.success)
+      if (props.datashelfboxid === 0)
+        emits('insertdataboxItem')
+
+      else
+        emits('updatedataboxItem', result)
+    }
+    isloading.value = false
+  }
+  catch (error) {
+    isloading.value = false
+
+    if (error instanceof CustomFetchError && error.code > 0)
+      emits('handlemessage', error.message, MessageType.error)
+    else emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
+  }
+  emits('update:isDialogVisible', false)
+
+  //   console.log('htmlafter', tempdataItem.text)
 }
 
 const refreshfootnote = () => {
@@ -70,7 +113,7 @@ const refreshfootnote = () => {
     for (let footnoteIndex = 0; footnoteIndex < sups.length; footnoteIndex++) {
     //   const footnoteid = Number.parseInt(sups[footnoteIndex].attributes[1].value)
       const footnoteid = sups[footnoteIndex].attributes[1].value
-      const footnoteItem = footnotes.find(item => item.id === footnoteid)
+      const footnoteItem = footNotes.find(item => item.id === footnoteid)
       if (footnoteItem)
         footnoteItem.index = footnoteIndex + 1
       sups[footnoteIndex].textContent = (footnoteIndex + 1).toString()
@@ -89,21 +132,21 @@ const addFootnote = () => {
       const sup = document.createElement('sup')
       const uuid = uuidV4()
 
-      sup.innerText = (footnotes.length + 1).toString()
+      sup.innerText = (footNotes.length + 1).toString()
       sup.className = 'footenote-index'
       sup.setAttribute('footnote-id', uuid.toString())
 
       //   sup.addEventListener('click', (event: MouseEvent) => {})
       range?.collapse(false)
       range?.insertNode(sup) // افزودن <sup> به محتوای div
-      footnotes.push({ title: '', id: uuid.toString(), editing: true, index: footnotes.length + 1 })
+      footNotes.push({ title: '', id: uuid.toString(), editing: true, index: footNotes.length + 1 })
       refreshfootnote()
     }
   }
 }
 
 const footnoteSort = computed(() => {
-  return footnotes.sort((a, b) => a.index - b.index)
+  return footNotes.sort((a, b) => a.index - b.index)
 })
 
 const deletefootnote = (footnoteId: string) => {
@@ -115,21 +158,35 @@ const deletefootnote = (footnoteId: string) => {
 
       parent?.removeChild(removedsup)
     }
-    footnotes.splice(footnotes.findIndex(item => item.id === footnoteId), 1)
+    footNotes.splice(footNotes.findIndex(item => item.id === footnoteId), 1)
     refreshfootnote()
   }
 }
 
+function handlepasteaction(event: ClipboardEvent) {
+  event.preventDefault()
+
+  const text = event.clipboardData?.getData('text/plain') ?? ''
+
+  if (editor.value) {
+    const selection = window.getSelection()
+    const range = selection?.getRangeAt(0)
+
+    range?.deleteContents() // حذف محتویات انتخاب‌شده
+    range?.insertNode(document.createTextNode(text)) // درج متن ساده
+    setTimeout(() => {
+      selection?.removeAllRanges()
+    }, 0)
+  }
+}
 function checkForRemovedFootnotes() {
-  if (editor.value && footnotes.length > 0) {
+  if (editor.value && footNotes.length > 0) {
     const supElements = editor.value.querySelectorAll('sup')
 
     // بررسی آیا پاورقی‌ها در لیست موجود هستند
     const currentFootnotes = Array.from(supElements).map(sup => Number.parseInt(sup.innerText))
 
-    footnotes.filter(footnote => !currentFootnotes.includes(footnote.index)).forEach(footnoteisdelete => {
-      console.log('filter', footnotes, currentFootnotes, footnoteisdelete)
-
+    footNotes.filter(footnote => !currentFootnotes.includes(footnote.index)).forEach(footnoteisdelete => {
       deletefootnote(footnoteisdelete.id)
     })
   }
@@ -141,18 +198,20 @@ function checkForRemovedFootnotes() {
 <template>
   <VDialog
     :width="$vuetify.display.smAndDown ? 'auto' : 900" :model-value="props.isDialogVisible"
-    persistent @update:model-value="onReset"
+    persistent
   >
     <!-- 👉 Dialog close btn -->
-    <DialogCloseBtn :disabled="isloading" @click="onReset" />
-    <VCard flat :title="$t('datashelfbox.addedit')">
+    <DialogCloseBtn :disabled="isloading || opening" @click="emits('update:isDialogVisible', false)" />
+    <VCard flat :title="$t('datashelfbox.addedit')" :loading="opening">
+      <MCLoading :loadingsize="SizeType.MD" :showloading="opening" />
+
       <VCardText>
         <div
           ref="editor"
           contenteditable="true"
           class="fish-editor"
           @input="checkForRemovedFootnotes"
-          v-html="tempdataItem.content"
+          @paste="handlepasteaction" v-html="tempdataItem.content"
         />
         <div class="d-flex pb-2 flex-column">
           <MCDataBoxEditableFootnote

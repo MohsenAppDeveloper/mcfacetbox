@@ -14,7 +14,7 @@ export const db: DB = {
       order: 1,
       refrenceId: '12',
       labelCount: 0,
-      footnotes: [],
+      footNotes: [],
       hasDescription: false,
     },
     {
@@ -25,7 +25,7 @@ export const db: DB = {
 
       order: 3,
 
-      footnotes: [],
+      footNotes: [],
       labelCount: 0,
       hasDescription: false,
       refrenceId: '',
@@ -38,7 +38,7 @@ export const db: DB = {
 
       order: 2,
 
-      footnotes: [],
+      footNotes: [],
       labelCount: 0,
       hasDescription: false,
       refrenceId: '',
@@ -51,7 +51,7 @@ export const db: DB = {
 
       order: 4,
 
-      footnotes: [],
+      footNotes: [],
       labelCount: 0,
       hasDescription: false,
       refrenceId: '',
@@ -64,7 +64,7 @@ export const db: DB = {
 
       order: 6,
 
-      footnotes: [],
+      footNotes: [],
       labelCount: 0,
       hasDescription: false,
       refrenceId: '',
@@ -77,7 +77,7 @@ export const db: DB = {
 
       order: 5,
 
-      footnotes: [],
+      footNotes: [],
       labelCount: 0,
       hasDescription: false,
       refrenceId: '',
@@ -90,7 +90,7 @@ export const db: DB = {
 
       order: 8,
 
-      footnotes: [],
+      footNotes: [],
       labelCount: 0,
       hasDescription: false,
       refrenceId: '',
@@ -103,7 +103,7 @@ export const db: DB = {
 
       order: 7,
 
-      footnotes: [],
+      footNotes: [],
       labelCount: 0,
       hasDescription: false,
       refrenceId: '',
@@ -116,7 +116,7 @@ export const db: DB = {
 
       order: 9,
 
-      footnotes: [],
+      footNotes: [],
       labelCount: 0,
       hasDescription: false,
       refrenceId: '',
@@ -129,7 +129,7 @@ export const db: DB = {
 
       order: 10,
 
-      footnotes: [],
+      footNotes: [],
       labelCount: 0,
       hasDescription: false,
       refrenceId: '',
@@ -142,7 +142,7 @@ export const db: DB = {
 
       order: 11,
 
-      footnotes: [],
+      footNotes: [],
       labelCount: 0,
       hasDescription: false,
       refrenceId: '',
@@ -154,7 +154,7 @@ export const db: DB = {
 
       order: 12,
 
-      footnotes: [],
+      footNotes: [],
       treeId: 0,
       labelCount: 0,
       hasDescription: false,
@@ -167,7 +167,7 @@ export const db: DB = {
 
       order: 13,
 
-      footnotes: [],
+      footNotes: [],
       treeId: 0,
       labelCount: 0,
       hasDescription: false,
@@ -180,7 +180,7 @@ export const db: DB = {
 
       order: 14,
 
-      footnotes: [],
+      footNotes: [],
       treeId: 0,
       labelCount: 0,
       hasDescription: false,
@@ -193,7 +193,7 @@ export const db: DB = {
 
       order: 15,
 
-      footnotes: [],
+      footNotes: [],
       treeId: 0,
       labelCount: 0,
       hasDescription: false,

@@ -89,7 +89,7 @@
     'autorizedbook': 'کتب مجاز',
     'nodes': 'گرهها',
     'selectednode':'گره انتخاب شده',
-    'selectnode':'انتخاب درخت',
+    'selectnode':'انتخاب گره',
     'newnode':'گره جدید',
     'editnode':'ویرایش',
     "deletenode":"حذف گره",
@@ -128,7 +128,7 @@
     'edit': 'ویرایش فیش',
     'about': 'درباره فیش',
     'duplicate': 'دوبل کردن',
-    'connecttonode': 'اتصال به گره',
+    "connecttonode": "اتصال به گره دیگر",
     "disconnect": "قطع اتصال از گره",
 
     "delete": "حذف فیش از درخت",

@@ -7,7 +7,7 @@ import { useTree } from '@/store/treeStore'
 import type { GridResultFacet, IRootServiceError } from '@/types/baseModels'
 import { MessageType, QueryRequestModel, SelectAllState, SizeType } from '@/types/baseModels'
 import type { IDataShelfBoxView } from '@/types/dataShelf'
-import { DataShelfRouteQueryParams } from '@/types/dataShelf'
+import { DataShelfBoxModelView, DataShelfRouteQueryParams } from '@/types/dataShelf'
 import { useDataShelfStateChanged } from '@/store/databoxStore'
 import type { IFacetBox } from '@/types/SearchResult'
 
@@ -40,7 +40,7 @@ const increasebtn = ref<VBtn>()
 const decreasebtn = ref<VBtn>()
 const apiQueryParamtData = reactive<QueryRequestModel>(new QueryRequestModel())
 const routeQueryParamData = reactive<DataShelfRouteQueryParams>(new DataShelfRouteQueryParams())
-
+const isDialogDataShelfBoxEdit = ref(false)
 const facettimeout: ReturnType<typeof setTimeout> | null = null
 const facetinterval = ref(3000)
 const { t } = useI18n({ useScope: 'global' })
@@ -218,7 +218,10 @@ onFetchResponse(() => {
     totalItems.value = result.totalCount
     resultdataItems.value.splice(0)
     facetboxItems.value = [...result.facets]
+
     resultdataItems.value = [...result.items]
+    console.log('shelfresult', resultdataItems.value[0].footNotes)
+
     if (isUndefined(resultdataItems.value))
       toast.error(t('alert.probleminGetExcerpt'))
 
@@ -348,7 +351,6 @@ function databoxOrderChanged(databoxItemId: number) {
 <template>
   <VContainer class="mc-data-container mc-data-shelf">
     <VRow no-gutters>
-      <MCLoading :showloading="loadingdata" :loadingsize="SizeType.MD" />
       <VCol class="">
         <VRow no-gutters class="btn-box data-shelf-toolbar d-flex align-center justify-space-between">
           <!-- <VCol md="12" > -->
@@ -409,7 +411,7 @@ function databoxOrderChanged(databoxItemId: number) {
               </VTooltip>
             </VBtn>
 
-            <VBtn icon size="small" variant="text">
+            <VBtn icon size="small" variant="text" @click="isDialogDataShelfBoxEdit = true">
               <VIcon icon="tabler-pencil-plus" size="22" />
               <VTooltip
                 activator="parent"
@@ -535,6 +537,10 @@ function databoxOrderChanged(databoxItemId: number) {
         />
       </VCol>
     </VRow>
+    <MCDialogDataShelfBoxEdit
+      v-if="isDialogDataShelfBoxEdit" v-model:is-dialog-visible="isDialogDataShelfBoxEdit" :treeid="currentTreeId" :nodeid="currentNodeId" :datashelfboxid="0" @insertdatabox-item="refreshDataShelf"
+      @handlemessage="handleDataBoxMessages"
+    />
   </VContainer>
 </template>
 

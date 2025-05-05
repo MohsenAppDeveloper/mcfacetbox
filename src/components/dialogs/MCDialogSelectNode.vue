@@ -13,7 +13,6 @@ const activeActions = ref(false)
 const selectedNodes = ref<number[]>([])
 const loading = ref(false)
 
-const { t } = useI18n({ useScope: 'global' })
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
 

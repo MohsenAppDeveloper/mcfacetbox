@@ -82,9 +82,9 @@ async function getDataBoxItem() {
               {{ databoxItem.description }}
             </p>
           </div>
-          <div v-if="databoxItem.footnotes.length > 0">
+          <div v-if="databoxItem.footNotes.length > 0">
             <span class="px-2 font-weight-bold">{{ $t('footnotecount') }} :</span> <VChip color="primary" text-color="white">
-              {{ databoxItem.footnotes.length }}
+              {{ databoxItem.footNotes.length }}
             </VChip>
           </div>
         </div>

@@ -25,7 +25,8 @@ const footnoteText = ref('')
 // })
 watch(iseditMode, () => {
   emit('update:editing', iseditMode.value)
-  emit('update:text', footnoteText.value)
+  if (footnoteText.value.length > 0)
+    emit('update:text', footnoteText.value)
 })
 
 // watch(() => props.editing, () => {

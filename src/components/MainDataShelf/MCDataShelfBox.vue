@@ -86,6 +86,10 @@ const addlabels = () => {
   dialogAddLabelVisible.value = true
 }
 
+const updatedataboxItem = (databoxitemResult: IDataShelfBoxView) => {
+  Object.assign(databoxItem.value, databoxitemResult)
+}
+
 const connecttoselectedNode = async (nodeid: number) => {
   loadinglocal.value = true
   try {
@@ -320,10 +324,10 @@ defineExpose({ increaseOrder, decreaseOrder })
           <VCheckbox v-model="isSelected" density="compact" />
           <VCol>
             <div class="text pb-1" v-html="databoxItem?.content" />
-            <VDivider v-if="((databoxItem?.footnotes && databoxItem?.footnotes.length) ?? 0) > 0" />
-            <div v-for="item in databoxItem?.footnotes" :key="item.id" class="d-flex flex-column">
+            <VDivider v-if="((databoxItem?.footNotes && databoxItem?.footNotes.length) ?? 0) > 0" />
+            <div v-for="(item, index) in databoxItem?.footNotes" :key="item.id" class="d-flex flex-column">
               <div>
-                <span class="footenote-index">{{ item.index }} -</span>
+                <span class="footenote-index">{{ item.index === undefined ? index + 1 : item.index }} -</span>
                 <span class="no-select foot-note">{{ item.title }}</span>
                 <!--
                   <VBtn icon size="small" variant="text" @click.left="deletefootnote">
@@ -488,7 +492,7 @@ defineExpose({ increaseOrder, decreaseOrder })
       v-if="dialogSelectNodeVisible" v-model:is-dialog-visible="dialogSelectNodeVisible"
       :selected-tree-id="databoxItem.treeId" @nodehasbeenselected="(nodeid) => connecttoselectedNode(nodeid)"
     />
-    <MCDialogDataShelfBoxEdit v-if="isDialogDataShelfBoxEdit" v-model:is-dialog-visible="isDialogDataShelfBoxEdit" v-model:databox-item="databoxItem" />
+    <MCDialogDataShelfBoxEdit v-if="isDialogDataShelfBoxEdit" v-model:is-dialog-visible="isDialogDataShelfBoxEdit" :datashelfboxid="databoxItem.id" @updatedatabox-item="updatedataboxItem" @handlemessage="(message, type) => emits('handlemessage', message, type)" />
     <MCDialogAddLabel
       v-if="dialogAddLabelVisible" v-model:is-dialog-visible="dialogAddLabelVisible" :tree-id="databoxItem?.treeId ?? 0" :selected-data-box-id="databoxItem.id ?? 0"
       :loc-x="btnlabelX" :loc-y="btnlabelY - 200" @error-has-occured="emits('handlemessage', $event, MessageType.error)" @label-added="labelhasbeenadded"

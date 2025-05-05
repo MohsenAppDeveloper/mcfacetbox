@@ -23,7 +23,6 @@ declare module 'vue' {
     CardStatisticsHorizontal: typeof import('./src/@core/components/cards/CardStatisticsHorizontal.vue')['default']
     CardStatisticsVertical: typeof import('./src/@core/components/cards/CardStatisticsVertical.vue')['default']
     CardStatisticsVerticalSimple: typeof import('./src/@core/components/CardStatisticsVerticalSimple.vue')['default']
-    copy: typeof import('./src/components/dialogs/MCDialogAddNewNode copy.vue')['default']
     CustomCheckboxes: typeof import('./src/@core/components/app-form-elements/CustomCheckboxes.vue')['default']
     CustomCheckboxesWithIcon: typeof import('./src/@core/components/app-form-elements/CustomCheckboxesWithIcon.vue')['default']
     CustomCheckboxesWithImage: typeof import('./src/@core/components/app-form-elements/CustomCheckboxesWithImage.vue')['default']
