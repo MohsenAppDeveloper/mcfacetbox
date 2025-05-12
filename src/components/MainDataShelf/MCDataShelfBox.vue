@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import ContextMenu from '@imengyu/vue3-context-menu'
 import Swal from 'sweetalert2'
-import { DataShelfBoxModelView, type IDataShelfBoxView } from '@/types/dataShelf'
+import { DataShelfBoxModelView } from '@/types/dataShelf'
+import type { IDataShelfBoxView, IOrderChangedResponse } from '@/types/dataShelf'
 import { MessageType, SizeType } from '@/types/baseModels'
 
-const props = defineProps<{ itemIndex: number;nextItemOrder: number;prevItemOrder: number }>()
+const props = defineProps<{ itemIndex: number;nextItemOrder: number;prevItemOrder: number;nextItemPriority: number;prevItemPriority: number }>()
 const emits = defineEmits<Emits>()
 const isDialogDataShelfBoxEdit = ref(false)
 const dialogAddLabelVisible = ref(false)
@@ -16,7 +17,7 @@ const showTools = ref(true)
 
 // const toast = useToast()
 const databox = ref()
-const highlightClass = ref(['mc-data-shelf-box'])
+const highlightClass = ref(['mc-data-shelf-box', 'w-100'])
 const loadinglocal = ref(false)
 const btnlabel = ref()
 
@@ -28,7 +29,7 @@ const { x: btnlabelX, y: btnlabelY }
 // }
 interface Emits {
   (e: 'editdataboxcontent', dataBoxId: IDataShelfBoxView): void
-  (e: 'selectedchanged', isSelected: boolean): void
+  (e: 'selectedchanged', isSelected: boolean, databoxitem: IDataShelfBoxView): void
   (e: 'orderchanged', itemId: number): void
   (e: 'refreshdatashelf'): void
 
@@ -80,6 +81,42 @@ const onContextMenu = (e: MouseEvent) => {
     //   },
     ],
   })
+}
+
+const focuToElementAfterMove = () => {
+  databox.value.$el.focus()
+  highlightClass.value.push('fade-highlight')
+  setTimeout(() => {
+    highlightClass.value.splice(2, 1)
+  }, 500) // زمان هم‌زمان با مدت انیمیشن
+  emits('orderchanged', databoxItem.value?.id ?? 0)
+}
+
+const changeOrder = async (orderNumber: number): Promise<boolean> => {
+  try {
+    loadinglocal.value = true
+
+    const result = await $api<IOrderChangedResponse[]>(`app/excerpt/${databoxItem.value.id}/move/${orderNumber}`, {
+      method: 'PUT',
+      ignoreResponseError: false,
+    })
+
+    loadinglocal.value = false
+    if (result && result.length > 0) {
+      databoxItem.value.priority = result[0].priority
+
+      return true
+    }
+    else { return false }
+  }
+  catch (error) {
+    loadinglocal.value = false
+    if (error instanceof CustomFetchError && error.code > 0)
+      emits('handlemessage', error.message, MessageType.error)
+    emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
+
+    return false
+  }
 }
 
 const addlabels = () => {
@@ -229,7 +266,7 @@ const addcomment = () => {
         try {
           await $api(`app/excerpt/${databoxItem.value.id}/description`, {
             method: 'PUT',
-            body: `"${value}"`,
+            body: { description: value },
             ignoreResponseError: false,
           })
           databoxItem.value.hasDescription = value.length > 0
@@ -257,38 +294,26 @@ const addcomment = () => {
   })
 }
 
-const focuToElementAfterMove = () => {
-  databox.value.$el.focus()
-  highlightClass.value.push('fade-highlight')
-  setTimeout(() => {
-    highlightClass.value.splice(1, 1)
-  }, 500) // زمان هم‌زمان با مدت انیمیشن
-  emits('orderchanged', databoxItem.value?.id ?? 0)
-}
-
-const decreaseOrder = () => {
-  if (props.prevItemOrder === -100)
+const decreaseOrder = async () => {
+  if (props.prevItemPriority === -1)
     return
 
-  if (databoxItem.value)
-    databoxItem.value.order = props.prevItemOrder - 0.0000001
-  databox.value.$el.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  const result = await changeOrder(props.prevItemOrder + 1)
 
-  //   console.log('prevorder', props.prevItemOrder, databoxItem.value?.order, lastPointerPos.value, x.value, y.value)
-
-  focuToElementAfterMove()
+  if (result) {
+    databox.value.$el.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    focuToElementAfterMove()
+  }
 }
 
-const increaseOrder = () => {
-  if (props.nextItemOrder === -100)
+const increaseOrder = async () => {
+  if (props.nextItemPriority === -1)
     return
-  if (databoxItem.value)
-    databoxItem.value.order = props.nextItemOrder + 0.0000001
-  databox.value.$el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-
-  //   console.log('nextorder', props.nextItemOrder, databoxItem.value?.order, lastPointerPos.value, x.value, y.value)s
-
-  focuToElementAfterMove()
+  const result = await changeOrder(props.nextItemOrder + 1)
+  if (result) {
+    databox.value.$el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    focuToElementAfterMove()
+  }
 }
 
 function labelhasbeenadded(nodeid: number, labelcount: number) {
@@ -304,7 +329,7 @@ const isSelected = computed({
   set(newval: boolean) {
     if (databoxItem.value)
       databoxItem.value.selected = newval
-    emits('selectedchanged', newval)
+    emits('selectedchanged', newval, databoxItem.value)
   },
 
 })
@@ -316,15 +341,16 @@ defineExpose({ increaseOrder, decreaseOrder })
 
 <template>
   <div class="d-flex" @mouseenter="showTools = true" @mouseleave="">
-    <VCard ref="databox" :class="`${[highlightClass]}` " style="overflow: visible !important;">
+    <VCard ref="databox" :class="[highlightClass]" style="overflow: visible !important;">
       <MCLoading :showloading="loadinglocal" :loadingsize="SizeType.MD" />
 
       <VCardText class="h-auto">
         <VRow no-gutters class="justify-start align-start box">
+          <span>{{ props.itemIndex + 1 }}</span>
           <VCheckbox v-model="isSelected" density="compact" />
           <VCol>
             <div class="text pb-1" v-html="databoxItem?.content" />
-            <VDivider v-if="((databoxItem?.footNotes && databoxItem?.footNotes.length) ?? 0) > 0" />
+            <VDivider v-if="((databoxItem?.footNotes && databoxItem?.footNotes.length) ?? 0) > 0" class="w-50" />
             <div v-for="(item, index) in databoxItem?.footNotes" :key="item.id" class="d-flex flex-column">
               <div>
                 <span class="footenote-index">{{ item.order === undefined ? index + 1 : item.order }} -</span>
@@ -479,7 +505,7 @@ defineExpose({ increaseOrder, decreaseOrder })
               </VBtn>
 
               <span>
-                {{ databoxItem?.order }}
+                {{ databoxItem?.priority }}
               </span>
             </VRow>
           </div>

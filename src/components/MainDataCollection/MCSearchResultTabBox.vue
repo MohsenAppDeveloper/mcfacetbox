@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import ContextMenu from '@imengyu/vue3-context-menu'
-import { isUndefined } from '@sindresorhus/is'
-import type { IHadithItem, IHadithSearchResultItem } from '@/types/SearchResult'
-import type { ISimpleDTO, ISimpleTreeActionable } from '@/types/baseModels'
+import type { ISimpleTreeActionable } from '@/types/baseModels'
 import { DataBoxType, MessageType, SizeType } from '@/types/baseModels'
 import { DataShelfBoxModelNew, type IDataShelfBoxNew } from '@/types/dataShelf'
+import type { IHadithSearchResultItem } from '@/types/SearchResult'
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
@@ -95,7 +94,7 @@ const onContextMenu = (e: MouseEvent) => {
         }),
         label: t('datagathering.connecttoselectednode'),
         onClick: () => {
-          addContentToNode({ content: selectedHighlight.value, description: '', labels: [], nodeId: props.selectedNode.id, treeId: 9, footNotes: [], id: 0, sourceId: selectedId.value })
+          addContentToNode({ content: selectedHighlight.value, description: '', labels: [], nodeId: props.selectedNode.id, treeId: 9, footNotes: [], id: 0, sourceId: selectedId.value.toString() })
         },
       },
       {
@@ -122,7 +121,7 @@ const onContextMenu = (e: MouseEvent) => {
         }),
         label: t('datagathering.connecttotree'),
         onClick: () => {
-          addContentToNode({ content: selectedHighlight.value, description: '', labels: [], nodeId: 0, treeId: props.selectedTreeId, footNotes: [], id: 0, sourceId: selectedId.value })
+          addContentToNode({ content: selectedHighlight.value, description: '', labels: [], nodeId: 0, treeId: props.selectedTreeId, footNotes: [], id: 0, sourceId: selectedId.value.toString() })
         },
       },
       {
@@ -159,7 +158,7 @@ const onContextMenu = (e: MouseEvent) => {
     <VCardText style="height: auto;" @contextmenu="onContextMenu($event)">
       <MCDialogSelectNode
         v-if="dialogSelectNodeVisible" v-model:is-dialog-visible="dialogSelectNodeVisible" :selected-item="selectedHighlight"
-        :selected-tree-id="props.selectedTreeId" @nodehasbeenselected="(nodeid) => addContentToNode(new DataShelfBoxModelNew(0, props.selectedTreeId, nodeid, selectedHighlight, '', [], [], selectedId))"
+        :selected-tree-id="props.selectedTreeId" @nodehasbeenselected="(nodeid) => addContentToNode(new DataShelfBoxModelNew(0, props.selectedTreeId, nodeid, selectedHighlight, '', [], [], selectedId.toString()))"
       />
       <VRow>
         <VCol>
@@ -171,7 +170,7 @@ const onContextMenu = (e: MouseEvent) => {
           </div>
         </VCol>
       </VRow>
-      <VRow no-gutters class="justify-start align-start box">
+      <VRow no-gutters class="justify-start align-start">
         <!--
           <VCheckbox
           v-if="(isUndefined(textData.raw.selectable) && item.content.length > 1) || (textData.raw.selectable)"
@@ -180,7 +179,7 @@ const onContextMenu = (e: MouseEvent) => {
         -->
 
         <VCol md="12">
-          <div v-if="props.dataitemHadith" class="text" v-html="props.dataitemHadith.highlightText" />
+          <div v-if="props.dataitemHadith" class="hadithtext" v-html="props.dataitemHadith.highlightText" />
           <!-- <div class="foot-note">این قسمت محل پاورقی</div> -->
         </VCol>
       </VRow>
@@ -189,7 +188,7 @@ const onContextMenu = (e: MouseEvent) => {
   </VCard>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .v-btn--disabled {
   opacity: 0.25;
 }
@@ -247,11 +246,15 @@ const onContextMenu = (e: MouseEvent) => {
   gap: 6px;
   padding: 4px 4px 2px;
 }
+.searchDataBoxInfoTitle {
+    font-size: .7em;
+    font-weight: bold;
+}
 
 .searchDataBoxInfoText {
   color: #555;
-  font-size: .8rem;
-  line-height: 1.6;
+  font-size: .7rem;
+  line-height: 1.3;
   display: inline;
 }
 // .mc-search-result:hover {
@@ -259,15 +262,12 @@ const onContextMenu = (e: MouseEvent) => {
 //   transform: translateY(-2px);
 // }
 /* متن حدیث */
-.box {
-  padding: 0 5px 2px;
-}
 
-.text {
-  font-size: 1.6rem;
-  line-height: 2.1;
+.hadithtext {
+  font-size: 1.4rem;
+  line-height: 1.6;
   color: #333;
-  padding: 4px 5px;
+  padding: 2px 5px;
   background-color: #f8f9fa;
   border-radius: 6px;
   border-right: 3px solid #4CAF50;
@@ -277,7 +277,7 @@ const onContextMenu = (e: MouseEvent) => {
 }
 
 /* هایلایت کلمات جستجو شده */
-.text em {
+.hadithtext em {
   font-style: normal;
   background-color: #FFF9C4;
   padding: 0 3px;
@@ -286,13 +286,13 @@ const onContextMenu = (e: MouseEvent) => {
   font-weight: 500;
 }
 
-em {
-  background-color: #fff9c4; /* پس‌زمینه زرد روشن */
-  color: #d32f2f; /* رنگ متن قرمز تیره */
-  font-style: normal; /* غیرایتالیک */
-  padding: 0.2em 0.4em; /* فاصله داخلی */
-  border-radius: 4px; /* لبه‌های گرد */
-  font-weight: bold; /* متن پررنگ */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* سایه ملایم */
-  }
+// .hadithtext em {
+//   background-color: #fff9c4; /* پس‌زمینه زرد روشن */
+//   color: #d32f2f; /* رنگ متن قرمز تیره */
+//   font-style: normal; /* غیرایتالیک */
+//   padding: 0.2em 0.4em; /* فاصله داخلی */
+//   border-radius: 4px; /* لبه‌های گرد */
+//   font-weight: bold; /* متن پررنگ */
+//   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* سایه ملایم */
+//   }
 </style>

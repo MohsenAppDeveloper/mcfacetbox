@@ -14,6 +14,7 @@ export interface IDataShelfBoxView {
   excerptType: ISimpleDTO<DataBoxType>
 
   order: number
+  priority: number
 
   // NOTE - برای پاورقی یک تگ اچ تی ام ال با شناسه پاورقی در محتوای جعبه داده درج میشود و باید بررسی گردد که اگر در ویرایش کاربر این تگ حذف شد در پاورقی هم حذف شود
   footNotes: IFootNote[]
@@ -39,6 +40,10 @@ export interface IDataShelfBoxView {
   sourceId: string
 }
 
+export interface IOrderChangedResponse {
+  id: number
+  priority: number
+}
 export interface IDataShelfBoxNew {
   id: number
   treeId: number
@@ -104,6 +109,7 @@ export class DataShelfRouteQueryParams {
   }
 }
 export class DataShelfBoxModelView implements IDataShelfBoxView {
+  priority: number = 0
   private _creationTime?: string
   private _lastModificationTime?: string
   private creationTimePersianCache?: string

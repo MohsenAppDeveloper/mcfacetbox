@@ -127,10 +127,6 @@ div {
     }
 }
 
-.searchDataBoxInfoTitle {
-    font-size: .8em;
-    font-weight: bold;
-}
 
 .welcome-msg-container {
     display: flex;
@@ -139,4 +135,24 @@ div {
     justify-content: center;
     height: 100vh;
     text-align: center;
+}
+
+.my-swal-popup {
+    font-size: 14px !important;
+    width: 320px !important;
+    padding: 1rem !important;
+}
+
+.my-swal-title {
+    font-size: 16px !important;
+}
+
+.my-swal-confirm,
+.my-swal-cancel {
+    font-size: 13px !important;
+    padding: 6px 12px !important;
+    background-color: #3085d6 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
 }

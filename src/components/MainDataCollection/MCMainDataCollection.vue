@@ -28,6 +28,7 @@ const searchPhrase = ref('')
 const apiQueryParamData = reactive<QueryRequestModel>(new QueryRequestModel())
 const facetboxItemsHadith = ref<IFacetBox[]>([])
 const resultdataItemsHadith = ref<IHadithSearchResultItem[]>([])
+const loading = ref(false)
 
 // const loading = ref(false)
 const selectedBooks = ref<string[]>([])
@@ -104,6 +105,7 @@ onFetchResponse(() => {
 
       // console.log('text', element.highlightText)
       })
+      loading.value = false
     }, 500)
   }
   catch (error) {
@@ -124,6 +126,7 @@ onFetchError(error => {
   catch {
     toast.error(t('alert.probleminLoadExcerpt'))
   }
+  loading.value = false
 })
 
 // function loadMoreCollectingData(options: { side: InfiniteScrollSide; done: (status: InfiniteScrollStatus) => void }) {
@@ -183,15 +186,18 @@ function resetData() {
 }
 
 async function runSearch(resetToDefault: boolean) {
+  if (searchPhrase.value.length < 2)
+    return
   if (resetToDefault) {
     /** مقادیر فست ها و صفحه بندی را به حالت اولیه برمیگرداند */
-    // if (apiQueryParamData.Filter !== searchPhrase.value)
-    //   apiQueryParamData.resetDynamicFields()
+    if (apiQueryParamData.Filter !== searchPhrase.value)
+      apiQueryParamData.resetDynamicFields()
     apiQueryParamData.SearchIn = 1
     apiQueryParamData.Filter = searchPhrase.value
     apiQueryParamData.PageNumber = 1
     hadithPageNumber.value = 1
   }
+  loading.value = true
   await fetchData()
 }
 </script>
@@ -203,7 +209,7 @@ async function runSearch(resetToDefault: boolean) {
       <VCol cols="12" md="3" />
       <VCol cols="12" md="6" class="mx-auto">
         <VTextField
-          v-model="searchPhrase" :placeholder="$t('search')" class="search-bar" single-line clearable :loading="loadingdata"
+          v-model="searchPhrase" :placeholder="$t('search')" class="search-bar" single-line clearable :loading="loading"
           @keydown="handleSearchKeydown"
         >
           <template #append-inner>
@@ -232,7 +238,7 @@ async function runSearch(resetToDefault: boolean) {
     <VRow no-gutters dense class="align-center" justify="space-between">
       <VTabs v-model="dataTabValue" density="compact" hide-slider class="data-collection-tabs">
         <VTab :value="DataBoxType.hadith" variant="elevated" rounded="sm">
-          {{ $t('hadith') }} <span class="pr-1">({{ totalItemsHadith > 0 ? totalItemsHadith.toString() : '' }})</span>
+          {{ $t('hadith') }} <span v-if="totalItemsHadith > 0" class="pr-1">({{ totalItemsHadith.toString() }})</span>
         </VTab>
         <VTab :value="DataBoxType.quran" variant="elevated" rounded="sm">
           {{ $t('ayah') }}
@@ -246,13 +252,13 @@ async function runSearch(resetToDefault: boolean) {
       </VBtn>
     </VRow>
     <VDivider />
-    <MCLoading :showloading="loadingdata" :loadingsize="SizeType.MD" />
+    <MCLoading :showloading="loading" :loadingsize="SizeType.MD" />
 
     <VTabsWindow ref="mainDataResult" v-model="dataTabValue" class="mc-data-scroll">
       <VTabsWindowItem :value="DataBoxType.hadith" :transition="false">
-        <VRow dense>
-          <VCol md="3">
-            <VFadeTransition>
+        <VFadeTransition>
+          <VRow v-if="resultdataItemsHadith.length > 0 && !loading" dense>
+            <VCol md="3">
               <div v-if="facetboxItemsHadith.length > 0">
                 <MCFacetBox
                   v-for="item in facetboxItemsHadith"
@@ -261,14 +267,12 @@ async function runSearch(resetToDefault: boolean) {
                   :dataitems="item.itemList" :facettitle="item.title" class="mb-2"
                 />
               </div>
-            </VFadeTransition>
-          </VCol>
-          <VCol md="9">
-            <!-- <VInfiniteScroll side="end" height="500px" @load="loadMoreCollectingData"> -->
-            <VFadeTransition>
-              <div v-if="resultdataItemsHadith.length > 0" class="pl-2 py-2">
+            </VCol>
+            <VCol md="9">
+              <!-- <VInfiniteScroll side="end" height="500px" @load="loadMoreCollectingData"> -->
+              <div class="pl-2 py-2">
                 <!-- <template v-for="(item, index) in resultdataItems" :key="item"> -->
-                <div v-show="!loadingdata" ref="loadmorestart" />
+                <div v-show="!loading" ref="loadmorestart" />
 
                 <MCSearchResultTabBox
                   v-for="(item) in resultdataItemsHadith" :key="item.id" :box-type="dataTabValue"
@@ -277,12 +281,22 @@ async function runSearch(resetToDefault: boolean) {
                 />
                 <!-- </template> -->
 
-                <div v-show="!loadingdata" ref="loadmoreend" />
+                <div v-show="!loading" ref="loadmoreend" />
               </div>
-            </VFadeTransition>
             <!-- </VInfiniteScroll> -->
-          </VCol>
-        </VRow>
+            </VCol>
+          </VRow>
+          <!--
+            <VRow v-else style="height: 200px;" class="d-flex justify-center align-center">
+            <div v-if="!loading" class="pt-5">
+            <span class="ml-3">{{ $t('$vuetify.noDataText') }}</span>
+            <IconBtn size="medium" @click="runSearch(false)">
+            <VIcon icon="tabler-refresh" size="32" />
+            </IconBtn>
+            </div>
+            </VRow>
+          -->
+        </VFadeTransition>
         <!-- </VFadeTransition> -->
       </VTabsWindowItem>
       <VTabsWindowItem :value="DataBoxType.quran" :transition="false" />

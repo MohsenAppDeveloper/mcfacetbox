@@ -142,7 +142,7 @@ async function checkRoute() {
 }
 
 const resultdataItemsSort = computed(() => {
-  return resultdataItems.value.sort((a, b) => a.order - b.order)
+  return resultdataItems.value.sort((a, b) => b.priority - a.priority)
 })
 
 function resetData() {
@@ -266,9 +266,10 @@ function selectFilterDataShelf() {
 }
 
 // این تابع برای بررسی این است که آیا هر کدام از موارد انتخاب شده از انتخاب خارج شده اند یا نه؟
-function checkSelectAllState(itemselected: boolean) {
+function checkSelectAllState(itemselected: boolean, selecteddataboxitem: IDataShelfBoxView) {
   if (itemselected && !resultdataItemsSort.value.find(item => item.selected === false || item.selected === undefined))
     selectAll.value.state = SelectAllState.Select
+
   else if (!itemselected && !resultdataItemsSort.value.find(item => item.selected === true))
     selectAll.value.state = SelectAllState.Deselect
   else selectAll.value.state = SelectAllState.Combine
@@ -400,15 +401,17 @@ function databoxOrderChanged(databoxItemId: number) {
               </VTooltip>
             </VBtn>
 
-            <VBtn icon size="small" variant="text">
+            <!--
+              <VBtn icon size="small" variant="text">
               <VIcon icon="tabler-filters" size="22" />
               <VTooltip
-                activator="parent"
-                location="top center"
+              activator="parent"
+              location="top center"
               >
-                {{ $t('datashelfbox.allnode') }}
+              {{ $t('datashelfbox.allnode') }}
               </VTooltip>
-            </VBtn>
+              </VBtn>
+            -->
 
             <VBtn icon size="small" variant="text" @click="isDialogDataShelfBoxEdit = true">
               <VIcon icon="tabler-pencil-plus" size="22" />
@@ -446,7 +449,7 @@ function databoxOrderChanged(databoxItemId: number) {
                   activator="parent"
                   location="top center"
                 >
-                  {{ $t('datashelfbox.movedown') }}
+                  {{ $t('datashelfbox.moveup') }}
                 </VTooltip>
               </VBtn>
 
@@ -456,7 +459,7 @@ function databoxOrderChanged(databoxItemId: number) {
                   activator="parent"
                   location="top center"
                 >
-                  {{ $t('datashelfbox.moveup') }}
+                  {{ $t('datashelfbox.movedown') }}
                 </VTooltip>
               </VBtn>
             </div>
@@ -496,8 +499,10 @@ function databoxOrderChanged(databoxItemId: number) {
               <div v-show="!loadingdata" ref="loadmorestart" />
               <MCDataShelfBox
                 v-for="(item, i) in resultdataItemsSort" :key="item.id" :ref="(el) => setdataboxref(el, item)" v-model="resultdataItemsSort[i]" :item-index="i"
-                :prev-item-order="i"
-                :next-item-order="i"
+                :prev-item-order="i - 1"
+                :next-item-order="i + 1"
+                :prev-item-priority="i > 0 ? resultdataItemsSort[i - 1].priority : -1"
+                :next-item-priority="i < resultdataItemsSort.length - 1 ? resultdataItemsSort[i + 1].priority : -1"
                 @selectedchanged="checkSelectAllState" @orderchanged="databoxOrderChanged" @handlemessage="handleDataBoxMessages" @refreshdatashelf="refreshDataShelf"
               />
               <!--

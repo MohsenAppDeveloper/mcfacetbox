@@ -78,7 +78,7 @@ const acceptchanged = async () => {
   tempdataItem.footNotes.splice(0)
   tempdataItem.footNotes.push(...footNotes)
   try {
-    const result = await $api<IDataShelfBoxView>(`app/excerpt${props.datashelfboxid !== 0 ? `/${tempdataItem.id}` : ''}/${DataBoxType[tempdataItem.excerptType.id]}`, {
+    const result = await $api<IDataShelfBoxView>(`app/excerpt/${DataBoxType[tempdataItem.excerptType.id]}${props.datashelfboxid !== 0 ? `/${tempdataItem.id}` : ''}`, {
       method: props.datashelfboxid === 0 ? 'POST' : 'PUT',
       body: JSON.stringify(new DataShelfBoxModelNew(tempdataItem.id, props.datashelfboxid === 0 ? props.treeid ?? 0 : tempdataItem.treeId, props.datashelfboxid === 0 ? props.nodeid ?? 0 : tempdataItem.node?.id ?? 0, tempdataItem.content, tempdataItem.description, tempdataItem.footNotes, tempdataItem.labels.map(item => item.id))),
     })

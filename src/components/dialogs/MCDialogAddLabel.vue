@@ -38,8 +38,12 @@ const loadExcerptLabels = async () => {
       method: 'GET',
     })
 
-    if (result.length > 0)
-      selectedLabels.value = result.map(item => item.id)
+    if (result.length > 0) {
+      setTimeout(() => {
+        selectedLabels.value.push(...result.map(item => item.id))
+        console.log('selectedlabels', selectedLabels.value)
+      }, 2000)
+    }
     opening.value = false
   }
   catch (error) {
@@ -87,7 +91,6 @@ onMounted(() => {
     <VCard variant="flat" class="v-card-sm" :title="$t('datashelfbox.addlabel')" :height="400" :loading="opening">
       <VCardText class="pa-0">
         <MCSearchApiAutoComplete
-          v-if="!opening"
           v-model:selected-items="selectedLabels" placeholder="datashelfbox.labeltitle" activeaction api-url-add-data="app/label" :actionedata="{ treeid: treeId }"
           auto-focus :max-height="255" :api-url="`app/label/simple?treeid=${treeId}`" :selection-type="SelectionType.Multiple" class="pt-0"
           :fill-search-phrase-with-selected="false" :list-item-size="SizeType.SM" load-all-list @error-has-occured="emit('errorHasOccured', $event)"
