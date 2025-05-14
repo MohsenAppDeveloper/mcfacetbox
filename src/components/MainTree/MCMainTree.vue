@@ -237,7 +237,7 @@ async function nodeEditProgress(nodeitem: ISimpleTreeActionable) {
   catch (error) {
     nodeitem.loading = false
     nodeitem.failed = true
-    if (error instanceof CustomFetchError && error.code > 0)
+    if (error instanceof CustomFetchError && error.message)
       toast.error(error.message)
     else toast.error(t('httpstatuscodes.0'))
   }
@@ -272,19 +272,19 @@ function gotoNode(nodeId: number, mustSelectNode: boolean = true) {
   }
 }
 
-const deleteSelectedNode = (nodeItem: ISimpleTreeActionable) => {
-  Swal.fire({
-    titleText: formatString(t('alert.specificItemDeleted'), nodeItem.title),
-    confirmButtonText: t('$vuetify.confirmEdit.ok'),
-    cancelButtonText: t('$vuetify.confirmEdit.cancel'),
-    showConfirmButton: true,
-    showCancelButton: true,
-    showLoaderOnConfirm: true,
-    showCloseButton: true,
-    preConfirm: async () => {
-      const serviceError = shallowRef()
+const deleteSelectedNode = async (nodeItem: ISimpleTreeActionable) => {
+  const title = formatString(t('alert.specificItemDeleted'), nodeItem.title)
+  const serviceError = shallowRef()
+
+  const result = await confirmSwal(
+    title,
+    '',
+    t('$vuetify.confirmEdit.ok'),
+    t('$vuetify.confirmEdit.cancel'),
+    true, 'warning',
+    async () => {
       try {
-        await $api(('app/node/').replace('//', '/') + nodeItem.id, {
+        await $api(`app/node/${nodeItem.id}`, {
           method: 'DELETE',
         })
         deleteNode(nodeItem, true)
@@ -295,20 +295,22 @@ const deleteSelectedNode = (nodeItem: ISimpleTreeActionable) => {
 
       return { serviceError }
     },
-    allowOutsideClick: false,
-  }).then(value => {
-    if (value.isConfirmed) {
-      if (value.value?.serviceError.value) {
-        if (value.value?.serviceError.value instanceof CustomFetchError && value.value?.serviceError.value.code > 0)
-          toast.error(value.value?.serviceError.value.message)
-        else toast.error(t('httpstatuscodes.0'))
-      }
-      else {
-        clearActivateNode()
-        toast.success(t('alert.deleteDataSuccess'))
-      }
+  )
+
+  if (result.isConfirmed) {
+    console.log('error', serviceError.value)
+
+    const err = serviceError.value
+    if (err) {
+      if (err instanceof CustomFetchError && err.message)
+        toast.error(err.message)
+      else toast.error(t('httpstatuscodes.0'))
     }
-  })
+    else {
+      clearActivateNode()
+      toast.success(t('alert.deleteDataSuccess'))
+    }
+  }
 }
 
 function clearActivateNode() {
@@ -397,23 +399,22 @@ function treeItemMouseUp(mouseEvent: MouseEvent, treeItem: ISimpleTreeActionable
   if (sourceDraggableItem.value && sourceDraggableItem.value.id !== treeItem.id && activeDraggableItem.value)
     transferNodeWithDraggableMouse(NodeType.Children, sourceDraggableItem.value, activeDraggableItem.value)
 }
-function transferNodeWithDraggableMouse(transfertype: NodeType, sourceNodeItem: ISimpleTreeActionable, destinationNodeItem: ISimpleTreeActionable) {
-  Swal.fire({
-    titleText: formatString(t(`${transfertype === NodeType.Children ? 'alert.transfernodeaschild' : (transfertype === NodeType.SiblingAfter ? 'alert.transfernodeasbrotherafter' : 'alert.transfernodeasbrotherbefore')}`), sourceNodeItem.title, destinationNodeItem.title),
-    confirmButtonText: t('$vuetify.confirmEdit.ok'),
-    cancelButtonText: t('$vuetify.confirmEdit.cancel'),
-    showConfirmButton: true,
-    showCancelButton: true,
-    showLoaderOnConfirm: true,
-    showCloseButton: true,
-    preConfirm: async () => {
-      const serviceError = shallowRef()
+async function transferNodeWithDraggableMouse(transfertype: NodeType, sourceNodeItem: ISimpleTreeActionable, destinationNodeItem: ISimpleTreeActionable) {
+  const title = formatString(t(`${transfertype === NodeType.Children ? 'alert.transfernodeaschild' : (transfertype === NodeType.SiblingAfter ? 'alert.transfernodeasbrotherafter' : 'alert.transfernodeasbrotherbefore')}`), sourceNodeItem.title, destinationNodeItem.title)
+  const serviceError = shallowRef()
+
+  const result = await confirmSwal(
+    title,
+    '',
+    t('$vuetify.confirmEdit.ok'),
+    t('$vuetify.confirmEdit.cancel'),
+    true, 'warning',
+    async () => {
       try {
         await $api(`app/node/${sourceNodeItem.id}/move/${getNodeTypeNameSpace(transfertype)}/${destinationNodeItem.id}`, {
           method: 'PUT',
           ignoreResponseError: false,
         })
-
         transferNode(sourceNodeItem.id, destinationNodeItem.id, transfertype)
       }
       catch (error) {
@@ -422,15 +423,19 @@ function transferNodeWithDraggableMouse(transfertype: NodeType, sourceNodeItem: 
 
       return { serviceError }
     },
-    allowOutsideClick: false,
-  }).then(value => {
-    if (value.isConfirmed && value.value?.serviceError.value) {
-      if (value.value?.serviceError.value instanceof CustomFetchError && value.value?.serviceError.value.code > 0)
-        toast.error(value.value?.serviceError.value.message)
+  )
+
+  if (result.isConfirmed) {
+    const err = serviceError.value
+    if (err) {
+      if (err instanceof CustomFetchError && err.message)
+        toast.error(err.message)
       else toast.error(t('alert.probleminnodeaddrefreshpage'))
     }
-    resetMouseDraggable()
-  })
+    else {
+      resetMouseDraggable()
+    }
+  }
 }
 function resetMouseDraggable() {
   hasDraggableState.value = false
@@ -444,75 +449,69 @@ const refreshTree = async () => {
   await fetchData()
 }
 
-const addcomment = (nodeItem: ISimpleTreeActionable) => {
+const addcomment = async (nodeItem: ISimpleTreeActionable) => {
   let resultTree: INodeView | null = null
 
-  Swal.fire({
-    title: t('tree.loadingnodedetail'),
-    showCloseButton: false,
+  try {
+    await showLoadingSwal(t('tree.loadingnodedetail'), async () => {
+      resultTree = await $api<INodeView>(
+        `app/node/${nodeItem.id}`,
+        { method: 'GET', ignoreResponseError: false },
+      )
+    })
+  }
+  catch (error) {
+    if (error instanceof CustomFetchError && error.message)
+      toast.error(error.message)
+    else toast.error(t('httpstatuscodes.0'))
+
+    return
+  }
+
+  if (!resultTree?.id)
+    return
+
+  const resultValue = await showSwal({
+    input: 'textarea',
+    inputLabel: t('tree.comment'),
+    inputValue: resultTree?.description,
+    inputPlaceholder: t('datashelfbox.enteryourcomment'),
+    confirmButtonText: t('$vuetify.confirmEdit.ok'),
+    cancelButtonText: t('$vuetify.confirmEdit.cancel'),
+    showConfirmButton: true,
+    showCancelButton: true,
+    showLoaderOnConfirm: true,
+    showCloseButton: true,
     allowOutsideClick: false,
-    didOpen: async () => {
-      Swal.showLoading()
+    preConfirm: async desc => {
+      const serviceError = shallowRef()
       try {
-        resultTree = await $api<INodeView>(('app/node/').replace('//', '/') + nodeItem.id, {
-          method: 'GET',
+        await $api(`app/node/${resultTree?.id}/Description`, {
+          method: 'PUT',
+          body: { description: desc },
           ignoreResponseError: false,
         })
+        treeIndex[resultTree.id].hasDescription = desc.length > 0
+      }
+      catch (err) {
+        serviceError.value = err
+      }
 
-        Swal.hideLoading()
-        Swal.close()
-      }
-      catch (error) {
-        if (error instanceof CustomFetchError && error.code > 0)
-          toast.error(error.message)
-        else toast.error(t('httpstatuscodes.0'))
-      }
+      return { serviceError }
     },
-  }).then(() => {
-    if (!resultTree?.id)
-      return
-    Swal.fire({
-      input: 'textarea',
-      inputLabel: t('tree.comment'),
-      inputValue: resultTree.description,
-      inputPlaceholder: t('datashelfbox.enteryourcomment'),
-      confirmButtonText: t('$vuetify.confirmEdit.ok'),
-      cancelButtonText: t('$vuetify.confirmEdit.cancel'),
-      showConfirmButton: true,
-      showCancelButton: true,
-      showLoaderOnConfirm: true,
-      showCloseButton: true,
-      preConfirm: async value => {
-        const serviceError = ref()
-        try {
-          await $api(`app/node/${resultTree?.id}/Description`, {
-            method: 'PUT',
-            body: JSON.parse(JSON.stringify({ description: value })),
-            ignoreResponseError: false,
-          })
-          treeIndex[resultTree.id].hasDescription = value.length > 0
-        }
-
-        catch (error) {
-          serviceError.value = error
-        }
-
-        return { serviceError }
-      },
-      allowOutsideClick: false,
-    }).then(value => {
-      if (value.isConfirmed) {
-        if (value.value?.serviceError.value) {
-          if (value.value?.serviceError.value instanceof CustomFetchError && value.value?.serviceError.value.code > 0)
-            toast.error(value.value?.serviceError.value.message)
-          else toast.error(t('httpstatuscodes.0'))
-        }
-        else {
-          toast.success(t('alert.dataActionSuccess'))
-        }
-      }
-    })
   })
+
+  if (resultValue.isConfirmed) {
+    const err = resultValue.value?.serviceError?.value
+    if (err) {
+      if (err instanceof CustomFetchError && err.message)
+        toast.error(err.message)
+      else toast.error(t('httpstatuscodes.0'))
+    }
+    else {
+      toast.success(t('alert.dataActionSuccess'))
+    }
+  }
 }
 
 const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {

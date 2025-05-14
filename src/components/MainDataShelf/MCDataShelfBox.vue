@@ -145,17 +145,16 @@ const connecttoselectedNode = async (nodeid: number) => {
   }
 }
 
-const disconnectSelectedExcerpt = () => {
-  Swal.fire({
-    titleText: t('datashelfbox.disconnectselecteditem'),
-    confirmButtonText: t('$vuetify.confirmEdit.ok'),
-    cancelButtonText: t('$vuetify.confirmEdit.cancel'),
-    showConfirmButton: true,
-    showCancelButton: true,
-    showLoaderOnConfirm: true,
-    showCloseButton: true,
-    preConfirm: async () => {
-      const serviceError = shallowRef()
+const disconnectSelectedExcerpt = async () => {
+  const serviceError = shallowRef()
+
+  const result = await confirmSwal(
+    t('datashelfbox.disconnectselecteditem'),
+    '',
+    t('$vuetify.confirmEdit.ok'),
+    t('$vuetify.confirmEdit.cancel'),
+    true, 'warning',
+    async () => {
       try {
         await $api(`app/excerpt/${databoxItem.value.id}/disconnect`, {
           method: 'DELETE',
@@ -167,33 +166,32 @@ const disconnectSelectedExcerpt = () => {
 
       return { serviceError }
     },
-    allowOutsideClick: false,
-  }).then(value => {
-    if (value.isConfirmed) {
-      if (value.value?.serviceError.value) {
-        if (value.value?.serviceError.value instanceof CustomFetchError && value.value?.serviceError.value.code > 0)
-          emits('handlemessage', value.value?.serviceError.value.message, MessageType.error)
-        else emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
-      }
-      else {
-        emits('handlemessage', t('alert.deleteDataSuccess'), MessageType.success)
-        emits('refreshdatashelf')
-      }
+  )
+
+  if (result.isConfirmed) {
+    const err = serviceError.value
+    if (err) {
+      if (err instanceof CustomFetchError && err.message)
+        emits('handlemessage', serviceError.value.message, MessageType.error)
+      else emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
     }
-  })
+    else {
+      emits('handlemessage', t('alert.deleteDataSuccess'), MessageType.success)
+      emits('refreshdatashelf')
+    }
+  }
 }
 
-const deleteSelectedExcerpt = () => {
-  Swal.fire({
-    titleText: t('datashelfbox.deleteselecteditem'),
-    confirmButtonText: t('$vuetify.confirmEdit.ok'),
-    cancelButtonText: t('$vuetify.confirmEdit.cancel'),
-    showConfirmButton: true,
-    showCancelButton: true,
-    showLoaderOnConfirm: true,
-    showCloseButton: true,
-    preConfirm: async () => {
-      const serviceError = shallowRef()
+const deleteSelectedExcerpt = async () => {
+  const serviceError = shallowRef()
+
+  const result = await confirmSwal(
+    t('datashelfbox.deleteselecteditem'),
+    '',
+    t('$vuetify.confirmEdit.ok'),
+    t('$vuetify.confirmEdit.cancel'),
+    true, 'warning',
+    async () => {
       try {
         await $api(('app/excerpt/').replace('//', '/') + databoxItem.value.id, {
           method: 'DELETE',
@@ -205,93 +203,86 @@ const deleteSelectedExcerpt = () => {
 
       return { serviceError }
     },
-    allowOutsideClick: false,
-  }).then(value => {
-    if (value.isConfirmed) {
-      if (value.value?.serviceError.value) {
-        if (value.value?.serviceError.value instanceof CustomFetchError && value.value?.serviceError.value.code > 0)
-          emits('handlemessage', value.value?.serviceError.value.message, MessageType.error)
-        else emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
-      }
-      else {
-        emits('handlemessage', t('alert.deleteDataSuccess'), MessageType.success)
-        emits('refreshdatashelf')
-      }
+  )
+
+  if (result.isConfirmed) {
+    const err = serviceError.value
+    if (err) {
+      if (err instanceof CustomFetchError && err.message)
+        emits('handlemessage', serviceError.value.message, MessageType.error)
+      else emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
     }
-  })
+    else {
+      emits('handlemessage', t('alert.deleteDataSuccess'), MessageType.success)
+      emits('refreshdatashelf')
+    }
+  }
 }
 
-const addcomment = () => {
-  let description: ''
+const addcomment = async () => {
+  let description = ''
   let haserror = false
+  const serviceError = shallowRef()
 
-  Swal.fire({
-    title: t('datashelfbox.loadingdesc'),
-    showCloseButton: false,
+  try {
+    await showLoadingSwal(t('tree.loadingnodedetail'), async () => {
+      description = await $api(`app/excerpt/${databoxItem.value.id}/description`,
+        { method: 'GET', ignoreResponseError: false },
+      )
+    })
+  }
+  catch (error) {
+    if (error instanceof CustomFetchError && error.code > 0)
+      emits('handlemessage', error.message, MessageType.error)
+    emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
+    haserror = true
+
+    return
+  }
+
+  if (haserror)
+    return
+
+  const resultValue = await showSwal({
+    input: 'textarea',
+    inputLabel: t('tree.comment'),
+    inputValue: description,
+    inputPlaceholder: t('datashelfbox.enteryourcomment'),
+    confirmButtonText: t('$vuetify.confirmEdit.ok'),
+    cancelButtonText: t('$vuetify.confirmEdit.cancel'),
+    showConfirmButton: true,
+    showCancelButton: true,
+    showLoaderOnConfirm: true,
+    showCloseButton: true,
     allowOutsideClick: false,
-    didOpen: async () => {
-      Swal.showLoading()
+    preConfirm: async desc => {
       try {
-        description = await $api(`app/excerpt/${databoxItem.value.id}/description`, {
-          method: 'GET',
+        await $api(`app/excerpt/${databoxItem.value.id}/description`, {
+          method: 'PUT',
+          body: { description: desc },
           ignoreResponseError: false,
         })
+        databoxItem.value.hasDescription = desc.length > 0
+      }
+      catch (err) {
+        serviceError.value = err
+      }
 
-        Swal.hideLoading()
-        Swal.close()
-      }
-      catch (error) {
-        if (error instanceof CustomFetchError && error.code > 0)
-          emits('handlemessage', error.message, MessageType.error)
-        emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
-        haserror = true
-      }
+      return { serviceError }
     },
-  }).then(() => {
-    if (haserror)
-      return
-    Swal.fire({
-      input: 'textarea',
-      inputLabel: t('datashelfbox.comment'),
-      inputValue: description,
-      inputPlaceholder: t('datashelfbox.enteryourcomment'),
-      confirmButtonText: t('$vuetify.confirmEdit.ok'),
-      cancelButtonText: t('$vuetify.confirmEdit.cancel'),
-      showConfirmButton: true,
-      showCancelButton: true,
-      showLoaderOnConfirm: true,
-      showCloseButton: true,
-      preConfirm: async value => {
-        const serviceError = ref()
-        try {
-          await $api(`app/excerpt/${databoxItem.value.id}/description`, {
-            method: 'PUT',
-            body: { description: value },
-            ignoreResponseError: false,
-          })
-          databoxItem.value.hasDescription = value.length > 0
-        }
-
-        catch (error) {
-          serviceError.value = error
-        }
-
-        return { serviceError }
-      },
-      allowOutsideClick: false,
-    }).then(value => {
-      if (value.isConfirmed) {
-        if (value.value?.serviceError.value) {
-          if (value.value?.serviceError.value instanceof CustomFetchError && value.value?.serviceError.value.code > 0)
-            emits('handlemessage', value.value?.serviceError.value.message, MessageType.error)
-          else emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
-        }
-        else {
-          emits('handlemessage', t('alert.dataActionSuccess'), MessageType.success)
-        }
-      }
-    })
   })
+
+  if (resultValue.isConfirmed) {
+    const err = serviceError.value
+    if (err) {
+      if (err instanceof CustomFetchError && err.message)
+        emits('handlemessage', err.message, MessageType.error)
+      else emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
+    }
+    else {
+      emits('handlemessage', t('alert.dataActionSuccess'), MessageType.success)
+    }
+  }
 }
 
 const decreaseOrder = async () => {

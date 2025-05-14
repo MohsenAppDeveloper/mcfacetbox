@@ -4,17 +4,6 @@ import VueSweetalert2 from 'vue-sweetalert2'
 
 // Styles
 // const { t } = useI18n({ useScope: 'global' })
-const defaultSwalOptions = {
-  customClass: {
-    popup: 'my-swal-popup',
-    title: 'my-swal-title',
-    confirmButton: 'my-swal-confirm',
-    cancelButton: 'my-swal-cancel',
-  },
-  buttonsStyling: false,
-  confirmButtonColor: '#41b882',
-  cancelButtonColor: '#ff7674',
-}
 
 // const options = {
 //   showCancelButton: true,
@@ -22,5 +11,5 @@ const defaultSwalOptions = {
 // }
 
 export default function (app: App) {
-  app.use(VueSweetalert2, defaultSwalOptions)
+  app.use(VueSweetalert2)
 }

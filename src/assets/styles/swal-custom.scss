@@ -1,0 +1,85 @@
+// swal-custom.scss
+
+// 🧩 Variables
+$swal-font-family: 'Vazir', sans-serif;
+$swal-font-size: 14px;
+$swal-title-size: 1.2rem;
+$swal-padding: .2rem;
+$swal-radius: .5rem;
+
+$swal-confirm-bg: rgb(var(--v-theme-primary));
+$swal-cancel-bg: #e0e0e0;
+$swal-cancel-color: #333;
+$swal-confirm-color: white;
+
+$swal-dark-bg: #2a2a2a;
+$swal-dark-text: #f0f0f0;
+$swal-dark-cancel-bg: #555;
+$swal-dark-cancel-color: white;
+
+// 🧾 Base
+.my-swal-popup {
+    font-family: $swal-font-family;
+    font-size: $swal-font-size;
+    padding: $swal-padding;
+    border-radius: $swal-radius;
+}
+
+.my-swal-title {
+    font-weight: bold;
+    font-size: $swal-title-size;
+}
+
+// ✅ Buttons
+.my-swal-confirm,
+.my-swal-cancel {
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 6px !important;
+    margin: 5px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.my-swal-confirm {
+    background-color: $swal-confirm-bg !important;
+    color: $swal-confirm-color !important;
+}
+
+.my-swal-cancel {
+    background-color: $swal-cancel-bg !important;
+    color: $swal-cancel-color !important;
+}
+
+// 📝 Inputs
+.swal2-input,
+.swal2-textarea {
+    font-size: $swal-font-size !important;
+    padding: 8px !important;
+    border-radius: 6px !important;
+}
+
+// 🌒 Dark Mode
+body.dark {
+    .my-swal-popup {
+        background-color: $swal-dark-bg;
+        color: $swal-dark-text;
+    }
+
+    .my-swal-cancel {
+        background-color: $swal-dark-cancel-bg !important;
+        color: $swal-dark-cancel-color !important;
+    }
+}

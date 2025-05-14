@@ -124,6 +124,42 @@ const updateAction = (dataModel: Record<string, any>) => {
 
 const deleteAction = async (item: baseDataTableModel, index: number) => {
   selectedItem.value.push(item.id)
+
+  const serviceError = shallowRef()
+
+  const result = await confirmSwal(
+    t('alert.deleteSelectedItem?'),
+    '',
+    t('$vuetify.confirmEdit.ok'),
+    t('$vuetify.confirmEdit.cancel'),
+    true, 'warning',
+    async () => {
+      try {
+        await $api((`${props.apiUrl}/`).replace('//', '/') + item.id, {
+          method: 'DELETE',
+        })
+      }
+      catch (error) {
+        serviceError.value = error
+      }
+    },
+  )
+
+  if (result.isConfirmed) {
+    const err = serviceError.value
+    if (err) {
+      if (err instanceof CustomFetchError && err.message)
+        toast.error(err.message)
+      else toast.error(t('httpstatuscodes.0'))
+    }
+    else {
+      refreshData()
+      toast.success(t('alert.deleteDataSuccess'))
+      emit('deletedItem', true)
+    }
+  }
+
+  return
   Swal.fire({
     titleText: t('alert.deleteSelectedItem?'),
     confirmButtonText: t('$vuetify.confirmEdit.ok'),

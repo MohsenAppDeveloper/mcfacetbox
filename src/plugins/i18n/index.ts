@@ -24,6 +24,7 @@ export const getI18n = () => {
   return _i18n
 }
 
+export const i18nGlobal = () => getI18n().global
 export default function (app: App) {
   app.use(getI18n())
 }

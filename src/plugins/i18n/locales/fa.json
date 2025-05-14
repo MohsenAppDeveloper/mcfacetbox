@@ -324,7 +324,7 @@
     "probleminLoadSearchResult":"مشکل در بارگذاری نتیجه جستجو بوجود آمد.",
 
     'specificNodeAdded':"گره (0) اضافه شد",
-    "specificItemDeleted":"آیا مورد '(0)' حذف شود",
+    "specificItemDeleted":"آیا مورد '(0)' حذف شود؟",
 
     'tryagainmin':"چند دقیقه دیگر تلاش کنید",
     "youmustselectoneperm":"باید حتما یک دسترسی را انتخاب کنید",
