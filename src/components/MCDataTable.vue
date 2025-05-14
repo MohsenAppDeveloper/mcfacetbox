@@ -158,56 +158,6 @@ const deleteAction = async (item: baseDataTableModel, index: number) => {
       emit('deletedItem', true)
     }
   }
-
-  return
-  Swal.fire({
-    titleText: t('alert.deleteSelectedItem?'),
-    confirmButtonText: t('$vuetify.confirmEdit.ok'),
-    cancelButtonText: t('$vuetify.confirmEdit.cancel'),
-    showConfirmButton: true,
-    showCancelButton: true,
-    showLoaderOnConfirm: true,
-    showCloseButton: true,
-    preConfirm: async () => {
-    //   const { serviceError } = await serviceDelete(item.id, props.apiUrl)
-      const serviceError = shallowRef()
-      try {
-        await $api((`${props.apiUrl}/`).replace('//', '/') + item.id, {
-          method: 'DELETE',
-        })
-      }
-      catch (error) {
-        serviceError.value = error
-
-        // if (error instanceof CustomFetchError && error.code > 0)
-        //   toast.error(error.message)
-        // else toast.error(t('httpstatuscodes.0'))
-      }
-
-      return { serviceError }
-    },
-    allowOutsideClick: false,
-  }).then(value => {
-    if (value.isConfirmed) {
-      if (value.value?.serviceError.value) {
-        if (value.value?.serviceError.value instanceof CustomFetchError && value.value?.serviceError.value.code > 0)
-          toast.error(value.value?.serviceError.value.message)
-        else toast.error(t('httpstatuscodes.0'))
-
-        // toast.error(t('alert.deleteDataFailed'))
-        emit('deletedItem', false)
-      }
-      else {
-        refreshData()
-        toast.success(t('alert.deleteDataSuccess'))
-        emit('deletedItem', true)
-      }
-      selectedItem.value.splice(index, 1)
-    }
-    else {
-      selectedItem.value.splice(index, 1)
-    }
-  })
 }
 
 const updateHighlightedItem = (index: number) => {
