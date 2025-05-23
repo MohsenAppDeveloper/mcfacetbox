@@ -4,12 +4,12 @@ import MCDialogBookSelect from '../dialogs/MCDialogBookSelect.vue'
 import type { GridResultFacet, IRootServiceError } from '@/types/baseModels'
 import { DataBoxType, MessageType, QueryRequestModel, SizeType } from '@/types/baseModels'
 import { HadithSearchResultItemModel, SearchResultItemModel } from '@/types/SearchResult'
-import type { IFacetBox, IHadithSearchResultItem, ISearchResultItem } from '@/types/SearchResult'
+import type { IFacetBox, IHadithSearchResultItem, ISearchResultItem, ITabSearchStateResult } from '@/types/SearchResult'
 import { useSelectedTree, useTree } from '@/store/treeStore'
 import { useDataShelfStateChanged } from '@/store/databoxStore'
 
-const hadithPageNumber = ref(1)
-const totalItemsHadith = ref(0)
+// const hadithPageNumber = ref(1)
+// const totalItemsHadith = ref(0)
 const sortBy = ref()
 const orderBy = ref()
 const { selectedNode } = useTree()
@@ -25,29 +25,60 @@ const toast = useToast()
 const isDialogSelectBookVisible = ref(false)
 const searchPhrase = ref('')
 const apiQueryParamData = reactive<QueryRequestModel>(new QueryRequestModel())
-const facetboxItemsHadith = ref<IFacetBox[]>([])
-const resultdataItemsHadith = ref<IHadithSearchResultItem[]>([])
-const loading = ref(false)
+
+// const facetboxItemsHadith = ref<IFacetBox[]>([])
+// const resultdataItemsHadith = ref<IHadithSearchResultItem[]>([])
+
+const resultDataOnState = reactive<Record<DataBoxType, ITabSearchStateResult>>({
+  [DataBoxType.hadith]: {
+    page: 1,
+    totalItems: 0,
+    facets: [],
+    selectedFacets: {},
+    results: [],
+    loading: false,
+  },
+  [DataBoxType.quran]: {
+    page: 1,
+    totalItems: 0,
+    facets: [],
+    selectedFacets: {},
+    results: [],
+    loading: false,
+  },
+  [DataBoxType.vocabulary]: {
+    page: 1,
+    totalItems: 0,
+    facets: [],
+    selectedFacets: {},
+    results: [],
+    loading: false,
+  },
+  [DataBoxType.text]: undefined,
+})
+
+// const loading = ref(false)
 const maximizBoxOverlay = ref(false)
 const currentitem = ref<ISearchResultItem>(new SearchResultItemModel())
 
 // const loading = ref(false)
 const selectedBooks = ref<string[]>([])
-const selectedFacetItemsHadith = reactive<Record<string, string[]>>({})
+
+// const selectedFacetItemsHadith = reactive<Record<string, string[]>>({})
 
 const { stop } = useIntersectionObserver(
   [loadmorestart, loadmoreend],
   ([entrystart, entryend], observerElement) => {
-    if ((entrystart?.isIntersecting || entryend?.isIntersecting) && (resultdataItemsHadith.value.length <= totalItemsHadith.value))
+    if ((entrystart?.isIntersecting || entryend?.isIntersecting) && (resultDataOnState[dataTabValue.value].results.length <= resultDataOnState[dataTabValue.value].totalItems))
       ispaginationFullSize.value = true
   },
 )
 
 const { isScrolling: isscrolling, arrivedState: scrollarriveState } = useScroll(mainDataResult)
 
-const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi(createUrl(`app/source/${DataBoxType[dataTabValue.value]}`, {
-  query: apiQueryParamData,
-}), { immediate: false })
+// const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi(createUrl(`app/source/${DataBoxType[dataTabValue.value]}`, {
+//   query: apiQueryParamData,
+// }), { immediate: false })
 
 watch(isscrolling, () => {
   //   if (!isscrolling.value && (scrollarriveState.bottom || scrollarriveState.top) && !ispaginationFullSize.value)
@@ -57,78 +88,80 @@ watch(isscrolling, () => {
     ispaginationFullSize.value = false
 })
 watch(() => apiQueryParamData.PageSize, async (newval, oldval) => {
-  if (newval !== oldval)
-    console.log('pagesize', hadithPageNumber, newval)
-
+  if (newval === oldval)
+    return
   await runSearch(false)
 })
-watch(hadithPageNumber, async newval => {
+watch(() => resultDataOnState[dataTabValue.value].page, async newval => {
   if ((newval !== apiQueryParamData.PageNumber)) {
     apiQueryParamData.PageNumber = newval
-    console.log('pagenumber', hadithPageNumber, newval)
+    console.log('pagenumber', resultDataOnState[dataTabValue.value].page, newval)
 
     await runSearch(false)
   }
 })
-watch(selectedFacetItemsHadith, async newval => {
+watch(resultDataOnState[dataTabValue.value].selectedFacets, async newval => {
   let facetChange = false
-
+  console.log('selectedfacet', resultDataOnState[dataTabValue.value])
   Object.keys(newval).forEach(key => {
-    console.log('facetboxx', !apiQueryParamData[key], apiQueryParamData[key] !== newval[key], apiQueryParamData[key], newval[key])
+    // console.log('facetboxx', !apiQueryParamData[key], JSON.stringify(apiQueryParamData[key]) !== JSON.stringify(newval[key]), JSON.stringify(apiQueryParamData[key]), JSON.stringify(newval[key]))
     if (!apiQueryParamData[key] || JSON.stringify(apiQueryParamData[key]) !== JSON.stringify(newval[key])) {
       apiQueryParamData[key] = newval[key]
       facetChange = true
     }
   })
+  console.log('newfacetkey', facetChange)
+
   if (facetChange)
     await runSearch(true)
-}, { flush: 'post' })
-
-onFetchResponse(() => {
-  try {
-    const resultTemp = resultData.value as GridResultFacet<IHadithSearchResultItem>
-
-    console.log('result', resultTemp)
-
-    totalItemsHadith.value = resultTemp.totalCount
-    resetData()
-
-    // resultdataItemsHadith.value = [...resultTemp.items]
-    setTimeout(() => {
-      resultTemp.items.forEach(element => {
-        resultdataItemsHadith.value.push(new HadithSearchResultItemModel(element.highLight, element.id, element.qaelTitleList, element.noorLibLink, element.qaelList, element.bookTitle, element.bookTitleShort, element.sourceId, element.pageNum, element.vol))
-
-      // console.log('text', element.highlightText)
-      })
-      resultTemp.facets.forEach(element => {
-        if (element.itemList && element.itemList.length > 0)
-          facetboxItemsHadith.value.push(element)
-
-      // console.log('text', element.highlightText)
-      })
-      loading.value = false
-    }, 500)
-  }
-  catch (error) {
-    console.log('error', error)
-  }
 })
-onFetchError(error => {
-  if (isNullOrUndefined(error) || error.name === 'AbortError')
-    return
-  try {
-    const result = resultData.value as IRootServiceError
 
-    if (result && result.error && result.error.message)
-      toast.error(result.error.message)
-    else
-      toast.error(t('alert.probleminGetExcerpt'))
-  }
-  catch {
-    toast.error(t('alert.probleminLoadExcerpt'))
-  }
-  loading.value = false
-})
+// onFetchResponse(() => {
+//   try {
+//     const resultTemp = resultData.value as GridResultFacet<ISearchResultItem>
+
+//     console.log('result', resultTemp)
+
+//     totalItemsHadith.value = resultTemp.totalCount
+//     resetData()
+
+//     // resultdataItemsHadith.value = [...resultTemp.items]
+//     setTimeout(() => {
+//       resultTemp.items.forEach(element => {
+//         resultdataItemsHadith.value.push(new HadithSearchResultItemModel(element.highLight, element.id, element.qaelTitleList, element.noorLibLink, element.qaelList, element.bookTitle, element.bookTitleShort, element.sourceId, element.pageNum, element.vol))
+
+//       // console.log('text', element.highlightText)
+//       })
+//       resultTemp.facets.forEach(element => {
+//         if (element.itemList && element.itemList.length > 0)
+//           facetboxItemsHadith.value.push(element)
+
+//       // console.log('text', element.highlightText)
+//       })
+//       loading.value = false
+//     }, 500)
+//   }
+//   catch (error) {
+//     console.log('error', error)
+//   }
+// })
+
+// onFetchError(error => {
+//   if (isNullOrUndefined(error) || error.name === 'AbortError')
+//     return
+//   try {
+//     const result = resultData.value as IRootServiceError
+
+//     if (result && result.error && result.error.message)
+//       toast.error(result.error.message)
+//     else
+//       toast.error(t('alert.probleminGetExcerpt'))
+//   }
+//   catch {
+//     toast.error(t('alert.probleminLoadExcerpt'))
+//   }
+//   loading.value = false
+// })
 
 // function loadMoreCollectingData(options: { side: InfiniteScrollSide; done: (status: InfiniteScrollStatus) => void }) {
 //   if (options.side === InfiniteScrollSide.start) {
@@ -182,13 +215,17 @@ function handleSearchKeydown(event: KeyboardEvent) {
 }
 function resetData() {
   // apiQueryParamData.resetDynamicFields()
-  resultdataItemsHadith.value.splice(0)
-  facetboxItemsHadith.value.splice(0)
+  resultDataOnState[dataTabValue.value].results.splice(0)
+  resultDataOnState[dataTabValue.value].facets.splice(0)
 }
 
 async function runSearch(resetToDefault: boolean) {
+  console.log('runsearch', resetToDefault)
+
   if (searchPhrase.value.length < 2)
     return
+  const contentType = dataTabValue.value
+
   if (resetToDefault) {
     /** مقادیر فست ها و صفحه بندی را به حالت اولیه برمیگرداند */
     if (apiQueryParamData.Filter !== searchPhrase.value)
@@ -196,10 +233,61 @@ async function runSearch(resetToDefault: boolean) {
     apiQueryParamData.SearchIn = 1
     apiQueryParamData.Filter = searchPhrase.value
     apiQueryParamData.PageNumber = 1
-    hadithPageNumber.value = 1
+    resultDataOnState[contentType].page = 1
   }
-  loading.value = true
-  await fetchData()
+
+  apiQueryParamData.PageNumber = resultDataOnState[contentType].page
+  resultDataOnState[contentType].loading = true
+  try {
+    const { data } = await useApi(createUrl(`app/source/${DataBoxType[contentType]}`, {
+      query: apiQueryParamData,
+    }), { refetch: false })
+
+    const resultCastedData = data.value as GridResultFacet<ISearchResultItem>
+
+    resetData()
+    resultDataOnState[contentType].totalItems = resultCastedData.totalCount
+    if (resultCastedData.items.length > 0) {
+      resultDataOnState[contentType].results = resultCastedData.items.map(item => {
+        switch (contentType) {
+          case DataBoxType.hadith:
+          return new HadithSearchResultItemModel(item.highLight, item.id, item.qaelTitleList, item.noorLibLink, item.qaelList, item.bookTitle, item.bookTitleShort, item.sourceId, item.pageNum, item.vol)
+        case DataBoxType.quran:
+          return new HadithSearchResultItemModel()
+        case DataBoxType.vocabulary:
+          return new HadithSearchResultItemModel()
+          default:
+            return item
+        }
+      })
+      resultDataOnState[contentType].facets = resultCastedData.facets || []
+    }
+    resultDataOnState[contentType].loading = false
+  }
+  catch (error) {
+    // console.log('error', error, resultDataOnState)
+    resultDataOnState[contentType].loading = false
+
+    // const result = resultDataOnState as IRootServiceError
+
+    // if (result && result.error && result.error.message)
+    //   toast.error(result.error.message)
+    // else
+    //   toast.error(t('alert.probleminGetExcerpt'))
+    toast.error(t('alert.probleminSearch'))
+  }
+
+//   if (resetToDefault) {
+//     /** مقادیر فست ها و صفحه بندی را به حالت اولیه برمیگرداند */
+//     if (apiQueryParamData.Filter !== searchPhrase.value)
+//       apiQueryParamData.resetDynamicFields()
+//     apiQueryParamData.SearchIn = 1
+//     apiQueryParamData.Filter = searchPhrase.value
+//     apiQueryParamData.PageNumber = 1
+//     hadithPageNumber.value = 1
+//   }
+//   loading.value = true
+//   await fetchData()
 }
 
 const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
@@ -224,7 +312,7 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
       <VCol cols="12" md="3" />
       <VCol cols="12" md="6" class="mx-auto">
         <VTextField
-          v-model="searchPhrase" :placeholder="$t('search')" class="search-bar" single-line clearable :loading="loading"
+          v-model="searchPhrase" :placeholder="$t('search')" class="search-bar" single-line clearable :loading="resultDataOnState[dataTabValue].loading"
           @keydown="handleSearchKeydown"
         >
           <template #append-inner>
@@ -253,7 +341,7 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
     <VRow no-gutters dense class="align-center" justify="space-between">
       <VTabs v-model="dataTabValue" density="compact" hide-slider class="data-collection-tabs">
         <VTab :value="DataBoxType.hadith" variant="elevated" rounded="sm">
-          {{ $t('hadith') }} <span v-if="totalItemsHadith > 0" class="pr-1">({{ totalItemsHadith.toString() }})</span>
+          {{ $t('hadith') }} <span v-if="resultDataOnState[dataTabValue].totalItems > 0" class="pr-1">({{ resultDataOnState[dataTabValue].totalItems.toString() }})</span>
         </VTab>
         <VTab :value="DataBoxType.quran" variant="elevated" rounded="sm">
           {{ $t('ayah') }}
@@ -267,17 +355,17 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
       </VBtn>
     </VRow>
     <VDivider />
-    <MCLoading :showloading="loading" :loadingsize="SizeType.MD" />
+    <MCLoading :showloading="resultDataOnState[dataTabValue].loading" :loadingsize="SizeType.MD" />
 
     <VTabsWindow ref="mainDataResult" v-model="dataTabValue" class="mc-data-scroll">
       <VTabsWindowItem :value="DataBoxType.hadith" :transition="false">
         <!-- <VFadeTransition> -->
-        <VRow v-if="resultdataItemsHadith.length > 0 && !loading" dense>
+        <VRow v-if="resultDataOnState[dataTabValue].results.length > 0 && !resultDataOnState[dataTabValue].loading" dense>
           <VCol md="3">
-            <div v-if="facetboxItemsHadith.length > 0">
+            <div v-if="resultDataOnState[dataTabValue].facets.length > 0">
               <MCFacetBox
-                v-for="item in facetboxItemsHadith"
-                :key="item.key" v-model:selected-items="selectedFacetItemsHadith[item.key]" :istree="item.isTree"
+                v-for="item in resultDataOnState[dataTabValue].facets"
+                :key="item.key" v-model:selected-items="resultDataOnState[dataTabValue].selectedFacets[item.key]" :istree="item.isTree"
                 :scroll-item-count="item.scrollSize" :searchable="item.itemList.length > 5 ? true : false"
                 :dataitems="item.itemList" :facettitle="item.title" class="mb-2"
               />
@@ -285,13 +373,13 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
           </VCol>
           <VCol md="9">
             <div class="pl-2 py-2">
-              <div v-show="!loading" ref="loadmorestart" />
+              <div v-show="!resultDataOnState[dataTabValue].loading" ref="loadmorestart" />
               <MCSearchResultBox
-                v-for="(item) in resultdataItemsHadith" :key="item.id" :box-type="dataTabValue"
+                v-for="(item) in resultDataOnState[dataTabValue].results" :key="item.id" :box-type="dataTabValue"
                 :selected-node="selectedNode" :selected-tree-id="selectedTreeItem.id" :dataitem="item"
                 @message-has-occured="searchResultBoxMessageHandle" @content-to-node-added="contentToNodeAdded" @maximize-search-tab-box="maximizeSearchTabBox"
               />
-              <div v-show="!loading" ref="loadmoreend" />
+              <div v-show="!resultDataOnState[dataTabValue].loading" ref="loadmoreend" />
             </div>
           </VCol>
         </VRow>
@@ -304,11 +392,11 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
     <VRow dense>
       <VCol md="12">
         <MCTablePagination
-          v-if="resultdataItemsHadith.length > 0"
-          v-model:page="hadithPageNumber"
+          v-if="resultDataOnState[dataTabValue].results.length > 0"
+          v-model:page="resultDataOnState[dataTabValue].page"
           v-model:full-size="ispaginationFullSize" v-model:items-per-page="apiQueryParamData.PageSize"
           :divider="false"
-          class="paging-container" :total-items="totalItemsHadith === undefined ? 0 : totalItemsHadith"
+          class="paging-container" :total-items="resultDataOnState[dataTabValue].totalItems"
         />
       </VCol>
     </VRow>

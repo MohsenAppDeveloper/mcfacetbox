@@ -4,7 +4,7 @@ import HadithView from './MCHadithViewBox.vue'
 import QuranView from './MCAyahViewBox.vue'
 import VocabView from './MCVocabViewBox.vue'
 import type { ISimpleTreeActionable } from '@/types/baseModels'
-import { DataBoxType, MessageType } from '@/types/baseModels'
+import { DataBoxType, MessageType, SizeType } from '@/types/baseModels'
 import { DataShelfBoxModelNew } from '@/types/dataShelf'
 import type { IDataShelfBoxNew } from '@/types/dataShelf'
 import type { ISearchResultItem } from '@/types/SearchResult'
@@ -153,6 +153,8 @@ function openBoxLink() {
 
 <template>
   <VCard v-no-context-menu class="h-100 w-100 mc-search-result" :class="{ 'not-expanded': !isExpanded }">
+    <MCLoading v-if="loadinglocal" :showloading="loadinglocal" :loadingsize="SizeType.MD" />
+
     <MCDialogSelectNode
       v-if="dialogSelectNodeVisible" v-model:is-dialog-visible="dialogSelectNodeVisible"
       :selected-tree-id="props.selectedTreeId" @nodehasbeenselected="(nodeid) => addContentToNode(new DataShelfBoxModelNew(0, props.selectedTreeId, nodeid, props.dataitem.text, '', [], [], props.dataitem.id.toString()))"

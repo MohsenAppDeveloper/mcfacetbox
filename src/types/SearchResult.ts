@@ -163,6 +163,14 @@ export class SearchResultItemModel implements ISearchResultItem {
     this.text = text
   }
 }
+export interface ITabSearchStateResult {
+  page: number
+  totalItems: number
+  facets: IFacetBox[]
+  selectedFacets: Record<string, string[]>
+  results: ISearchResultItem[]
+  loading: boolean
+}
 
 // export const qaelSearchResultItemSchema = z.object({
 //   id: z.number(),

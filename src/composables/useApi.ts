@@ -75,7 +75,8 @@ export const useApi = createFetch({
 
         }
       }
-      console.log('fetcherror', ctx)
+
+      //   console.log('fetcherror', ctx)
 
       return { data: parsedData, response }
     },
