@@ -90,8 +90,8 @@ const apiurl = computed(() => {
 
 <template>
   <VDialog
-    :scrim="false"
-    :width="$vuetify.display.smAndDown ? 'auto' : DialogSizeXS" :model-value="props.isDialogVisible"
+    v-if="props.isDialogVisible"
+    :scrim="false" :width="$vuetify.display.smAndDown ? 'auto' : DialogSizeXS" :model-value="props.isDialogVisible"
     :target="[locX, locY]" location-strategy="connected" @update:model-value="onReset(true)"
   >
     <DialogCloseBtn icon-size="16px" :disabled="loading || opening" @click="onReset(true)" />

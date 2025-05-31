@@ -137,7 +137,7 @@ defineExpose({ changeTree })
 
 <template>
   <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : DialogSizeSM" :model-value="props.isDialogVisible"
+    v-if="props.isDialogVisible" :width="$vuetify.display.smAndDown ? 'auto' : DialogSizeSM" :model-value="props.isDialogVisible"
     persistent @update:model-value="onReset"
   >
     <!-- 👉 Dialog close btn -->

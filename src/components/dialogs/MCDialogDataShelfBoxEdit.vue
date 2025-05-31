@@ -197,7 +197,7 @@ function checkForRemovedFootnotes() {
 
 <template>
   <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : 900" :model-value="props.isDialogVisible"
+    v-if="props.isDialogVisible" :width="$vuetify.display.smAndDown ? 'auto' : 900" :model-value="props.isDialogVisible"
     persistent
   >
     <!-- 👉 Dialog close btn -->

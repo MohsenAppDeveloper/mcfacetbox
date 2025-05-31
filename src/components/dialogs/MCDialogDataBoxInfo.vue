@@ -46,7 +46,7 @@ async function getDataBoxItem() {
 
 <template>
   <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : DialogSizeSM" :model-value="props.isDialogVisible"
+    v-if="props.isDialogVisible" :width="$vuetify.display.smAndDown ? 'auto' : DialogSizeSM" :model-value="props.isDialogVisible"
     persistent
   >
     <DialogCloseBtn :disabled="loading" @click="emit('update:isDialogVisible', false)" />

@@ -179,7 +179,7 @@ const formattedField = (list: Record<string, any>[], fieldName: string) => {
 
 <template>
   <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : 900" :model-value="props.isDialogVisible"
+    v-if="props.isDialogVisible" :width="$vuetify.display.smAndDown ? 'auto' : 900" :model-value="props.isDialogVisible"
     class="mc-dialog-bookselect" persistent @update:model-value="onReset(true)"
   >
     <DialogCloseBtn :disabled="loadingdata" @click="onReset(true)" />

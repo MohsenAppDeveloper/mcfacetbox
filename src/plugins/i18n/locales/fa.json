@@ -19,6 +19,8 @@
   'hadith': 'حدیث',
   'ayah': 'آیه',
   'word': 'لغت',
+  "showdetails":"نمایش جزییات",
+  "openlink":"بازکردن آدرس",
   "relatedhadith":"احادیث مرتبط",
   "qael":"قائل",
   "address":"آدرس",

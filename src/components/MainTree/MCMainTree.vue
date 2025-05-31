@@ -39,11 +39,6 @@ const hasDividerDraggableBefore = ref(false)
 const hasDividerDraggableAfter = ref(false)
 const sourceDraggableItem = ref<ISimpleTreeActionable | null>(null)
 const activeDraggableItem = ref<ISimpleTreeActionable | null>(null)
-
-// const currentNodeId = ref(0)
-
-// const treeIndex = useTreeIndex()
-
 const editableNode = ref()
 const activeSearch = ref(false)
 const showDisconnectedDatabox = ref(false)
@@ -583,15 +578,6 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
           alert('You click a menu item')
         },
       },
-
-    //   {
-    //     label: 'A submenu',
-    //     children: [
-    //       { label: 'Item1' },
-    //       { label: 'Item2' },
-    //       { label: 'Item3' },
-    //     ],
-    //   },
     ],
   })
 }
@@ -706,13 +692,6 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
         activatable :items="treeData" expand-icon="mdi-menu-left" item-value="id"
         item-title="title" density="compact" :lines="false" @keydown="handleTreeViewKeydown"
       >
-        <!--
-          <template #item=>
-          <div class="w-100 h-100 my-2" @mouseup="treeDividerMouseUp">
-          <VDivider />
-          </div>
-          </template>
-        -->
         <template #title="{ item }">
           <div
             :class="`no-select ${item.selected ? 'selected' : ''}`"
@@ -773,11 +752,6 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
           </div>
         </template>
       </VTreeview>
-      <!--
-        <div v-if="treeData.length > 0" class="tree-title">
-        <span>{{ $t('reservenode') }}</span>
-        </div>
-      -->
     </div>
     <VBtn
       v-if="selectedNode.id
@@ -789,13 +763,6 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleTreeActionable) => {
         </span>
       </p>
     </VBtn>
-    <!--
-      <Loading
-      v-model:active="isLoading"
-      can-cancel
-      :is-full-page="false"
-      />
-    -->
   </div>
 </template>
 

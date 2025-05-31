@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ContextMenu from '@imengyu/vue3-context-menu'
 import Swal from 'sweetalert2'
+import { VFadeTransition } from 'vuetify/lib/components/index.mjs'
 import { DataShelfBoxModelView } from '@/types/dataShelf'
 import type { IDataShelfBoxView, IOrderChangedResponse } from '@/types/dataShelf'
 import { MessageType, SizeType } from '@/types/baseModels'
@@ -13,7 +14,7 @@ const dialogDataBoxInfo = ref(false)
 const dialogSelectNodeVisible = ref(false)
 const databoxItem = defineModel<IDataShelfBoxView>({ default: new DataShelfBoxModelView() })
 const { t } = useI18n({ useScope: 'global' })
-const showTools = ref(true)
+const showTools = ref(false)
 
 // const toast = useToast()
 const databox = ref()
@@ -331,7 +332,7 @@ defineExpose({ increaseOrder, decreaseOrder })
 </script>
 
 <template>
-  <div class="d-flex" @mouseenter="showTools = true" @mouseleave="">
+  <div class="d-flex" @mouseenter="showTools = true" @mouseleave="showTools = false">
     <VCard ref="databox" :class="[highlightClass]" style="overflow: visible !important;">
       <MCLoading :showloading="loadinglocal" :loadingsize="SizeType.MD" />
 
@@ -357,153 +358,155 @@ defineExpose({ increaseOrder, decreaseOrder })
           <!-- position-absolute px-2 d-flex flex-column top-0 left-0 -->
         </VRow>
       </VCardText>
-      <div class="box-state-container">
-        <VTooltip location="right center">
-          <template #activator="{ props }">
-            <VIcon v-if="(databoxItem?.node?.id ?? 0) > 0" icon="tabler-plug-connected-x" size="12" class="mb-1" v-bind="props" />
-          </template>
-          {{ formatString($t('datashelfbox.connectednode'), databoxItem?.node?.title) }}
-        </VTooltip>
+      <VFabTransition>
+        <div v-if="showTools" class="box-state-container">
+          <VTooltip location="right center">
+            <template #activator="{ props }">
+              <VIcon v-if="(databoxItem?.node?.id ?? 0) > 0" icon="tabler-plug-connected-x" size="12" class="mb-1" v-bind="props" />
+            </template>
+            {{ formatString($t('datashelfbox.connectednode'), databoxItem?.node?.title) }}
+          </VTooltip>
 
-        <VIcon v-if="databoxItem?.hasDescription" icon="tabler-message" size="12" class="mb-1" />
-        <VTooltip location="right center">
-          <template #activator="{ props }">
-            <VIcon
-              v-if="(databoxItem?.labelCount ?? 0) > 0"
-              icon="tabler-tag"
-              size="12"
-              class="mb-1"
-              v-bind="props"
-            />
-          </template>
-          {{ formatString($t('datashelfbox.labelscount'), databoxItem?.labelCount.toString()) }}
-        </VTooltip>
-      </div>
-      <VExpandTransition>
-        <VRow v-if="showTools" no-gutters class="border-t-sm tools" justify="space-between">
-          <div>
-            <VRow no-gutters class="btn-box data-box-toolbar">
-              <VBtn icon size="25" variant="text" @click="">
-                <VIcon icon="tabler-pin" size="20" />
-                <VTooltip
-                  activator="parent"
-                  location="top center"
-                >
-                  {{ $t('datashelfbox.pintotop') }}
-                </VTooltip>
-              </VBtn>
-              <VBtn icon size="25" variant="text" @click="dialogDataBoxInfo = true">
-                <VIcon icon="tabler-info-circle" size="20" />
-                <VTooltip
-                  activator="parent"
-                  location="top center"
-                >
-                  {{ $t('datashelfbox.about') }}
-                </VTooltip>
-              </VBtn>
-              <VBtn icon size="25" variant="text" @click="isDialogDataShelfBoxEdit = true">
-                <VIcon icon="tabler-edit" size="20" />
-                <VTooltip
-                  activator="parent"
-                  location="top center"
-                >
-                  {{ $t('datashelfbox.edit') }}
-                </VTooltip>
-              </VBtn>
-              <VBtn icon size="25" variant="text" @click="">
-                <VIcon icon="tabler-box-multiple" size="20" />
-                <VTooltip
-                  activator="parent"
-                  location="top center"
-                >
-                  {{ $t('datashelfbox.duplicate') }}
-                </VTooltip>
-              </VBtn>
-              <VBtn v-if="databoxItem.node && databoxItem.node.id > 0" icon size="25" variant="text" @click="disconnectSelectedExcerpt">
-                <VIcon icon="tabler-plug-connected-x" size="20" color="error" />
-                <VTooltip
-                  activator="parent"
-                  location="top center"
-                >
-                  {{ $t('datashelfbox.disconnect') }}
-                </VTooltip>
-              </VBtn>
-              <VBtn icon size="25" variant="text" @click="dialogSelectNodeVisible = true">
-                <VIcon icon="tabler-plug-connected" size="20" />
-                <VTooltip
-                  activator="parent"
-                  location="top center"
-                >
-                  {{ $t('datashelfbox.connecttonode') }}
-                </VTooltip>
-              </VBtn>
-              <VBtn icon size="25" variant="text" color="error" @click="deleteSelectedExcerpt">
-                <VIcon icon="tabler-trash-x" size="20" />
-                <VTooltip
-                  activator="parent"
-                  location="top center"
-                >
-                  {{ $t('datashelfbox.delete') }}
-                </VTooltip>
-              </VBtn>
-              <VBtn ref="btnlabel" icon size="25" variant="text" @click="addlabels">
-                <VIcon icon="tabler-tag" size="20" />
-                <VTooltip
-                  activator="parent"
-                  location="top center"
-                >
-                  {{ $t('datashelfbox.addlabel') }}
-                </VTooltip>
-              </VBtn>
-              <VBtn icon size="25" variant="text" @click="addcomment">
-                <VIcon icon="tabler-square-plus" size="20" />
-                <VTooltip
-                  activator="parent"
-                  location="top center"
-                >
-                  {{ $t('datashelfbox.addcomment') }}
-                </VTooltip>
-              </VBtn>
+          <VIcon v-if="databoxItem?.hasDescription" icon="tabler-message" size="12" class="mb-1" />
+          <VTooltip location="right center">
+            <template #activator="{ props }">
+              <VIcon
+                v-if="(databoxItem?.labelCount ?? 0) > 0"
+                icon="tabler-tag"
+                size="12"
+                class="mb-1"
+                v-bind="props"
+              />
+            </template>
+            {{ formatString($t('datashelfbox.labelscount'), databoxItem?.labelCount.toString()) }}
+          </VTooltip>
+        </div>
+      </VFabTransition>
+      <VFadeTransition>
+        <!-- <VRow v-if="showTools" no-gutters class="border-t-sm tools" justify="space-between"> -->
+        <div v-if="showTools" class="box-state-toolbar">
+          <!-- <VRow no-gutters class="btn-box data-box-toolbar"> -->
+          <VBtn icon size="25" variant="text" @click="">
+            <VIcon icon="tabler-pin" size="20" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ $t('datashelfbox.pintotop') }}
+            </VTooltip>
+          </VBtn>
+          <VBtn icon size="25" variant="text" @click="dialogDataBoxInfo = true">
+            <VIcon icon="tabler-info-circle" size="20" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ $t('datashelfbox.about') }}
+            </VTooltip>
+          </VBtn>
+          <VBtn icon size="25" variant="text" @click="isDialogDataShelfBoxEdit = true">
+            <VIcon icon="tabler-edit" size="20" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ $t('datashelfbox.edit') }}
+            </VTooltip>
+          </VBtn>
+          <VBtn icon size="25" variant="text" @click="">
+            <VIcon icon="tabler-box-multiple" size="20" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ $t('datashelfbox.duplicate') }}
+            </VTooltip>
+          </VBtn>
+          <VBtn v-if="databoxItem.node && databoxItem.node.id > 0" icon size="25" variant="text" @click="disconnectSelectedExcerpt">
+            <VIcon icon="tabler-plug-connected-x" size="20" color="error" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ $t('datashelfbox.disconnect') }}
+            </VTooltip>
+          </VBtn>
+          <VBtn icon size="25" variant="text" @click="dialogSelectNodeVisible = true">
+            <VIcon icon="tabler-plug-connected" size="20" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ $t('datashelfbox.connecttonode') }}
+            </VTooltip>
+          </VBtn>
+          <VBtn icon size="25" variant="text" color="error" @click="deleteSelectedExcerpt">
+            <VIcon icon="tabler-trash-x" size="20" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ $t('datashelfbox.delete') }}
+            </VTooltip>
+          </VBtn>
+          <VBtn ref="btnlabel" icon size="25" variant="text" @click="addlabels">
+            <VIcon icon="tabler-tag" size="20" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ $t('datashelfbox.addlabel') }}
+            </VTooltip>
+          </VBtn>
+          <VBtn icon size="25" variant="text" @click="addcomment">
+            <VIcon icon="tabler-square-plus" size="20" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ $t('datashelfbox.addcomment') }}
+            </VTooltip>
+          </VBtn>
 
-              <VBtn icon size="25" variant="text" @click="">
-                <VIcon icon="tabler-circles-relation" size="20" />
-                <VTooltip
-                  activator="parent"
-                  location="top center"
-                >
-                  {{ $t('datashelfbox.showrelateddata') }}
-                </VTooltip>
-              </VBtn>
+          <VBtn icon size="25" variant="text" @click="">
+            <VIcon icon="tabler-circles-relation" size="20" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ $t('datashelfbox.showrelateddata') }}
+            </VTooltip>
+          </VBtn>
 
-              <VBtn icon size="25" variant="text" @click="">
-                <VIcon icon="tabler-refresh" size="20" />
-                <VTooltip
-                  activator="parent"
-                  location="top center"
-                >
-                  {{ $t('datashelfbox.refreshtobase') }}
-                </VTooltip>
-              </VBtn>
+          <VBtn icon size="25" variant="text" @click="">
+            <VIcon icon="tabler-refresh" size="20" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ $t('datashelfbox.refreshtobase') }}
+            </VTooltip>
+          </VBtn>
 
-              <VBtn icon size="25" variant="text" @click="">
-                <VIcon icon="tabler-history" size="20" />
-                <VTooltip
-                  activator="parent"
-                  location="top center"
-                >
-                  {{ $t('datashelfbox.showhistory') }}
-                </VTooltip>
-              </VBtn>
+          <VBtn icon size="25" variant="text" @click="">
+            <VIcon icon="tabler-history" size="20" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ $t('datashelfbox.showhistory') }}
+            </VTooltip>
+          </VBtn>
 
-              <span>
-                {{ databoxItem?.priority }}
-              </span>
-            </VRow>
-          </div>
+          <span>
+            {{ databoxItem?.priority }}
+          </span>
+          <!-- </VRow> -->
+        </div>
 
         <!-- @node-added="nodeItemAdded" @node-added-failed="nodeaddfailed" -->
-        </VRow>
-      </VExpandTransition>
+        <!-- </VRow> -->
+      </VFadeTransition>
     </VCard>
     <MCDialogSelectNode
       v-if="dialogSelectNodeVisible" v-model:is-dialog-visible="dialogSelectNodeVisible"
