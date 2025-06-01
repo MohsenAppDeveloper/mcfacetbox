@@ -213,7 +213,7 @@ function openBoxLink() {
             activator="parent"
             location="top center"
           >
-            {{ $t('close') }}
+            {{ $t('$vuetify.close') }}
           </VTooltip>
         </VBtn>
       </div>

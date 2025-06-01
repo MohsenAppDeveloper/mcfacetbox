@@ -67,7 +67,7 @@ function paginationMouseEnter() {
     </VBtn>
     <VDivider v-if="props.divider" />
 
-    <div class="d-flex align-center justify-sm-space-between justify-center flex-wrap gap-1 px-1 py-0">
+    <div class="d-flex align-center justify-sm-space-between justify-center flex-wrap gap-1 px-1 py-0" style="font-size: smaller;">
       <VSlideYReverseTransition>
         <p v-if="showNumber && !showPaging" class=" mb-0" @mouseenter="paginationMouseEnter">
           {{ paginationMeta({ page, itemsPerPage }, totalItems, $t("Show"), $t("to"), $t("of"), $t("entries")) }}
@@ -79,6 +79,7 @@ function paginationMouseEnter() {
             {{ paginationMeta({ page, itemsPerPage }, totalItems, $t("Show"), $t("to"), $t("of"), $t("entries")) }}
           </p>
           <VPagination
+            density="compact"
             :model-value="page" active-color="primary" :length="Math.ceil(totalItems / itemsPerPage)"
             :total-visible="$vuetify.display.xs ? 1 : Math.min(Math.ceil(totalItems / itemsPerPage), 3)"
             @update:model-value="updatePage"
@@ -87,7 +88,8 @@ function paginationMouseEnter() {
             <p class="text-body-1 mb-0">
               {{ $t('Show') }}
             </p>
-            <AppSelect
+            <VSelect
+              density="compact"
               :model-value="itemsPerPage"
               :items="[
                 { value: 10, title: '10' },

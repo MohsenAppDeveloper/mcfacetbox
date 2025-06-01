@@ -44,6 +44,7 @@ const isDialogDataShelfBoxEdit = ref(false)
 const facettimeout: ReturnType<typeof setTimeout> | null = null
 const facetinterval = ref(3000)
 const { t } = useI18n({ useScope: 'global' })
+const loadingdata = ref(false)
 
 // const loadmore = ref(null)
 const toast = useToast()
@@ -53,9 +54,9 @@ const route = useRoute()
 const router = useRouter()
 const ispaginationFullSize = ref(false)
 
-const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi(createUrl('app/excerpt', {
-  query: apiQueryParamtData,
-}), { immediate: false, refetch: false })
+// const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi(createUrl('app/excerpt', {
+//   query: apiQueryParamtData,
+// }), { immediate: false, refetch: false })
 
 const { stop } = useIntersectionObserver(
   [loadmorestart, loadmoreend],
@@ -152,7 +153,7 @@ function resetData() {
   selectAll.value.state = SelectAllState.Deselect
   selectAll.value.count = 0
   resultdataItems.value = []
-  facetboxItems.value = []
+  facetboxItems.value.splice(0)
   currentNodeId.value = selectedNode.id
 }
 watch(selectAll.value, () => {
@@ -209,59 +210,92 @@ watch(shelfState.lastState, async () => {
   catch (error) {
   }
 })
-onFetchResponse(() => {
-//   response.json().then(value => {
-  try {
-    const result = resultData.value as GridResultFacet<IDataShelfBoxView>
 
-    resetData()
+// onFetchResponse(() => {
+// //   response.json().then(value => {
+//   try {
+//     const result = resultData.value as GridResultFacet<IDataShelfBoxView>
 
-    totalItems.value = result.totalCount
-    facetboxItems.value = [...result.facets]
+//     resetData()
 
-    resultdataItems.value = [...result.items]
+//     totalItems.value = result.totalCount
+//     setTimeout(() => {
+//       facetboxItems.value.push(...result.facets)
 
-    // if (isUndefined(resultdataItems.value))
-    //   toast.error(t('alert.probleminGetExcerpt'))
+//       resultdataItems.value = [...result.items]
 
-    //   if ((result.items.length ?? 0) <= 0)
-    //     toast.info(t('alert.resultNotFound'))
-  }
-  catch (error) {
-    toast.error(t('alert.probleminLoadExcerpt'))
-  }
+//       //   activefilter.value = !activefilter.value
 
-  // loading.value = true
-//   })
-})
+//     //   activefilter.value = !activefilter.value
+//     }, 1000)
 
-onFetchError(error => {
-  if (isNullOrUndefined(error) || error.name === 'AbortError')
-    return
+//     // if (isUndefined(resultdataItems.value))
+//     //   toast.error(t('alert.probleminGetExcerpt'))
 
-  //   console.log('responseerror', error.name)
+//     //   if ((result.items.length ?? 0) <= 0)
+//     //     toast.info(t('alert.resultNotFound'))
+//   }
+//   catch (error) {
+//     toast.error(t('alert.probleminLoadExcerpt'))
+//   }
 
-  //   error.json().then(value => {
-  try {
-    const result = resultData.value as IRootServiceError
+//   // loading.value = true
+// //   })
+// })
 
-    console.log('result', result)
+// onFetchError(error => {
+//   if (isNullOrUndefined(error) || error.name === 'AbortError')
+//     return
 
-    if (result && result.error && result.error.message)
-      toast.error(result.error.message)
-    else
-      toast.error(t('alert.probleminGetExcerpt'))
-  }
-  catch {
-    toast.error(t('alert.probleminLoadSearchResult'))
-  }
+//   //   console.log('responseerror', error.name)
 
-  // loading.value = true
-//   })
-})
+//   //   error.json().then(value => {
+//   try {
+//     const result = resultData.value as IRootServiceError
+
+//     console.log('result', result)
+
+//     if (result && result.error && result.error.message)
+//       toast.error(result.error.message)
+//     else
+//       toast.error(t('alert.probleminGetExcerpt'))
+//   }
+//   catch {
+//     toast.error(t('alert.probleminLoadSearchResult'))
+//   }
+
+//   // loading.value = true
+// //   })
+// })
 
 async function refreshDataShelf() {
-  await fetchData()
+  loadingdata.value = true
+  try {
+    const { data } = await useApi(createUrl('app/excerpt', {
+      query: apiQueryParamtData,
+    }), { refetch: false })
+
+    const resultCastedData = data.value as GridResultFacet<IDataShelfBoxView>
+
+    resetData()
+    totalItems.value = resultCastedData.totalCount
+
+    if (resultCastedData.items.length > 0) {
+      setTimeout(() => {
+        loadingdata.value = false
+        facetboxItems.value.push(...resultCastedData.facets)
+
+        resultdataItems.value = [...resultCastedData.items]
+      }, 1000)
+    }
+    else { loadingdata.value = false }
+  }
+  catch (error) {
+    loadingdata.value = false
+    toast.error(t('alert.probleminSearch'))
+  }
+
+//   await fetchData()
 }
 function selectFilterDataShelf() {
   activefilter.value = !activefilter.value
@@ -484,42 +518,43 @@ function databoxOrderChanged(databoxItemId: number) {
     <VRow ref="mainDataResult" class="mc-data-scrolly">
       <MCLoading :showloading="loadingdata" :loadingsize="SizeType.MD" />
       <VCol md="12">
-        <VRow v-if="resultdataItems.length > 0">
-          <!-- <VSlideXReverseTransition> -->
-          <VCol v-if="activefilter" md="3">
-            <div>
-              <MCFacetBox
-                v-for="item in facetboxItems" :key="item.key"
-                v-model:selected-items="routeQueryParamData.selectedFacetItems[item.key]" :searchable="false" :dataitems="item.itemList"
-                :facettitle="item.title" class="mb-2" :facettype="item.type"
-              />
-            </div>
-          </VCol>
-          <!-- </VSlideXReverseTransition> -->
-          <VCol :md="activefilter ? 9 : 12">
-            <div>
-              <div v-show="!loadingdata" ref="loadmorestart" />
-              <MCDataShelfBox
-                v-for="(item, i) in resultdataItemsSort" :key="item.id" :ref="(el) => setdataboxref(el, item)" v-model="resultdataItemsSort[i]" :item-index="i"
-                :prev-item-order="i - 1"
-                :next-item-order="i + 1"
-                :prev-item-priority="i > 0 ? resultdataItemsSort[i - 1].priority : -1"
-                :next-item-priority="i < resultdataItemsSort.length - 1 ? resultdataItemsSort[i + 1].priority : -1"
-                @selectedchanged="checkSelectAllState" @orderchanged="databoxOrderChanged" @handlemessage="handleDataBoxMessages" @refreshdatashelf="refreshDataShelf"
-              />
-              <!--
-                :prev-item-order="i > 0 ? resultdataItemsSort[i - 1].order : -100"
-                :next-item-order="i < resultdataItemsSort.length - 1 ? resultdataItemsSort[i + 1].order : -100"
-              -->
-              <div v-show="!loadingdata" ref="loadmoreend" />
-            </div>
-          </VCol>
-        </VRow>
+        <VFadeTransition>
+          <VRow v-if="resultdataItems.length > 0">
+            <!-- <VSlideXReverseTransition> -->
+            <VCol v-if="activefilter" md="3">
+              <div v-if="facetboxItems.length > 0">
+                <MCFacetBox
+                  v-for="item in facetboxItems" :key="item.key"
+                  v-model:selected-items="routeQueryParamData.selectedFacetItems[item.key]" :searchable="false" :dataitems="item.itemList"
+                  :facettitle="item.title" class="mb-2" :facettype="item.type"
+                />
+              </div>
+            </VCol>
+            <!-- </VSlideXReverseTransition> -->
+            <VCol :md="activefilter ? 9 : 12">
+              <div>
+                <div v-show="!loadingdata" ref="loadmorestart" />
+                <MCDataShelfBox
+                  v-for="(item, i) in resultdataItemsSort" :key="item.id" :ref="(el) => setdataboxref(el, item)" v-model="resultdataItemsSort[i]" :item-index="i"
+                  :prev-item-order="i - 1"
+                  :next-item-order="i + 1"
+                  :prev-item-priority="i > 0 ? resultdataItemsSort[i - 1].priority : -1"
+                  :next-item-priority="i < resultdataItemsSort.length - 1 ? resultdataItemsSort[i + 1].priority : -1"
+                  @selectedchanged="checkSelectAllState" @orderchanged="databoxOrderChanged" @handlemessage="handleDataBoxMessages" @refreshdatashelf="refreshDataShelf"
+                />
+                <!--
+                  :prev-item-order="i > 0 ? resultdataItemsSort[i - 1].order : -100"
+                  :next-item-order="i < resultdataItemsSort.length - 1 ? resultdataItemsSort[i + 1].order : -100"
+                -->
+                <div v-show="!loadingdata" ref="loadmoreend" />
+              </div>
+            </VCol>
+          </VRow>
+          <div v-else-if="!loadingdata" class="w-100 h-100 d-flex align-center justify-center">
+            <p>{{ $t('datashelfbox.fishnotexist') }}</p>
+          </div>
+        </VFadeTransition>
         <!-- <VRow > -->
-
-        <div v-else-if="!loadingdata" class="w-100 h-100 d-flex align-center justify-center">
-          <p>{{ $t('datashelfbox.fishnotexist') }}</p>
-        </div>
 
         <!-- </VRow> -->
       </VCol>

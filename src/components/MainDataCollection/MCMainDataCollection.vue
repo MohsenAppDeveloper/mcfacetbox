@@ -8,8 +8,10 @@ import type { ISearchResultItem, ITabSearchStateResult } from '@/types/SearchRes
 import { useSelectedTree, useTree } from '@/store/treeStore'
 import { useDataShelfStateChanged } from '@/store/databoxStore'
 
-// const hadithPageNumber = ref(1)
-// const totalItemsHadith = ref(0)
+interface IMCSearchResultREF {
+  element: any
+  itemId: string
+}
 const { selectedNode } = useTree()
 const selectedTreeItem = useSelectedTree()
 const shelfState = useDataShelfStateChanged()
@@ -62,8 +64,6 @@ const currentitem = ref<ISearchResultItem>(new SearchResultItemModel())
 // const loading = ref(false)
 const selectedBooks = ref<string[]>([])
 
-// const selectedFacetItemsHadith = reactive<Record<string, string[]>>({})
-
 const { stop } = useIntersectionObserver(
   [loadmorestart, loadmoreend],
   ([entrystart, entryend], observerElement) => {
@@ -71,6 +71,33 @@ const { stop } = useIntersectionObserver(
       ispaginationFullSize.value = true
   },
 )
+
+/**
+ * این کد حذف نشود، برای انتصاب رفرنس به هر ایتم جستجو و رهگیری نمایش آنها هنگام اسکرول کردن است
+ */
+// const setSearchResultElementRef = (elementParam: any, itemId: string) => {
+//   const elementIndex = searchResultElement.value.findIndex(elementItem => elementItem.itemId === itemId)
+//   if (elementIndex < 0) {
+//     searchResultElement.value.push({ element: elementParam, itemId })
+
+//     const observer = new IntersectionObserver(
+//       ([entry]) => {
+//         if (entry.isIntersecting)
+//           visibleItemIds.value.add(itemId)
+//         else
+//           visibleItemIds.value.delete(itemId)
+//         console.log('entry', entry)
+//         console.log('visibleItemIds', visibleItemIds.value)
+//       },
+//       { threshold: 0.1 },
+//     )
+
+//     console.log('element', itemId)
+
+//     observer.observe(elementParam)
+//     observers.push(observer)
+//   }
+// }
 
 const { isScrolling: isscrolling, arrivedState: scrollarriveState } = useScroll(mainDataResult)
 
@@ -115,67 +142,6 @@ watch(resultDataOnState[dataTabValue.value].selectedFacets, async newval => {
     await runSearch(true)
 })
 
-// onFetchResponse(() => {
-//   try {
-//     const resultTemp = resultData.value as GridResultFacet<ISearchResultItem>
-
-//     console.log('result', resultTemp)
-
-//     totalItemsHadith.value = resultTemp.totalCount
-//     resetData()
-
-//     // resultdataItemsHadith.value = [...resultTemp.items]
-//     setTimeout(() => {
-//       resultTemp.items.forEach(element => {
-//         resultdataItemsHadith.value.push(new HadithSearchResultItemModel(element.highLight, element.id, element.qaelTitleList, element.noorLibLink, element.qaelList, element.bookTitle, element.bookTitleShort, element.sourceId, element.pageNum, element.vol))
-
-//       // console.log('text', element.highlightText)
-//       })
-//       resultTemp.facets.forEach(element => {
-//         if (element.itemList && element.itemList.length > 0)
-//           facetboxItemsHadith.value.push(element)
-
-//       // console.log('text', element.highlightText)
-//       })
-//       loading.value = false
-//     }, 500)
-//   }
-//   catch (error) {
-//     console.log('error', error)
-//   }
-// })
-
-// onFetchError(error => {
-//   if (isNullOrUndefined(error) || error.name === 'AbortError')
-//     return
-//   try {
-//     const result = resultData.value as IRootServiceError
-
-//     if (result && result.error && result.error.message)
-//       toast.error(result.error.message)
-//     else
-//       toast.error(t('alert.probleminGetExcerpt'))
-//   }
-//   catch {
-//     toast.error(t('alert.probleminLoadExcerpt'))
-//   }
-//   loading.value = false
-// })
-
-// function loadMoreCollectingData(options: { side: InfiniteScrollSide; done: (status: InfiniteScrollStatus) => void }) {
-//   if (options.side === InfiniteScrollSide.start) {
-//     if (page.value > 1)
-//       page.value -= 1
-//     else
-//       options.done(InfiniteScrollStatus.ok)
-//   }
-//   else {
-//     if (resultdataItems.value.length < totalItems.value)
-//       page.value += 1
-//     else
-//       options.done(InfiniteScrollStatus.ok)
-//   }
-// }
 function contentToNodeAdded(connectednodeid: number) {
   toast.success(t('datashelfbox.yourfishadded'))
   shelfState.connectednodeid.value = connectednodeid
@@ -252,8 +218,6 @@ async function runSearch(resetToDefault: boolean) {
     resultDataOnState[contentType].totalItems = resultCastedData.totalCount
     if (resultCastedData.items.length > 0) {
       resultDataOnState[contentType].results = resultCastedData.items.map(item => {
-        console.log('itemid', item.id)
-
         switch (contentType) {
           case DataBoxType.hadith:
           return new HadithSearchResultItemModel(item.highLight, item.id, item.text ?? '', item.shortText ?? '', item.qaelTitleList, item.noorLibLink, item.qaelList, item.bookTitle, item.bookTitleShort, item.pageNum, item.sourceId, item.vol)
@@ -267,12 +231,9 @@ async function runSearch(resetToDefault: boolean) {
       })
       resultDataOnState[contentType].facets = resultCastedData.facets || []
     }
-    console.log('resultdata', resultDataOnState[contentType].results)
-
     resultDataOnState[contentType].loading = false
   }
   catch (error) {
-    // console.log('error', error, resultDataOnState)
     resultDataOnState[contentType].loading = false
 
     // const result = resultDataOnState as IRootServiceError
@@ -373,11 +334,21 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
           <VCol md="9">
             <div class="pl-2 py-2">
               <div v-show="!resultDataOnState[dataTabValue].loading" ref="loadmorestart" />
+              <!--
+                <div
+                v-for="item in resultDataOnState[dataTabValue].results"
+                :key="item.id"
+                :ref="(el) => setSearchResultElementRef(el as HTMLElement, item.id.toString())"
+                style="min-height: 100px;"
+                >
+              -->
               <MCSearchResultBox
-                v-for="(item) in resultDataOnState[dataTabValue].results" :key="item.id" :box-type="dataTabValue" expandable
+                v-for="item in resultDataOnState[dataTabValue].results"
+                :key="item.id" :box-type="dataTabValue" expandable
                 :selected-node="selectedNode" :selected-tree-id="selectedTreeItem.id" :dataitem="item" :search-phrase="searchPhrase"
                 @message-has-occured="searchResultBoxMessageHandle" @content-to-node-added="contentToNodeAdded" @maximize-search-tab-box="maximizeSearchTabBox" @dataitemhaschanged="searchResultItemChaneged"
               />
+              <!-- </div> -->
               <div v-show="!resultDataOnState[dataTabValue].loading" ref="loadmoreend" />
             </div>
           </VCol>
