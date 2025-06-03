@@ -4,6 +4,7 @@ import { DataBoxType, MessageType, SizeType } from '@/types/baseModels'
 import { type IDataShelfBoxNew } from '@/types/dataShelf'
 import { HadithSearchResultItemModel } from '@/types/SearchResult'
 import { DataShelfBoxModelNew } from '@/types/dataShelf'
+import { getSelectedTextWithinElement } from '@/utils/htmlUtils'
 
 import type { IHadithSearchResultItem, IHadithTranslateItem, ISearchResultItem } from '@/types/SearchResult'
 
@@ -15,13 +16,11 @@ const { t } = useI18n({ useScope: 'global' })
 const loadinglocal = ref(false)
 const loadingMore = ref(false)
 const showfulltext = ref(false)
-const hadithItemLocal = reactive<IHadithSearchResultItem>(new HadithSearchResultItemModel())
 const translatelist = reactive<IHadithTranslateItem[]>([])
 const relatedhadith = reactive<IHadithSearchResultItem[]>([])
 const relatedHadithPage = ref(1)
 const relatedHadithPageSize = ref(5)
 const relatedHadithTotalCount = ref(0)
-const ispaginationFullSize = ref(true)
 
 // const { selectedNode } = useTree()
 interface Props {
@@ -106,16 +105,6 @@ async function loadrelated() {
     emit('messageHasOccured', t('httpstatuscodes.0'), MessageType.error)
   }
 }
-
-// const props = defineProps<>({
-//   dataitems: {
-//     type: SearchResultTabBoxModel,
-//     required: true,
-//     validator: value => {
-//       return value instanceof SearchResultTabBoxModel // Ensure the instance is correct
-//     },
-//   },
-// })
 const dataTabValue = ref(1)
 
 onMounted(async () => {
@@ -147,9 +136,18 @@ watch(relatedHadithPage, () => {
 },
 )
 
-const onContextMenu = (e: MouseEvent, contentType: DataBoxType, contentdata: IDataShelfBoxNew) => {
+const onContextMenu = (e: MouseEvent, contentType: DataBoxType, contentdata: IDataShelfBoxNew, htmlElement?: HTMLElement) => {
   // prevent the browser's default menu
+
   e.preventDefault()
+
+  let selectedText = ''
+  if (htmlElement)
+    selectedText = getSelectedTextWithinElement(htmlElement)
+
+  if (selectedText.length > 0)
+    contentdata.content = selectedText
+
   emit('oncontextmenuselect', e, contentType, contentdata)
 }
 
@@ -188,9 +186,10 @@ function relatedHadithItemChanged(searchresultItem: ISearchResultItem) {
           <div v-if="relatedhadith.length > 0" class="d-flex flex-column position-relative">
             <div class="pl-2 py-2">
               <MCSearchResultBox
-                v-for="(item) in relatedhadith" :key="item.id" :box-type="DataBoxType.hadith" :expandable="false"
+                v-for="(item) in relatedhadith"
+                :key="item.id" nestedmode :box-type="DataBoxType.hadith" :expandable="false"
                 :dataitem="item" :search-phrase="searchPhrase"
-                @message-has-occured="(message, type) => $emit('messageHasOccured', message, type)" @contextmenu="onContextMenu($event, DataBoxType.hadith, new DataShelfBoxModelNew(0, 0, 0, item.text, '', [], [], item.id.toString()))" @dataitemhaschanged="relatedHadithItemChanged"
+                @message-has-occured="(message, type) => $emit('messageHasOccured', message, type)" @oncontextmenuselect="onContextMenu" @dataitemhaschanged="relatedHadithItemChanged"
               />
             </div>
             <div class="paging-container-fixed">
@@ -205,13 +204,18 @@ function relatedHadithItemChanged(searchresultItem: ISearchResultItem) {
         </VTabsWindowItem>
 
         <VTabsWindowItem :value="2" :transition="false">
-          <div v-for="(item) in translatelist" :key="item.id" class="mc-search-result" @contextmenu="onContextMenu($event, DataBoxType.text, new DataShelfBoxModelNew(0, 0, 0, item.text, '', [], [], '0'))">
-            <div class="py-1 px-1">
+          <div v-for="(item) in translatelist" :key="item.id" class="mc-search-result">
+            <div
+              class="py-1 px-1" @contextmenu="(e) => {
+                const textContainer = e.currentTarget.querySelector('.selectable-content') || e.currentTarget;
+                onContextMenu(e, DataBoxType.text, new DataShelfBoxModelNew(0, 0, 0, item.text, '', [], [], '0'), textContainer)
+              }"
+            >
               <VRow>
                 <VCol>
                   <div class="flex">
                     <div>
-                      <span class="searchDataBoxInfoTitle"> {{ $t('address') }}: </span><span class="searchDataBoxInfoText">{{ `${item.sourceMainTitle}, ${`${$t('volume')} ${item.vol}`}, ${`${$t('pagenum')} ${item.pageNum}`}` }} </span>
+                      <span class="searchDataBoxInfoTitle no-select"> {{ $t('address') }}: </span><span class="searchDataBoxInfoText">{{ `${item.sourceMainTitle}, ${`${$t('volume')} ${item.vol}`}, ${`${$t('pagenum')} ${item.pageNum}`}` }} </span>
                       <VBtn icon size="22" variant="text" class="mx-2" @click="openBoxLink(item.noorLibLink)">
                         <VIcon icon="tabler-external-link" size="18" />
                       </VBtn>
@@ -219,19 +223,20 @@ function relatedHadithItemChanged(searchresultItem: ISearchResultItem) {
                   </div>
                 </VCol>
               </VRow>
+              <!-- @contextmenu="onContextMenu($event, DataBoxType.text, new DataShelfBoxModelNew(0, 0, 0, item.text, '', [], [], '0'), ($event.currentTarget as HTMLElement))" -->
               <VRow no-gutters class="justify-start align-start">
                 <VCol md="12">
-                  <div v-html="item.text" />
+                  <div class="selectable-content" v-html="item.text" />
                 </VCol>
               </VRow>
             </div>
           </div>
         </VTabsWindowItem>
         <VTabsWindowItem :value="1" :transition="false">
-          <div class="py-1 px-1" @contextmenu="onContextMenu($event, DataBoxType.hadith, new DataShelfBoxModelNew(0, 0, 0, props.dataitem.text, '', [], [], props.dataitem.id.toString()))">
+          <div class="py-1 px-1">
             <VRow>
               <VCol>
-                <div class="flex">
+                <div class="flex no-select">
                   <div v-if="props.dataitem.qaelList && props.dataitem.qaelList.length > 1">
                     <span class="searchDataBoxInfoTitle"> {{ $t('qael') }}: </span><span class="searchDataBoxInfoText">{{ props.dataitem.qaelTitleList }}</span>
                   </div>
@@ -239,14 +244,22 @@ function relatedHadithItemChanged(searchresultItem: ISearchResultItem) {
                 </div>
               </VCol>
             </VRow>
-            <VRow no-gutters class="justify-start align-start hadithtext">
+            <!-- @contextmenu="onContextMenu($event, DataBoxType.hadith, new DataShelfBoxModelNew(0, 0, 0, props.dataitem.text, '', [], [], props.dataitem.id.toString()), ($event.currentTarget as HTMLElement))" -->
+            <VRow
+              no-gutters class="justify-start align-start hadithtext"
+
+              @contextmenu="(e) => {
+                const textContainer = e.currentTarget.querySelector('.selectable-content') || e.currentTarget;
+                onContextMenu(e, DataBoxType.hadith, new DataShelfBoxModelNew(0, 0, 0, props.dataitem.text, '', [], [], props.dataitem.id.toString()), textContainer)
+              }"
+            >
               <VCol md="12">
-                <div v-html="(props.dataitem.text.length > 1 && (showfulltext || props.isExpanded)) ? props.dataitem.text : ((props.dataitem.highLight && props.dataitem.highLight.length > 0) ? props.dataitem.highlightText : props.dataitem.shortText)" />
+                <div class="selectable-content" v-html="(props.dataitem.text.length > 1 && (showfulltext || props.isExpanded)) ? props.dataitem.text : ((props.dataitem.highLight && props.dataitem.highLight.length > 0) ? props.dataitem.highlightText : props.dataitem.shortText)" />
                 <!-- test: {{ (props.dataitem.highLight) ? 'true' : 'false' }} -->
-                <VBtn v-if="!props.isExpanded && !showfulltext && props.dataitem.hasShortText" style="font-size: large;" variant="text" :loading="loadingMore" @click="selectmorelessHadith">
+                <VBtn v-if="!props.isExpanded && !showfulltext && props.dataitem.hasShortText" class="no-select" style="font-size: large;" variant="text" :loading="loadingMore" @click="selectmorelessHadith">
                   {{ $t('more') }}
                 </VBtn>
-                <VBtn v-if="showfulltext && !props.isExpanded" style="font-size: large;" variant="text" :loading="loadingMore" @click="selectmorelessHadith">
+                <VBtn v-if="showfulltext && !props.isExpanded" class="no-select" style="font-size: large;" variant="text" :loading="loadingMore" @click="selectmorelessHadith">
                   {{ $t('less') }}
                 </VBtn>
               </VCol>

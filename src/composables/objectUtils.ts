@@ -39,8 +39,6 @@ export function searchItems<T>(items: T[], searchText: string, field: keyof T): 
     searchText = ''
   const normalizedSearchText = normalizeText(searchText)
 
-  console.log('searchtext', normalizedSearchText, searchText)
-
   return items.filter(item =>
     normalizeText(item[field]?.toString() || '').includes(normalizedSearchText),
   )

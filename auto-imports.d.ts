@@ -73,11 +73,17 @@ declare global {
   const formatDateToMonthShort: typeof import('./src/@core/utils/formatters')['formatDateToMonthShort']
   const formatString: typeof import('./src/composables/objectUtils')['formatString']
   const getActivePinia: typeof import('pinia')['getActivePinia']
+  const getCleanSelectedText: typeof import('./src/utils/htmlUtils')['getCleanSelectedText']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
+  const getFilteredSelectionWithinElement: typeof import('./src/utils/htmlUtils')['getFilteredSelectionWithinElement']
+  const getSelectedTextFiltered: typeof import('./src/utils/htmlUtils')['getSelectedTextFiltered']
+  const getSelectedTextFromElement: typeof import('./src/utils/htmlUtils')['getSelectedTextFromElement']
+  const getSelectedTextWithinElement: typeof import('./src/utils/htmlUtils')['getSelectedTextWithinElement']
   const h: typeof import('vue')['h']
   const handleFetchError: typeof import('./src/utils/api')['handleFetchError']
   const handleUnauthorized: typeof import('./src/utils/api')['handleUnauthorized']
+  const htmlUtils: typeof import('./src/utils/htmlUtils')['default']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
   const inject: typeof import('vue')['inject']
   const injectLocal: typeof import('@vueuse/core')['injectLocal']
@@ -470,6 +476,7 @@ declare module 'vue' {
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
+    readonly getSelectedTextWithinElement: UnwrapRef<typeof import('./src/utils/htmlUtils')['getSelectedTextWithinElement']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly handleFetchError: UnwrapRef<typeof import('./src/utils/api')['handleFetchError']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>

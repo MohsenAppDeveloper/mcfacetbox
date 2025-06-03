@@ -17,6 +17,7 @@ interface Props {
   boxType: DataBoxType
   isExpanded?: boolean
   expandable: boolean
+  nestedmode?: boolean// در این حالت کامپوننت بعنوان فرزند خود در انواع حدیث یا ایه استفاده میشود و به همین علت یکسری اکشن های مورد نظر در ان غیر فعال است
 }
 const props = defineProps<Props>()
 
@@ -26,6 +27,8 @@ const emit = defineEmits<{
   (e: 'contentToNodeAdded', connectednodeid: number): void
   (e: 'update:isExpanded', value: boolean): void
   (e: 'dataitemhaschanged', value: ISearchResultItem): void
+  (e: 'oncontextmenuselect', mouseEvent: MouseEvent, contenttype: DataBoxType, boxdata: IDataShelfBoxNew, element: HTMLElement): void
+
 }
 >()
 
@@ -94,7 +97,15 @@ const boxUrl = computed(() => {
   }
 })
 
-function openContextMenu(e: MouseEvent, connectedboxType: DataBoxType, contentdata: IDataShelfBoxNew) {
+function openContextMenu(e: MouseEvent, connectedboxType: DataBoxType, contentdata: IDataShelfBoxNew, element: HTMLElement) {
+  if (props.nestedmode) {
+    /**
+     * اگر در حالت فرزند قرار داشته باشد، منوی راست کلیک باز نمیشود و مقادیر را به کامپوننت پدر ارسال میکند
+     */
+    emit('oncontextmenuselect', e, connectedboxType, contentdata, element)
+
+    return
+  }
   currentDataboxTypeToConnectToNode.value = connectedboxType
   contentdata.treeId = props.selectedTreeId ?? 0
   contentdata.nodeId = props.selectedNode?.id ?? 0
@@ -219,7 +230,7 @@ function openBoxLink() {
       </div>
     </VFadeTransition>
     <VCardText style="height: 95%;" class="w-100 py-1 px-1">
-      <component :is="componentName" :dataitem="props.dataitem" :is-expanded="props.isExpanded ?? false" :search-phrase="props.searchPhrase" @oncontextmenuselect="(event, contenttype, contentdata) => openContextMenu(event, contenttype, contentdata)" @dataitemchanged="(value) => $emit('dataitemhaschanged', value)" />
+      <component :is="componentName" :dataitem="props.dataitem" :is-expanded="props.isExpanded ?? false" :search-phrase="props.searchPhrase" @oncontextmenuselect="(event, contenttype, contentdata, element) => openContextMenu(event, contenttype, contentdata, element)" @dataitemchanged="(value) => $emit('dataitemhaschanged', value)" />
     </VCardText>
   </VCard>
 </template>

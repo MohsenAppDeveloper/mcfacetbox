@@ -247,8 +247,6 @@ async function runSearch(resetToDefault: boolean) {
 }
 
 const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
-  console.log('tabboxitem', tabBoxItem)
-
   currentitem.value = tabBoxItem
   maximizBoxOverlay.value = true
 }
@@ -334,21 +332,12 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
           <VCol md="9">
             <div class="pl-2 py-2">
               <div v-show="!resultDataOnState[dataTabValue].loading" ref="loadmorestart" />
-              <!--
-                <div
-                v-for="item in resultDataOnState[dataTabValue].results"
-                :key="item.id"
-                :ref="(el) => setSearchResultElementRef(el as HTMLElement, item.id.toString())"
-                style="min-height: 100px;"
-                >
-              -->
               <MCSearchResultBox
                 v-for="item in resultDataOnState[dataTabValue].results"
                 :key="item.id" :box-type="dataTabValue" expandable
                 :selected-node="selectedNode" :selected-tree-id="selectedTreeItem.id" :dataitem="item" :search-phrase="searchPhrase"
                 @message-has-occured="searchResultBoxMessageHandle" @content-to-node-added="contentToNodeAdded" @maximize-search-tab-box="maximizeSearchTabBox" @dataitemhaschanged="searchResultItemChaneged"
               />
-              <!-- </div> -->
               <div v-show="!resultDataOnState[dataTabValue].loading" ref="loadmoreend" />
             </div>
           </VCol>
