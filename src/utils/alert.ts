@@ -12,6 +12,16 @@ const defaultSwalOptions: Partial<SweetAlertOptions> = {
     confirmButton: 'my-swal-confirm',
     cancelButton: 'my-swal-cancel',
   },
+  showClass: {
+    popup: 'animate__fadeIn',
+    backdrop: 'swal2-backdrop-show',
+    icon: '',
+  },
+  hideClass: {
+    popup: 'animate__fadeOut',
+    backdrop: 'swal2-backdrop-hide',
+    icon: '',
+  },
   buttonsStyling: false,
 }
 

@@ -136,3 +136,8 @@ div {
     height: 100vh;
     text-align: center;
 }
+
+.selectedbox {
+    border: 1px solid rgb(var(--v-theme-primary));
+    border-radius: 5px;
+}

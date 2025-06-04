@@ -16,6 +16,11 @@ const databoxItem = defineModel<IDataShelfBoxView>({ default: new DataShelfBoxMo
 const { t } = useI18n({ useScope: 'global' })
 const showTools = ref(false)
 
+/**
+ * هر زمان که یک اکشن روی این کامپوننت اتفاق بیفتد که منجر به نمایش یک دیالوگ دیگر و وابسته با این کامپوننت باشد باید این متغییر تحت تاثیر قرار بگیرد
+ */
+const selectedbox = shallowRef(false)
+
 // const toast = useToast()
 const databox = ref()
 const highlightClass = ref(['mc-data-shelf-box', 'w-100'])
@@ -147,6 +152,8 @@ const connecttoselectedNode = async (nodeid: number) => {
 }
 
 const disconnectSelectedExcerpt = async () => {
+  selectedbox.value = true
+
   const serviceError = shallowRef()
 
   const result = await confirmSwal(
@@ -181,9 +188,12 @@ const disconnectSelectedExcerpt = async () => {
       emits('refreshdatashelf')
     }
   }
+  selectedbox.value = false
 }
 
 const deleteSelectedExcerpt = async () => {
+  selectedbox.value = true
+
   const serviceError = shallowRef()
 
   const result = await confirmSwal(
@@ -218,9 +228,11 @@ const deleteSelectedExcerpt = async () => {
       emits('refreshdatashelf')
     }
   }
+  selectedbox.value = false
 }
 
 const addcomment = async () => {
+  selectedbox.value = true
   let description = ''
   let haserror = false
   const serviceError = shallowRef()
@@ -284,6 +296,7 @@ const addcomment = async () => {
       emits('handlemessage', t('alert.dataActionSuccess'), MessageType.success)
     }
   }
+  selectedbox.value = false
 }
 
 const decreaseOrder = async () => {
@@ -327,6 +340,18 @@ const isSelected = computed({
 })
 
 defineExpose({ increaseOrder, decreaseOrder })
+watch(dialogAddLabelVisible, () => {
+  selectedbox.value = dialogAddLabelVisible.value
+}, { deep: false })
+watch(dialogDataBoxInfo, () => {
+  selectedbox.value = dialogDataBoxInfo.value
+}, { deep: false })
+watch(dialogSelectNodeVisible, () => {
+  selectedbox.value = dialogSelectNodeVisible.value
+}, { deep: false })
+watch(isDialogDataShelfBoxEdit, () => {
+  selectedbox.value = isDialogDataShelfBoxEdit.value
+}, { deep: false })
 
 // mc-data-shelf-box
 </script>
@@ -336,7 +361,7 @@ defineExpose({ increaseOrder, decreaseOrder })
     <VCard ref="databox" :class="[highlightClass]" style="overflow: visible !important;">
       <MCLoading :showloading="loadinglocal" :loadingsize="SizeType.MD" />
 
-      <VCardText class="h-auto">
+      <VCardText :class="`${selectedbox ? 'selectedbox h-auto' : 'h-auto'}`">
         <VRow no-gutters class="justify-start align-start box">
           <span>{{ props.itemIndex + 1 }}</span>
           <VCheckbox v-model="isSelected" density="compact" />

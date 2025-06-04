@@ -5,8 +5,8 @@ import { SelectionType, SizeType } from '@/types/baseModels'
 interface Prop {
   isDialogVisible: boolean
   selectedDataBoxId?: number
-  locX: number
-  locY: number
+  locX?: number
+  locY?: number
   treeId: number
 
 }
@@ -91,9 +91,11 @@ const apiurl = computed(() => {
 <template>
   <VDialog
     v-if="props.isDialogVisible"
-    :scrim="false" :width="$vuetify.display.smAndDown ? 'auto' : DialogSizeXS" :model-value="props.isDialogVisible"
-    :target="[locX, locY]" location-strategy="connected" @update:model-value="onReset(true)"
+    :width="$vuetify.display.smAndDown ? 'auto' : DialogSizeXS" :model-value="props.isDialogVisible"
+    @update:model-value="onReset(true)"
   >
+    <!-- این تکه کد برای جابجایی جایگاه دیالوگ است، پاک نشود تا در صورت لزوم مراجعه شود -->
+    <!-- :target="[locX, locY]" location-strategy="connected" @update:model-value="onReset(true)" -->
     <DialogCloseBtn icon-size="16px" :disabled="loading || opening" @click="onReset(true)" />
     <VCard variant="flat" class="v-card-sm" :title="$t('datashelfbox.addlabel')" :height="400" :loading="opening">
       <VCardText class="pa-0">

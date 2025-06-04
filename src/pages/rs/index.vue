@@ -40,7 +40,7 @@ function changeComponent() {
   bottomComponentOrder.value = (bottomComponentOrder.value === 1 ? 2 : 1)
 }
 function changeWindowTitle(status: boolean) {
-  return status ? 'گردآوری اطلاعات' : 'قفسه داده'
+  return status ? 'قفسه داده' : 'گردآوری اطلاعات'
 }
 </script>
 

@@ -315,6 +315,44 @@ function changeselectAllState() {
   else
     selectAll.value.state = SelectAllState.Select
 }
+function deleteSelectedItem() {
+//   const serviceError = shallowRef()
+
+  //   const result = await confirmSwal(
+  //     t('datashelfbox.deleteselecteditem'),
+  //     '',
+  //     t('$vuetify.confirmEdit.ok'),
+  //     t('$vuetify.confirmEdit.cancel'),
+  //     true, 'warning',
+  //     async () => {
+  //       try {
+  //         await $api(('app/excerpt/').replace('//', '/') + databoxItem.value.id, {
+  //           method: 'DELETE',
+  //         })
+  //       }
+  //       catch (error) {
+  //         serviceError.value = error
+  //       }
+
+  //       return { serviceError }
+  //     },
+  //   )
+
+  //   if (result.isConfirmed) {
+  //     const err = serviceError.value
+  //     if (err) {
+  //       if (err instanceof CustomFetchError && err.message)
+  //         emits('handlemessage', serviceError.value.message, MessageType.error)
+  //       else emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
+  //     }
+  //     else {
+  //       emits('handlemessage', t('alert.deleteDataSuccess'), MessageType.success)
+  //       emits('refreshdatashelf')
+  //     }
+  //   }
+
+// resultdataItemsSort.value.find(item => item.selected === true)
+}
 
 // برای کار کردن با متدهای داخلی حعبه های داده انتخاب شده آنها را در یک لیست ذخیره می کنیم
 const setdataboxref = (elementParam: any, item: IDataShelfBoxView) => {
@@ -454,17 +492,6 @@ function databoxOrderChanged(databoxItemId: number) {
                 {{ $t('datashelfbox.add') }}
               </VTooltip>
             </VBtn>
-            <!--
-              <VBtn icon size="small" variant="text">
-              <VIcon icon="tabler-list-details" size="22" />
-              <VTooltip
-              activator="parent"
-              location="top center"
-              >
-              {{ $t('datashelfbox.listdetail') }}
-              </VTooltip>
-              </VBtn>
-            -->
             <VBtn icon size="small" variant="text" @click="refreshDataShelf">
               <VIcon icon="tabler-refresh" size="22" />
               <VTooltip
@@ -516,7 +543,6 @@ function databoxOrderChanged(databoxItemId: number) {
       <VCol md="12">
         <VFadeTransition>
           <VRow v-if="resultdataItems.length > 0">
-            <!-- <VSlideXReverseTransition> -->
             <VCol v-if="activefilter" md="3">
               <div v-if="facetboxItems.length > 0">
                 <MCFacetBox
@@ -526,7 +552,6 @@ function databoxOrderChanged(databoxItemId: number) {
                 />
               </div>
             </VCol>
-            <!-- </VSlideXReverseTransition> -->
             <VCol :md="activefilter ? 9 : 12">
               <div>
                 <div v-show="!loadingdata" ref="loadmorestart" />
@@ -556,13 +581,6 @@ function databoxOrderChanged(databoxItemId: number) {
       </VCol>
     </VRow>
 
-    <!--
-      <VRow dense>
-      <div v-show="loadingdata" class="loading-container">
-      <VProgressCircular size="20" width="2" indeterminate />
-      </div>
-      </VRow>
-    -->
     <VRow dense>
       <VCol md="12">
         <MCTablePagination
