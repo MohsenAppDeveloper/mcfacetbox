@@ -3,7 +3,7 @@ import { useToast } from 'vue-toastification'
 import MCDialogBookSelect from '../dialogs/MCDialogBookSelect.vue'
 import type { GridResultFacet } from '@/types/baseModels'
 import { DataBoxType, MessageType, QueryRequestModel, SizeType } from '@/types/baseModels'
-import { SearchResultItemModel } from '@/types/SearchResult'
+import { FacetBoxModel, SearchResultItemModel } from '@/types/SearchResult'
 import { HadithSearchResultItemModel } from '@/types/hadithResult'
 import type { ISearchResultItem, ITabSearchStateResult } from '@/types/SearchResult'
 import { useSelectedTree, useTree } from '@/store/treeStore'
@@ -150,7 +150,7 @@ watch(() => resultDataOnState[dataTabValue.value].page, async newval => {
     await runSearch(false)
   }
 })
-watch(resultDataOnState[dataTabValue.value].selectedFacets, async newval => {
+watch(() => resultDataOnState[dataTabValue.value].selectedFacets, async newval => {
   let facetChange = false
 
   console.log('selectedfacet', resultDataOnState[dataTabValue.value])
@@ -164,7 +164,7 @@ watch(resultDataOnState[dataTabValue.value].selectedFacets, async newval => {
 
   if (facetChange)
     await runSearch(true)
-})
+}, { deep: true })
 
 function contentToNodeAdded(connectednodeid: number) {
   toast.success(t('datashelfbox.yourfishadded'))
@@ -253,7 +253,7 @@ async function runSearch(resetToDefault: boolean) {
             return item
         }
       })
-      resultDataOnState[contentType].facets = resultCastedData.facets || []
+      resultDataOnState[contentType].facets = resultCastedData.facets.map(f => new FacetBoxModel(f)) || []
       console.log('fillfacets', contentType, resultDataOnState[contentType].facets)
     }
     resultDataOnState[contentType].loading = false

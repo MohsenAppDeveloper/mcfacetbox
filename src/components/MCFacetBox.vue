@@ -25,8 +25,8 @@ const treeItems = computed(() =>
   convertFacetItemToFacetTree(props.dataitems),
 )
 
-const selectedTreeFacetItems = ref<string | number[]>([])
-const selectedFacetItems = ref<string | number[]>([])
+const selectedTreeFacetItems = ref<string[]>([])
+const selectedFacetItems = ref<string[]>([])
 
 const switchState = ref<boolean>(props.dataitems[0].key === 'true')
 const searchText = ref('')
@@ -41,12 +41,12 @@ watch(() => props.selectedItems, newVal => {
       switchState.value = boolVal
   }
   else if (props.facettype === FacetType.tree) {
-    if (JSON.stringify(selectedTreeFacetItems.value) !== JSON.stringify(newVal.map(item => useToNumber(item).value)))
-      selectedTreeFacetItems.value = [...newVal].map(item => useToNumber(item).value)
+    if (JSON.stringify(selectedTreeFacetItems.value) !== JSON.stringify(newVal.map(item => item)))
+      selectedTreeFacetItems.value = [...newVal].map(item => item)
   }
   else { // Flat list
-    if (JSON.stringify(selectedFacetItems.value) !== JSON.stringify(newVal.map(item => useToNumber(item).value)))
-      selectedFacetItems.value = [...newVal].map(item => useToNumber(item).value)
+    if (JSON.stringify(selectedFacetItems.value) !== JSON.stringify(newVal.map(item => item)))
+      selectedFacetItems.value = [...newVal].map(item => item)
   }
 }, { immediate: true })
 
@@ -61,21 +61,23 @@ onMounted(() => {
   }
   else if (props.facettype === FacetType.tree) {
     if (JSON.stringify(selectedTreeFacetItems.value) !== JSON.stringify(props.selectedItems))
-      selectedTreeFacetItems.value = [...props.selectedItems].map(item => useToNumber(item).value)
+      selectedTreeFacetItems.value = [...props.selectedItems].map(item => item)
   }
   else { // Flat list
     if (JSON.stringify(selectedFacetItems.value) !== JSON.stringify(props.selectedItems))
-      selectedTreeFacetItems.value = [...props.selectedItems].map(item => useToNumber(item).value)
+      selectedTreeFacetItems.value = [...props.selectedItems].map(item => item)
   }
 })
 watch(filteredItems, () => {
   if ((props.selectedItems?.length ?? 0) > 0)
-    !(props.istree ?? false) ? selectedFacetItems.value.push(...(props.selectedItems?.map(item => useToNumber(item).value) ?? [])) : selectedTreeFacetItems.value.push(...(props.selectedItems?.map(item => useToNumber(item).value) ?? []))
+    !(props.istree ?? false) ? selectedFacetItems.value.push(...(props.selectedItems?.map(item => item.toString()) ?? [])) : selectedTreeFacetItems.value.push(...(props.selectedItems?.map(item => item.toString()) ?? []))
 }, { immediate: true })
 watch((selectedTreeFacetItems), newval => {
   emit('update:selectedItems', newval.map(item => item.toString()))
 })
 watch((selectedFacetItems), newval => {
+  console.log('selectedItems', newval)
+
   emit('update:selectedItems', newval.map(item => item.toString()))
 })
 watch(switchState, () => {

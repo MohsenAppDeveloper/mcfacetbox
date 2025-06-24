@@ -62,6 +62,28 @@ export interface IFacetBox {
   itemList: IFacetItem[]
   isTree?: boolean
 }
+export class FacetBoxModel implements IFacetBox {
+  hasSearchBox: boolean
+  key: string
+  scrollSize: number
+  title: string
+  type?: FacetType
+  itemList: IFacetItem[]
+  isTree?: boolean
+
+  constructor(raw: any) {
+    this.hasSearchBox = raw.hasSearchBox
+    this.key = String(raw.key)
+    this.scrollSize = raw.scrollSize
+    this.title = raw.title
+    this.type = raw.type
+    this.isTree = raw.isTree
+    this.itemList = (raw.itemList ?? []).map((item: any) => ({
+      ...item,
+      key: String(item.key),
+    }))
+  }
+}
 
 // export interface IFacetResult {
 //     key: string,

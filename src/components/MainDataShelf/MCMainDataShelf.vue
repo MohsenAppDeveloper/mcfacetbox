@@ -9,7 +9,7 @@ import { MessageType, QueryRequestModel, SelectAllState, SizeType } from '@/type
 import type { IDataShelfBoxView } from '@/types/dataShelf'
 import { DataShelfRouteQueryParams } from '@/types/dataShelf'
 import { useDataShelfStateChanged } from '@/store/databoxStore'
-import type { IFacetBox } from '@/types/SearchResult'
+import { FacetBoxModel, type IFacetBox } from '@/types/SearchResult'
 
 interface ISelectAllState {
   state: SelectAllState
@@ -225,7 +225,10 @@ async function refreshDataShelf(changescroll: boolean) {
     if (resultCastedData.items.length > 0) {
       setTimeout(() => {
         loadingdata.value = false
-        facetboxItems.value.push(...resultCastedData.facets)
+
+        facetboxItems.value.push(...resultCastedData.facets.map(f => new FacetBoxModel(f)))
+        console.log('facetboxitems', facetboxItems.value)
+
         resultdataItems.value.push(...resultCastedData.items)
         nextTick(() => {
           if (changescroll && mainDataResult.value)
