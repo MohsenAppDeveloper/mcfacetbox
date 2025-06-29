@@ -152,7 +152,9 @@
     .mc-search-result-box,
     .mc-data-shelf-box {
         box-shadow: 0 0 5px rgba(var(--v-shadow-key-umbra-color), 0.15), 0 0 transparent, 0 0 transparent !important;
-        margin-block-end: 10px;
+
+        position: relative;
+        z-index: 1;
 
         .v-card-text {
             padding: 8px;
@@ -198,6 +200,16 @@
             flex-direction: row;
             align-items: center;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .box-unpin-item {
+            position: absolute;
+            bottom: -15px;
+            right: 0px;
+            z-index: 20;
+            background-color: white; // برای تضاد بهتر
+            // border: 1px solid rgba(0, 0, 0, 0.1); // حاشیه اختیاری
+            // box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); // سایه برای اثر "شناور"
         }
 
 

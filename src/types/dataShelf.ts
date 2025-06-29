@@ -21,7 +21,8 @@ export interface IDataShelfBoxView {
   description?: string
 
   // NOTE - شناسه جعبه داده ای که به این جعبه داده وصل شده و باید با آن حرکت کند
-  pinnedItem?: number
+  linkId?: number
+  hasLink: boolean
   creationTime?: string
   creatorId?: string
   creatorFullName?: string
@@ -108,6 +109,8 @@ export class DataShelfRouteQueryParams {
   }
 }
 export class DataShelfBoxModelView implements IDataShelfBoxView {
+  linkId?: number | undefined = 0
+  hasLink: boolean = false
   priority: number = 0
   private _creationTime?: string
   private _lastModificationTime?: string
@@ -121,7 +124,6 @@ export class DataShelfBoxModelView implements IDataShelfBoxView {
   excerptType: ISimpleDTO<DataBoxType> = { id: DataBoxType.text, title: '' }
   order: number = 0
   footNotes: IFootNote[] = []
-  pinnedItem?: number | undefined = 0
   creatorId?: string | undefined = ''
   creatorFullName?: string | undefined = ''
   selected?: boolean | undefined = false
