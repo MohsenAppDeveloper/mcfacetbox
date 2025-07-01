@@ -63,16 +63,6 @@
                 text-align: center;
             }
 
-            .paging-container {
-                position: absolute;
-                background: rgba(white, 0.95);
-                inset-block-end: 0;
-                inset-inline-end: 24px;
-                padding-inline: 0;
-                text-align: center;
-                border-radius: 7px;
-                box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-            }
         }
     }
 
@@ -206,7 +196,7 @@
             position: absolute;
             bottom: -15px;
             right: 0px;
-            z-index: 20;
+            z-index: 2;
             background-color: white; // برای تضاد بهتر
             // border: 1px solid rgba(0, 0, 0, 0.1); // حاشیه اختیاری
             // box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); // سایه برای اثر "شناور"
@@ -561,4 +551,16 @@
     border-radius: 7px;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
     z-index: 1000;
+}
+
+.paging-container {
+    position: absolute;
+    background: rgba(white, 0.95);
+    inset-block-end: 0;
+    inset-inline-end: 24px;
+    padding-inline: 0;
+    text-align: center;
+    border-radius: 7px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+    z-index: 3;
 }

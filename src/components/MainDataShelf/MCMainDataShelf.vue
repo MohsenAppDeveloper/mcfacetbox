@@ -49,7 +49,7 @@ const { selectedNode } = useTree()
 const shelfState = useDataShelfStateChanged()
 const route = useRoute()
 const router = useRouter()
-const ispaginationFullSize = shallowRef(false)
+const ispaginationFullSize = ref(false)
 
 // const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi(createUrl('app/excerpt', {
 //   query: apiQueryParamtData,

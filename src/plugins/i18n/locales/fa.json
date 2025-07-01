@@ -18,6 +18,7 @@
   'actions': 'امکانات',
   'hadith': 'حدیث',
   'ayah': 'آیه',
+  "quran":"آیه",
   'word': 'لغت',
   "showdetails":"نمایش جزییات",
   "openlink":"بازکردن آدرس",

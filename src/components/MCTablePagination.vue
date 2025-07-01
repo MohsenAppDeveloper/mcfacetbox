@@ -58,7 +58,7 @@ function paginationMouseEnter() {
 </script>
 
 <template>
-  <div>
+  <div style="background-color: white;">
     <VBtn
       v-if="showPaging" icon size="xsmall" variant="elevated" color="secondary" class="close-btn"
       @click="updateFullSize(false)"
