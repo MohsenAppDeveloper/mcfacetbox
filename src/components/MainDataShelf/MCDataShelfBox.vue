@@ -3,7 +3,7 @@ import ContextMenu from '@imengyu/vue3-context-menu'
 import { VFadeTransition } from 'vuetify/lib/components/index.mjs'
 import { DataShelfBoxModelView } from '@/types/dataShelf'
 import type { IDataShelfBoxView, IOrderChangedResponse } from '@/types/dataShelf'
-import { MessageType, SizeType } from '@/types/baseModels'
+import { DataBoxType, MessageType, SizeType } from '@/types/baseModels'
 
 const props = defineProps<{ itemIndex: number;nextItemOrder: number;prevItemOrder: number;nextItemPriority: number;prevItemPriority: number }>()
 const emits = defineEmits<Emits>()
@@ -550,7 +550,7 @@ watch(isDialogDataShelfBoxEdit, () => {
           </VTooltip>
         </VBtn>
 
-        <VBtn icon size="25" variant="text" @click="">
+        <VBtn v-if="databoxItem.excerptType.id === DataBoxType.quran || databoxItem.excerptType.id === DataBoxType.hadith" icon size="25" variant="text" @click="">
           <VIcon icon="tabler-circles-relation" size="20" />
           <VTooltip
             activator="parent"
@@ -560,7 +560,7 @@ watch(isDialogDataShelfBoxEdit, () => {
           </VTooltip>
         </VBtn>
 
-        <VBtn icon size="25" variant="text" @click="">
+        <VBtn v-if="databoxItem.excerptType.id === DataBoxType.quran || databoxItem.excerptType.id === DataBoxType.hadith" icon size="25" variant="text" @click="">
           <VIcon icon="tabler-refresh" size="20" />
           <VTooltip
             activator="parent"
@@ -580,9 +580,11 @@ watch(isDialogDataShelfBoxEdit, () => {
           </VTooltip>
         </VBtn>
 
-        <span>
+        <!--
+          <span>
           {{ databoxItem?.priority }}
-        </span>
+          </span>
+        -->
         <!-- </VRow> -->
       </div>
 
