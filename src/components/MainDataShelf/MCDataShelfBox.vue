@@ -5,6 +5,7 @@ import { DataShelfBoxModelView } from '@/types/dataShelf'
 import type { IDataShelfBoxView, IOrderChangedResponse } from '@/types/dataShelf'
 import { DataBoxType, MessageType, SizeType } from '@/types/baseModels'
 import { type ISearchResultItem, SearchResultItemModel } from '@/types/SearchResult'
+import { useDataShelfPriorityChanged } from '@/store/databoxStore'
 
 const props = defineProps<{ itemIndex: number;nextItemOrder: number;prevItemOrder: number;nextItemPriority: number;prevItemPriority: number }>()
 const emits = defineEmits<Emits>()
@@ -16,6 +17,7 @@ const databoxItem = defineModel<IDataShelfBoxView>({ default: new DataShelfBoxMo
 const { t } = useI18n({ useScope: 'global' })
 const showTools = ref(false)
 const marginbottom = ref('10px')
+const priorityChangedData = useDataShelfPriorityChanged()
 
 /**
  * هر زمان که یک اکشن روی این کامپوننت اتفاق بیفتد که منجر به نمایش یک دیالوگ دیگر و وابسته با این کامپوننت باشد باید این متغییر تحت تاثیر قرار بگیرد
@@ -91,7 +93,7 @@ const onContextMenu = (e: MouseEvent) => {
 }
 
 const focuToElementAfterMove = () => {
-  databox.value.$el.focus()
+  databox.value.focus()
   highlightClass.value.push('fade-highlight')
   setTimeout(() => {
     highlightClass.value.splice(2, 1)
@@ -99,11 +101,11 @@ const focuToElementAfterMove = () => {
   emits('orderchanged', databoxItem.value?.id ?? 0)
 }
 
-const changeOrder = async (orderNumber: number): Promise<boolean> => {
+const changeOrder = async (direction: 'next' | 'prev'): Promise<IOrderChangedResponse[] | null> => {
   try {
     loadinglocal.value = true
 
-    const result = await $api<IOrderChangedResponse[]>(`app/excerpt/${databoxItem.value.id}/move/${orderNumber}`, {
+    const result = await $api<IOrderChangedResponse[]>(`app/excerpt/${databoxItem.value.id}/move/${direction}`, {
       method: 'PUT',
       ignoreResponseError: false,
     })
@@ -112,9 +114,9 @@ const changeOrder = async (orderNumber: number): Promise<boolean> => {
     if (result && result.length > 0) {
       databoxItem.value.priority = result[0].priority
 
-      return true
+      return result
     }
-    else { return false }
+    else { return null }
   }
   catch (error) {
     loadinglocal.value = false
@@ -122,7 +124,7 @@ const changeOrder = async (orderNumber: number): Promise<boolean> => {
       emits('handlemessage', error.message, MessageType.error)
     emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
 
-    return false
+    return null
   }
 }
 
@@ -348,10 +350,14 @@ const decreaseOrder = async () => {
   if (props.prevItemPriority === -1)
     return
 
-  const result = await changeOrder(props.prevItemOrder + 1)
-
+  const result = await changeOrder('prev')
   if (result) {
-    databox.value.$el.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    priorityChangedData.items.value.splice(0)
+    priorityChangedData.prioritydirection.value = 'Down'
+    priorityChangedData.items.value = result
+
+    await nextTick()
+    databox.value.scrollIntoView({ behavior: 'smooth', block: 'end' })
     focuToElementAfterMove()
   }
 }
@@ -359,16 +365,20 @@ const decreaseOrder = async () => {
 const increaseOrder = async () => {
   if (props.nextItemPriority === -1)
     return
-  const result = await changeOrder(props.nextItemOrder + 1)
+  const result = await changeOrder('next')
+
   if (result) {
-    databox.value.$el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    priorityChangedData.items.value.splice(0)
+    priorityChangedData.prioritydirection.value = 'Top'
+    priorityChangedData.items.value = result
+
+    await nextTick()
+    databox.value.scrollIntoView({ behavior: 'smooth', block: 'start' })
     focuToElementAfterMove()
   }
 }
 
 function showrelatedData() {
-  console.log('showrelateddata', new SearchResultItemModel([], databoxItem.value.sourceId, '', ''))
-
   emits('showrelateddata', new SearchResultItemModel([], databoxItem.value.sourceId, databoxItem.value.content, ''), databoxItem.value.excerptType.id)
 }
 function labelhasbeenadded(nodeid: number, labelcount: number) {
@@ -390,7 +400,23 @@ const isSelected = computed({
 })
 
 defineExpose({ increaseOrder, decreaseOrder })
+watch(priorityChangedData.items, newval => {
+  console.log('newval', priorityChangedData)
 
+  const result = newval.findLast(a => a.id === databoxItem.value.id)
+  if (!result)
+    return
+  databoxItem.value.priority = result.priority
+
+//   if (priorityChangedData.prioritydirection.value === 'Top') {
+//  databox.value.$el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+//     focuToElementAfterMove()
+//   }
+//   else if (priorityChangedData.prioritydirection.value === 'Down') {
+//     databox.value.$el.scrollIntoView({ behavior: 'smooth', block: 'end' })
+//     focuToElementAfterMove()
+//   }
+})
 watch(dialogAddLabelVisible, () => {
   selectedbox.value = dialogAddLabelVisible.value
 }, { deep: false })

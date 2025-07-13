@@ -144,9 +144,6 @@ watch(() => resultDataOnState[dataTabValue.value].page, async newval => {
   if ((newval !== apiQueryParamData[dataTabValue.value].PageNumber)) {
     apiQueryParamData[dataTabValue.value].PageNumber = newval
 
-    // console.log('pagenumber', resultDataOnState[dataTabValue.value].page, newval)
-    console.log('datatabpage', dataTabValue.value)
-
     await runSearch(false)
   }
 })
