@@ -109,6 +109,7 @@ export class DataShelfRouteQueryParams {
   }
 }
 export class DataShelfBoxModelView implements IDataShelfBoxView {
+  state: ISimpleDTO<SupervisionStatus> = { id: SupervisionStatus.primary, title: '' }
   supervisionState: ISimpleDTO<SupervisionStatus> = { id: SupervisionStatus.primary, title: '' }
   linkId?: number | undefined = 0
   hasLink: boolean = false
@@ -138,7 +139,7 @@ export class DataShelfBoxModelView implements IDataShelfBoxView {
       return undefined
 
     if (!this.creationTimePersianCache)
-      this.creationTimePersianCache = Intl.DateTimeFormat('fa-IR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(this._creationTime))
+      this.creationTimePersianCache = usePersianDate(this._creationTime)
 
     return this.creationTimePersianCache
   }
@@ -153,7 +154,7 @@ export class DataShelfBoxModelView implements IDataShelfBoxView {
       return undefined
 
     if (!this.modificationTimePersianCache)
-      this.modificationTimePersianCache = Intl.DateTimeFormat('fa-IR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(this._lastModificationTime))
+      this.modificationTimePersianCache = usePersianDate(this._lastModificationTime)
 
     return this.modificationTimePersianCache
   }

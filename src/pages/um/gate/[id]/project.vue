@@ -3,7 +3,7 @@
 import { useToast } from 'vue-toastification'
 import { VDialog } from 'vuetify/lib/components/index.mjs'
 import MCDataTable from '@/components/MCDataTable.vue'
-import type { ISimpleDTO } from '@/types/baseModels'
+import type { ISimpleDTO, baseDataTableModel } from '@/types/baseModels'
 
 const { t } = useI18n({ useScope: 'global' })
 const mcdatatableProject = ref(MCDataTable)
@@ -21,6 +21,7 @@ const currentGateId = computed((): number => {
 })
 
 const toast = useToast()
+const selectedFile = ref(null)
 
 // GateHeaders
 const projectHeaders = [
@@ -64,8 +65,69 @@ const treeTitleDataAdded = () => {
   mcdatatableTree.value.refreshData()
 }
 
+const fileInput = ref()
+
 const selectBook = (treeid: number) => {
 
+}
+
+const exportword = async (item: baseDataTableModel) => {
+  item.isLoading = true
+  try {
+    await $api(`app/tree/${item.id}/word`, {
+      method: 'PUT',
+    })
+    item.wordCreationTime = Date.now().toString()
+    window.open(`${import.meta.env.VITE_API_URL}app/tree/${item.id}/word`, '_blank')
+    toast.success(t('alert.dataActionSuccess'))
+  }
+  catch (error) {
+    if (error instanceof CustomFetchError && error.code !== '0')
+      toast.error(error.message)
+    else toast.error(t('httpstatuscodes.0'))
+  }
+  finally {
+    item.isLoading = false
+  }
+}
+
+const openword = (item: baseDataTableModel) => {
+  window.location.href = `${import.meta.env.VITE_API_URL}app/tree/${item.id}/word`
+}
+
+const importword = async (myevent: Event, item: baseDataTableModel) => {
+  if (myevent?.target?.files[0]) {
+    selectedFile.value = myevent?.target?.files[0]
+    console.log('selectedfile', selectedFile)
+
+    item.isLoading = true
+    try {
+      const formData = new FormData()
+
+      formData.append('file', selectedFile.value)
+
+      await $api(`app/tree/${item.id}/word`, {
+        method: 'POST',
+        body: formData,
+      })
+
+      toast.success(t('alert.creationtreehasbeensucceded'))
+    }
+    catch (error) {
+      if (error instanceof CustomFetchError && error.code !== '0')
+        toast.error(error.message)
+      else toast.error(t('httpstatuscodes.0'))
+    }
+    finally {
+      item.isLoading = false
+    }
+  }
+
+//   open()
+}
+
+function triggerFileInput() {
+  fileInput.value.click()
 }
 </script>
 
@@ -91,6 +153,11 @@ const selectBook = (treeid: number) => {
             <template #item.trees="{ value }">
               <div class="d-flex align-center gap-x-4">
                 {{ value.trees && value.trees.map((item: ISimpleDTO<number>) => `${item.title}`).join(' ,') }}
+              </div>
+            </template>
+            <template #item.creationTime="{ value }">
+              <div class="d-flex align-center gap-x-4">
+                {{ usePersianDate(value.creationTime) }}
               </div>
             </template>
             <template #item.isActive="{ value }">
@@ -127,9 +194,47 @@ const selectBook = (treeid: number) => {
                 {{ value.book && value.book.map((item: ISimpleDTO<number>) => `${item.title}`).join(' ,') }}
               </div>
             </template>
+            <template #item.creationTime="{ value }">
+              <div class="d-flex align-center gap-x-4">
+                {{ usePersianDate(value.creationTime) }}
+              </div>
+            </template>
             <template #action="{ value }">
-              <IconBtn @click="selectBook(value.id)">
+              <!--
+                <IconBtn @click="selectBook(value.id)">
                 <VIcon icon="tabler-books" />
+                </IconBtn>
+              -->
+              <IconBtn @click="exportword(value)">
+                <VTooltip location="right center">
+                  <template #activator="{ props }">
+                    <VIcon icon="tabler-table-export" v-bind="props" />
+                  </template>
+                  {{ formatString($t('tree.exportword')) }}
+                </VTooltip>
+              </IconBtn>
+              <input
+                ref="fileInput"
+                type="file"
+                style="display: none"
+                accept=".doc,.docx"
+                @change="importword($event, value)"
+              >
+              <IconBtn @click="triggerFileInput">
+                <VTooltip location="right center">
+                  <template #activator="{ props }">
+                    <VIcon icon="tabler-table-import" v-bind="props" />
+                  </template>
+                  {{ formatString($t('tree.importword')) }}
+                </VTooltip>
+              </IconBtn>
+              <IconBtn v-if="value.wordCreationTime" @click="openword(value)">
+                <VTooltip location="right center">
+                  <template #activator="{ props }">
+                    <VIcon icon="tabler-cloud-download" v-bind="props" />
+                  </template>
+                  {{ `${formatString($t('tree.getlastword'))} ${usePersianDate(value.wordCreationTime)}` }}
+                </VTooltip>
               </IconBtn>
             </template>
             <template #item.isActive="{ value }">

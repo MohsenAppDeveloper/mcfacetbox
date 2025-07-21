@@ -123,6 +123,7 @@ const updateAction = (dataModel: Record<string, any>) => {
 }
 
 const deleteAction = async (item: baseDataTableModel, index: number) => {
+  selectedItem.value.splice(0)
   selectedItem.value.push(item.id)
 
   const serviceError = shallowRef()
@@ -252,30 +253,37 @@ defineExpose({ refreshData })
             :value="item"
           >
             <div v-if="header.key === 'actions' && (props.activeDeleteAction || props.activeEditAction)">
-              <IconBtn
-                v-show="props.activeDeleteAction"
-                @click="deleteAction(item, index)"
-              >
-                <VIcon
-                  v-if="!item.isLoading"
-                  icon="tabler-trash"
-                />
-                <VProgressCircular
+              <div v-if="!item.isLoading">
+                <IconBtn
+                  v-show="props.activeDeleteAction"
+                  @click="deleteAction(item, index)"
+                >
+                  <VIcon icon="tabler-trash" />
+                <!--
+                  <VProgressCircular
                   v-else
                   size="20"
                   width="3"
                   indeterminate
+                  />
+                -->
+                </IconBtn>
+                <IconBtn
+                  v-show="props.activeEditAction"
+                  @click="updateAction(item)"
+                >
+                  <VIcon icon="tabler-pencil" />
+                </IconBtn>
+                <slot
+                  name="action"
+                  :value="item"
                 />
-              </IconBtn>
-              <IconBtn
-                v-show="props.activeEditAction"
-                @click="updateAction(item)"
-              >
-                <VIcon icon="tabler-pencil" />
-              </IconBtn>
-              <slot
-                name="action"
-                :value="item"
+              </div>
+              <VProgressCircular
+                v-else
+                size="20"
+                width="3"
+                indeterminate
               />
             </div>
             <span v-else>{{ item[header.key] }}</span>

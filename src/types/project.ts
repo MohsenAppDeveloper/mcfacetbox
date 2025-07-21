@@ -1,4 +1,4 @@
-import type { ISimpleDTO, baseItemState } from './baseModels'
+import { ActionDates, type ISimpleDTO, type baseItemState } from './baseModels'
 
 export interface IProjectBase {
   id: number
@@ -13,7 +13,6 @@ export interface IProjectEdit extends IProjectBase {
 }
 export interface IProjectView extends baseItemState, IProjectBase {
   trees: ISimpleDTO<number>[]
-  createDate: string
 }
 export class ProjectEditModel implements IProjectEdit {
   gateId: number = 0
@@ -28,12 +27,13 @@ export class ProjectViewModel implements IProjectView {
   loading?: boolean | undefined = false
   selected?: boolean | undefined = false
   tempData: any
+  creationTime: string = ''
 
   //   [x: string]: any;
   id: number = 0
   title: string = ''
   trees: ISimpleDTO<number>[] = []
-  createDate: string = ''
+
   isActive: boolean = false
   description: string = ''
 }

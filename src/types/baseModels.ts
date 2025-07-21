@@ -110,7 +110,41 @@ export interface baseDataTableModel extends Record<string, any> {
   selectable: boolean
   disabled: boolean
 }
+export class ActionDates {
+  private _creationTime?: string
+  private _lastModificationTime?: string
+  private creationTimePersianCache?: string
+  private modificationTimePersianCache?: string
+  get creationTime(): string | undefined {
+    if (!this._creationTime)
+      return undefined
 
+    if (!this.creationTimePersianCache)
+      this.creationTimePersianCache = Intl.DateTimeFormat('fa-IR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(this._creationTime))
+
+    return this.creationTimePersianCache
+  }
+
+  set creationTime(value: string | undefined) {
+    this._creationTime = value
+    this.creationTimePersianCache = undefined
+  }
+
+  get lastModificationTime(): string | undefined {
+    if (!this._lastModificationTime)
+      return undefined
+
+    if (!this.modificationTimePersianCache)
+      this.modificationTimePersianCache = Intl.DateTimeFormat('fa-IR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(this._lastModificationTime))
+
+    return this.modificationTimePersianCache
+  }
+
+  set lastModificationTime(value: string | undefined) {
+    this._lastModificationTime = value
+    this.modificationTimePersianCache = undefined
+  }
+}
 export class SimpleSelectableDTOModel<T extends stringNumber> implements ISimpleSelectableDTO<T> {
   id: T
   title: string = ''
