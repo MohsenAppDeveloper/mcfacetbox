@@ -61,7 +61,7 @@ const selectNode = async () => {
     persistent @update:model-value="onReset(true)"
   >
     <DialogCloseBtn @click="onReset(true)" />
-    <VCard variant="flat">
+    <VCard variant="flat" class="pa-1">
       <VCardTitle>{{ $t('tree.selectnode') }}</VCardTitle>
       <MCSearchApiAutoComplete
         v-model:selected-items="selectedNodes"

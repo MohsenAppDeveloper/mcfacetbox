@@ -72,7 +72,7 @@ const mergenode = async () => {
     persistent @update:model-value="onReset(true)"
   >
     <DialogCloseBtn :disabled="loading" @click="onReset(true)" />
-    <VCard variant="flat" :title="$t('tree.mergenode')">
+    <VCard variant="flat" :title="$t('tree.mergenode')" class="pa-1">
       <template #subtitle>
         <span>{{ $t('tree.selectednode') }} : </span>
 

@@ -208,7 +208,7 @@ defineExpose({ updateRole })
   >
     <!-- 👉 Dialog close btn -->
     <DialogCloseBtn :disabled="isloading" @click="onReset" />
-    <VCard flat :title="$t('role.addedit')" :subtitle="$t('role.addeditsubtitle')" :loading="opening">
+    <VCard flat :title="$t('role.addedit')" :subtitle="$t('role.addeditsubtitle')" :loading="opening" class="pa-1">
       <VCardText>
         <!--
           <VBtn type="reset" variant="tonal" color="error" @click="testvmodel" :disabled="isloading">

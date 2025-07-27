@@ -89,7 +89,7 @@ defineExpose({ addRootNode })
     persistent @update:model-value="onReset(true)"
   >
     <DialogCloseBtn :disabled="loading" @click="onReset(true)" />
-    <VCard variant="flat" :subtitle="`${$t('tree.selectednode')}: ${props.selectedNode.title}`" :title="$t('tree.addnewnode')">
+    <VCard variant="flat" :subtitle="`${$t('tree.selectednode')}: ${props.selectedNode.title}`" :title="$t('tree.addnewnode')" class="pa-1">
       <MCSearchApiAutoComplete
         v-model:selected-items="selectedNodes"
         auto-focus :max-height="400" :api-url="`app/node/simple?treeid=${props.selectedTreeId}`" :selection-type="SelectionType.Single" class="pt-1"

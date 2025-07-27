@@ -173,7 +173,7 @@ defineExpose({ updateProject })
     persistent @update:model-value="onReset"
   >
     <DialogCloseBtn :disabled="isloading" @click="onReset" />
-    <VCard flat :title="$t('project.addedit')" :subtitle="$t('project.addeditsubtitle')" :loading="opening">
+    <VCard flat :title="$t('project.addedit')" :subtitle="$t('project.addeditsubtitle')" :loading="opening" class="pa-1">
       <VCardText>
         <!-- 👉 Form -->
         <VForm ref="refForm" v-model="isFormValid" :disabled="opening" @submit.prevent="onSubmit">

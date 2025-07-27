@@ -124,7 +124,7 @@ defineExpose({ updateGate })
     <!-- 👉 Dialog close btn -->
     <DialogCloseBtn :disabled="isloading" @click="onReset" />
     <!-- <PerfectScrollbar :options="{ wheelPropagation: false }"> -->
-    <VCard flat :title="$t('gate.addedit')" :subtitle="$t('gate.addeditsubtitle')" :loading="opening">
+    <VCard flat :title="$t('gate.addedit')" :subtitle="$t('gate.addeditsubtitle')" :loading="opening" class="pa-1">
       <VCardText>
         <!-- 👉 Form -->
         <VForm ref="refForm" v-model="isFormValid" :disabled="opening" @submit.prevent="onSubmit">

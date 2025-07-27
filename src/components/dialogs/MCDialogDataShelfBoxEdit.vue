@@ -202,7 +202,7 @@ function checkForRemovedFootnotes() {
   >
     <!-- 👉 Dialog close btn -->
     <DialogCloseBtn :disabled="isloading || opening" @click="emits('update:isDialogVisible', false)" />
-    <VCard flat :title="$t('datashelfbox.addedit')" :loading="opening">
+    <VCard flat :title="$t('datashelfbox.addedit')" :loading="opening" class="pa-1">
       <MCLoading :loadingsize="SizeType.MD" :showloading="opening" />
 
       <VCardText>

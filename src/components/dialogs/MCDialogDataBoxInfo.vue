@@ -51,7 +51,7 @@ async function getDataBoxItem() {
   >
     <DialogCloseBtn :disabled="loading" @click="emit('update:isDialogVisible', false)" />
 
-    <VCard variant="flat" :loading="opening" :min-height="200">
+    <VCard variant="flat" :loading="opening" :min-height="200" class="pa-1">
       <MCLoading :loadingsize="SizeType.MD" :showloading="opening" />
       <VCardTitle class="primary white--text">
         {{ $t('datashelfbox.about') }}

@@ -143,7 +143,7 @@ defineExpose({ changeTree })
     <!-- 👉 Dialog close btn -->
     <DialogCloseBtn :disabled="isloading || selectedTree === 0" @click="onReset" />
     <!-- <PerfectScrollbar :options="{ wheelPropagation: false }"> -->
-    <VCard flat :title="$t('tree.select')" :subtitle="$t('tree.selectyourtree')">
+    <VCard flat :title="$t('tree.select')" :subtitle="$t('tree.selectyourtree')" class="pa-1">
       <VCardText>
         <!-- 👉 Form -->
         <VRow>

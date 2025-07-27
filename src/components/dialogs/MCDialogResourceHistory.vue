@@ -62,7 +62,7 @@ async function getDataBoxItem() {
   <VDialog v-if="props.isDialogVisible" :model-value="props.isDialogVisible">
     <DialogCloseBtn :disabled="loading" @click="emit('update:isDialogVisible', false)" />
 
-    <VCard variant="flat" :loading="opening" :min-height="400" class="pa-3">
+    <VCard variant="flat" :loading="opening" :min-height="400" class="pa-1">
       <MCLoading :loadingsize="SizeType.MD" :showloading="opening" />
       <VCardTitle class="primary white--text">
         {{ $t('datashelfbox.about') }}

@@ -74,7 +74,7 @@ const transferNodeLocal = async () => {
     persistent @update:model-value="onReset(true)"
   >
     <DialogCloseBtn :disabled="loading" @click="onReset(true)" />
-    <VCard variant="flat" :title="$t('tree.transfernode')">
+    <VCard variant="flat" :title="$t('tree.transfernode')" class="pa-1">
       <template #subtitle>
         <span>{{ $t('tree.selectednode') }} : </span>
 
