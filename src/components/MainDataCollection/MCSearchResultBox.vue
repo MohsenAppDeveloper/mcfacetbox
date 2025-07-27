@@ -91,7 +91,7 @@ const boxUrl = computed(() => {
     case DataBoxType.hadith:
       return createHadithURL(props.dataitem.id.toString())
     case DataBoxType.quran:
-      return ''
+      return createAyahUrl(props.dataitem.id.toString().split('-')[0], props.dataitem.id.toString().split('-')[1])
     case DataBoxType.vocabulary:
       return ''
   }

@@ -52,6 +52,6 @@ export const resolveSupervisionStatus = (statusid: SupervisionStatus, resolverta
 export const createHadithURL = (resourceid: string) => {
   return `https://hadith.inoor.ir/fa/hadith/${resourceid}`
 }
-export const createAyahUrl = (surahid: number, ayahid: number) => {
+export const createAyahUrl = (surahid: string, ayahid: string) => {
   return `https://quran.inoor.ir/fa/ayah/${surahid}/${ayahid}`
 }
