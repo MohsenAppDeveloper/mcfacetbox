@@ -216,7 +216,7 @@ function resetData() {
   ispaginationFullSize.value = false
   selectAll.value.state = SelectAllState.Deselect
   selectAll.value.count = 0
-  resultdataItems.value = []
+  resultdataItems.value.splice(0)
   facetboxItems.value.splice(0)
   currentNodeId.value = selectedNode.id
 }

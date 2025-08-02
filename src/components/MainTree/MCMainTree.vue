@@ -51,7 +51,7 @@ interface Emit {
   (e: 'open'): void
   (e: 'showSelectTree'): void
 }
-const { x: cursorX, y: cursorY, pressure, pointerType } = usePointer()
+const { x: cursorX, y: cursorY } = usePointer()
 
 // نمایش Tooltip هنگام کلیک
 const showNodeTooltip = (event: MouseEvent, item: ISimpleTreeActionable) => {
@@ -114,7 +114,9 @@ const selectTreeNode = (item: ISimpleTreeActionable) => {
   const newQuery = { ...route.query }
 
   Object.keys(newQuery).forEach(key => {
-    delete newQuery[key]
+    // پارامتر dps از کوئری نباید حذف شود چون اندازه صفحه میباشد
+    if (key !== 'dps')
+      delete newQuery[key]
   })
 
   //   router.push({ name: 'rs', query: { gtd: btoa(currentTreeId.value.toString()), snd: btoa(item.id.toString()) } })

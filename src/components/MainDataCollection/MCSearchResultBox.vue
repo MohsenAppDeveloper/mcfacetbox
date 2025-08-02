@@ -57,7 +57,7 @@ async function addContentToNode(datashelfbox: IDataShelfBoxNew, duplicate: boole
       if (error.code === 'Encyclopedia.ErrorCode:010004') {
         const title = formatString(t('alert.contentisduplicate'), t(DataBoxType[currentDataboxTypeToConnectToNode.value]))
 
-        const result = await confirmSwal(
+        await confirmSwal(
           title,
           '',
           t('$vuetify.confirmEdit.ok'),
