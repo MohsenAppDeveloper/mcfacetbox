@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { VFadeTransition } from 'vuetify/lib/components/index.mjs'
-import { DataShelfBoxModelView } from '@/types/dataShelf'
+import { DataShelfBoxModelNew, DataShelfBoxModelView } from '@/types/dataShelf'
 import { resolveSupervisionStatus } from '@/utils/dataResolver'
-import type { IDataShelfBoxView, IOrderChangedResponse, LinkDetailModel, UnlinkDataModel } from '@/types/dataShelf'
+import type { IDataShelfBoxNew, IDataShelfBoxView, IOrderChangedResponse, LinkDetailModel, UnlinkDataModel } from '@/types/dataShelf'
 import { DataBoxType, MessageType, SizeType, SupervisionStatus } from '@/types/baseModels'
 import { type ISearchResultItem, SearchResultItemModel } from '@/types/SearchResult'
 import { useDataShelfPriorityChanged } from '@/store/databoxStore'
@@ -21,6 +21,8 @@ const { t } = useI18n({ useScope: 'global' })
 const showTools = ref(false)
 const marginbottom = ref('10px')
 const priorityChangedData = useDataShelfPriorityChanged()
+const copytoNodeAction = shallowRef(false)
+const transfertoNodeAction = shallowRef(false)
 
 /**
  * هر زمان که یک اکشن روی این کامپوننت اتفاق بیفتد که منجر به نمایش یک دیالوگ دیگر و وابسته با این کامپوننت باشد باید این متغییر تحت تاثیر قرار بگیرد
@@ -150,22 +152,69 @@ const changeSupervisionStatus = async (statusId: SupervisionStatus) => {
   }
 }
 
-const connecttoselectedNode = async (nodeid: number) => {
+async function copyToNode(datashelfbox: IDataShelfBoxNew, duplicate: boolean) {
+  loadinglocal.value = true
+
+  try {
+    await $api('app/excerpt/copy', {
+      method: 'POST',
+      body: JSON.stringify({ ignoreDuplicate: duplicate, ...datashelfbox }),
+      ignoreResponseError: false,
+    })
+
+    emits('handlemessage', t('alert.dataActionSuccess'), MessageType.success)
+  }
+  catch (error) {
+    if (error instanceof CustomFetchError && error.code !== '0') {
+      if (error.code === 'Encyclopedia.ErrorCode:010004') {
+        const title = formatString(t('alert.contentisduplicate'), t(DataBoxType[databoxItem.value.excerptType.id]))
+
+        await confirmSwal(
+          title,
+          '',
+          t('$vuetify.confirmEdit.ok'),
+          t('$vuetify.confirmEdit.cancel'),
+          true, 'warning',
+          async () => {
+            await copyToNode(datashelfbox, true)
+          },
+        )
+      }
+      else { emits('handlemessage', error.message, MessageType.error) }
+    }
+    else { emits('handlemessage', t('httpstatuscodes.0'), MessageType.error) }
+  }
+  finally {
+    copytoNodeAction.value = false
+    loadinglocal.value = false
+  }
+}
+
+const transfertoNode = async (nodeid: number) => {
   loadinglocal.value = true
   try {
     await $api(`app/excerpt/${databoxItem.value.id}/connect/${nodeid}`, {
       method: 'PUT',
     })
     emits('handlemessage', t('alert.dataActionSuccess'), MessageType.success)
-    loadinglocal.value = false
   }
   catch (error) {
-    loadinglocal.value = false
-
     if (error instanceof CustomFetchError && error.code !== '0')
       emits('handlemessage', error.message, MessageType.error)
     else emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
   }
+  finally {
+    transfertoNodeAction.value = false
+    loadinglocal.value = false
+  }
+}
+
+function nodehasbeenselected(nodeid: number) {
+  if (transfertoNodeAction.value)
+    transfertoNode(nodeid)
+
+  if (copytoNodeAction.value)
+    copyToNode(new DataShelfBoxModelNew(databoxItem.value.id, 0, nodeid, ''), false)
 }
 
 const disconnectSelectedExcerpt = async () => {
@@ -562,7 +611,7 @@ watch(isDialogDataShelfBoxEdit, () => {
               {{ $t('datashelfbox.disconnect') }}
             </VTooltip>
           </VBtn>
-          <VBtn icon size="25" variant="text" @click="dialogSelectNodeVisible = true">
+          <VBtn icon size="25" variant="text" @click="() => { dialogSelectNodeVisible = true;transfertoNodeAction = true }">
             <VIcon icon="tabler-plug-connected" size="20" />
             <VTooltip
               activator="parent"
@@ -617,7 +666,7 @@ watch(isDialogDataShelfBoxEdit, () => {
               {{ `${$t('datashelfbox.otherusage')} ${$t(DataBoxType[databoxItem.excerptType.id])}` }}
             </VTooltip>
           </VBtn>
-          <VBtn icon size="25" variant="text" @click="">
+          <VBtn icon size="25" variant="text" @click="() => { dialogSelectNodeVisible = true ;copytoNodeAction = true }">
             <VIcon icon="tabler-box-multiple" size="20" />
             <VTooltip
               activator="parent"
@@ -679,7 +728,7 @@ watch(isDialogDataShelfBoxEdit, () => {
   </div>
   <MCDialogSelectNode
     v-if="dialogSelectNodeVisible" v-model:is-dialog-visible="dialogSelectNodeVisible"
-    :selected-tree-id="databoxItem.treeId" @nodehasbeenselected="(nodeid) => connecttoselectedNode(nodeid)"
+    :selected-tree-id="databoxItem.treeId" @nodehasbeenselected="(nodeid) => nodehasbeenselected(nodeid)"
   />
   <MCDialogDataShelfBoxEdit v-if="isDialogDataShelfBoxEdit" v-model:is-dialog-visible="isDialogDataShelfBoxEdit" :datashelfboxid="databoxItem.id" @updatedatabox-item="updatedataboxItem" @handlemessage="(message, type) => emits('handlemessage', message, type)" />
   <MCDialogAddLabel

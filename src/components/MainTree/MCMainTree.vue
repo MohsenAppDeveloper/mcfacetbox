@@ -55,20 +55,13 @@ const { x: cursorX, y: cursorY, pressure, pointerType } = usePointer()
 
 // نمایش Tooltip هنگام کلیک
 const showNodeTooltip = (event: MouseEvent, item: ISimpleTreeActionable) => {
-  console.log('activenodes1', activatedNode.value)
-
   activeTooltipPath.value = getNodePath(item, '')
   setTimeout(() => {
     if (!activatedNode.value.includes(item.id))
       activatedNode.value = [item.id]
-    console.log('activenodes2', activatedNode.value)
     dialogDescriptionVisible.value = true
   }, 500)
 }
-
-watch(activatedNode, () => {
-  console.log('activatednodewatch', activatedNode.value)
-})
 
 const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi<ISimpleTreeActionable[]>(createUrl('app/node/hierarchy',
   { query: { treeid: currentTreeId } }), { immediate: false })

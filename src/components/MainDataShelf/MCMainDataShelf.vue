@@ -58,10 +58,6 @@ const route = useRoute()
 const router = useRouter()
 const ispaginationFullSize = ref(false)
 
-watch(ispaginationFullSize, newval => {
-  console.log('update-ispaginationFullSize', newval)
-})
-
 // const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi(createUrl('app/excerpt', {
 //   query: apiQueryParamtData,
 // }), { immediate: false, refetch: false })
