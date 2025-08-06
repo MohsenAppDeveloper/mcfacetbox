@@ -7,6 +7,7 @@ export {}
 declare global {
   const $api: typeof import('./src/utils/api')['$api']
   const $apiFake: typeof import('./src/utils/api')['$apiFake']
+  const BookReferenceModel: typeof import('./src/utils/refrenceUtils')['BookReferenceModel']
   const COOKIE_MAX_AGE_1_YEAR: typeof import('./src/utils/constants')['COOKIE_MAX_AGE_1_YEAR']
   const CreateUrl: typeof import('./src/@core/composable/CreateUrl')['CreateUrl']
   const CustomError: typeof import('./src/utils/api')['CustomError']
@@ -75,9 +76,7 @@ declare global {
   const formatDate: typeof import('./src/@core/utils/formatters')['formatDate']
   const formatDateToMonthShort: typeof import('./src/@core/utils/formatters')['formatDateToMonthShort']
   const formatString: typeof import('./src/composables/objectUtils')['formatString']
-  const generateAyahFootnote: typeof import('./src/utils/stringUtils')['generateAyahFootnote']
   const generateAyahFootnoteRefrence: typeof import('./src/utils/refrenceUtils')['generateAyahFootnoteRefrence']
-  const generateFootnote: typeof import('./src/utils/stringUtils')['generateFootnote']
   const generateFootnoteRefrence: typeof import('./src/utils/refrenceUtils')['generateFootnoteRefrence']
   const getActivePinia: typeof import('pinia')['getActivePinia']
   const getCleanSelectedText: typeof import('./src/utils/htmlUtils')['getCleanSelectedText']
@@ -424,6 +423,9 @@ declare global {
   // @ts-ignore
   export type { CustomFetchError } from './src/utils/api'
   import('./src/utils/api')
+  // @ts-ignore
+  export type { BookReferenceModel } from './src/utils/refrenceUtils'
+  import('./src/utils/refrenceUtils')
 }
 // for vue template auto import
 import { UnwrapRef } from 'vue'
@@ -432,6 +434,7 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly $api: UnwrapRef<typeof import('./src/utils/api')['$api']>
     readonly $apiFake: UnwrapRef<typeof import('./src/utils/api')['$apiFake']>
+    readonly BookReferenceModel: UnwrapRef<typeof import('./src/utils/refrenceUtils')['BookReferenceModel']>
     readonly COOKIE_MAX_AGE_1_YEAR: UnwrapRef<typeof import('./src/utils/constants')['COOKIE_MAX_AGE_1_YEAR']>
     readonly CustomFetchError: UnwrapRef<typeof import('./src/utils/api')['CustomFetchError']>
     readonly DialogSizeMD: UnwrapRef<typeof import('./src/utils/constants')['DialogSizeMD']>

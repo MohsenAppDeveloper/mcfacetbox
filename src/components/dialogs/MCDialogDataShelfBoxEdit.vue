@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { v4 as uuidV4 } from 'uuid'
+import MCDialogAddCitation from './MCDialogAddCitation.vue'
 import { DataShelfBoxModelNew, DataShelfBoxModelView } from '@/types/dataShelf'
 import type { IDataShelfBoxView, IFootNote } from '@/types/dataShelf'
 import { DataBoxType, MessageType, SizeType } from '@/types/baseModels'
+import type { IReference } from '@/utils/refrenceUtils'
+import { generateFootnoteRefrence } from '@/utils/refrenceUtils'
 
 interface Props {
   isDialogVisible: boolean
@@ -17,8 +20,8 @@ const emits = defineEmits<Emit>()
 const { t } = useI18n({ useScope: 'global' })
 const tempdataItem = reactive<IDataShelfBoxView>(new DataShelfBoxModelView())
 const footNotes = reactive<IFootNote[]>([])
-const opening = ref(false)
-
+const opening = shallowRef(false)
+const dialogSupervisionHistory = shallowRef(false)
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
   (e: 'updatedataboxItem', databoxItem: IDataShelfBoxView): void
@@ -28,7 +31,7 @@ interface Emit {
 
 }
 
-const isloading = ref(false)
+const isloading = shallowRef(false)
 const editor = ref<HTMLDivElement>()
 
 // const editableContent = ref('')
@@ -121,28 +124,76 @@ const refreshfootnote = () => {
   }
 }
 
-const addFootnote = () => {
-  // NOTE - بدلیل نیاز به نمایش شماره پاورقی ها از یک همه جا اندیس پاورقی بعلاوه یک شده است، برای همین هرجا بخواهیم به یک رکورد از آرایه پاورقی دسترسی داشته باشیم، اندیس نمایش را منهای یک می کنیم
+const canFootnoteAction = () => {
   const selection = window.getSelection()
+
+  console.log('can', selection)
+
   if ((selection?.rangeCount ?? 0) > 0) {
     const range = selection?.getRangeAt(0)
     const selectedText = range?.toString().trim()
     const parent = range?.startContainer.parentNode
-    if (selectedText && !(parent?.nodeName === 'SUP')) {
-      const sup = document.createElement('sup')
-      const uuid = uuidV4()
-
-      sup.innerText = (footNotes.length + 1).toString()
-      sup.className = 'footenote-index'
-      sup.setAttribute('footnote-id', uuid.toString())
-
-      //   sup.addEventListener('click', (event: MouseEvent) => {})
-      range?.collapse(false)
-      range?.insertNode(sup) // افزودن <sup> به محتوای div
-      footNotes.push({ title: '', id: uuid.toString(), editing: true, order: footNotes.length + 1, isReference: false })
-      refreshfootnote()
-    }
+    if (selectedText && !(parent?.nodeName === 'SUP'))
+      return true
   }
+
+  return false
+}
+
+const addFootnote = () => {
+  if (canFootnoteAction()) {
+    const selection = window.getSelection()
+    const sup = document.createElement('sup')
+    const uuid = uuidV4()
+
+    sup.innerText = (footNotes.length + 1).toString()
+    sup.className = 'footenote-index'
+    sup.setAttribute('footnote-id', uuid.toString())
+
+    //   sup.addEventListener('click', (event: MouseEvent) => {})
+    const range = selection?.getRangeAt(0)
+
+    range?.collapse(false)
+    range?.insertNode(sup) // افزودن <sup> به محتوای div
+    footNotes.push({ title: '', id: uuid.toString(), editing: true, order: footNotes.length + 1, isReference: false })
+    refreshfootnote()
+  }
+}
+
+const startInsertBookCitation = () => {
+  if (!canFootnoteAction())
+    return
+  const selection = window.getSelection()
+  const sup = document.createElement('sup')
+  const uuid = uuidV4()
+
+  sup.innerText = (footNotes.length + 1).toString()
+  sup.className = 'footenote-index'
+  sup.setAttribute('footnote-id', uuid.toString())
+
+  //   sup.addEventListener('click', (event: MouseEvent) => {})
+  const range = selection?.getRangeAt(0)
+
+  range?.collapse(false)
+  range?.insertNode(sup) // افزودن <sup> به محتوای div
+  footNotes.push({ title: '', id: uuid.toString(), editing: true, order: footNotes.length + 1, isReference: true })
+  refreshfootnote()
+  dialogSupervisionHistory.value = true
+}
+
+const finishInsertBookCitation = (citation: IReference | null) => {
+  dialogSupervisionHistory.value = false
+
+  const footnoteindex = footNotes.findIndex(item => item.title === '' && item.isReference)
+  if (!citation) {
+    deletefootnote(footNotes[footnoteindex].id)
+  }
+  else {
+    console.log('citation', footNotes, footNotes[footnoteindex], footnoteindex)
+
+    footNotes[footnoteindex] = { id: footNotes[footnoteindex].id, editing: false, isReference: true, order: footNotes[footnoteindex].order, title: generateFootnoteRefrence(citation) }
+  }
+  refreshfootnote()
 }
 
 const footnoteSort = computed(() => {
@@ -222,17 +273,26 @@ function checkForRemovedFootnotes() {
         </div>
         <VDivider />
         <VCardActions>
-          <VBtn variant="plain" :loading="isloading" @click="acceptchanged">
+          <VBtn variant="flat" :loading="isloading" @click="acceptchanged">
             {{ t('accept') }}
           </VBtn>
 
-          <VBtn variant="plain" icon :disabled="isloading" @click="addFootnote">
+          <VBtn variant="flat" icon :disabled="isloading" @click="addFootnote">
             <VIcon icon="tabler-superscript" size="22" />
             <VTooltip
               activator="parent"
               location="top center"
             >
-              {{ t('datashelfbox.addfootnote') }}
+              {{ t('datashelfbox.adddescfootnote') }}
+            </VTooltip>
+          </VBtn>
+          <VBtn variant="flat" icon :disabled="isloading" @click="startInsertBookCitation">
+            <VIcon icon="tabler-book-2" size="22" />
+            <VTooltip
+              activator="parent"
+              location="top center"
+            >
+              {{ t('datashelfbox.addcitationfootnote') }}
             </VTooltip>
           </VBtn>
         </VCardActions>
@@ -240,6 +300,10 @@ function checkForRemovedFootnotes() {
         <!-- <div v-html="renderedContent" /> -->
       </VCardText>
     </VCard>
+    <MCDialogAddCitation
+      v-if="dialogSupervisionHistory" v-model:is-dialog-visible="dialogSupervisionHistory"
+      @error-has-occured="emits('handlemessage', $event, MessageType.error)" @citationcreated="finishInsertBookCitation"
+    />
     <!-- </PerfectScrollbar> -->
   </VDialog>
 </template>

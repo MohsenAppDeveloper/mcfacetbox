@@ -12,6 +12,16 @@ export interface IAyahReference {
   surahTitle: string
   ayahNumber: string
 }
+export class BookReferenceModel implements IReference {
+  bookTitle: string = ''
+  author?: string | undefined = ''
+  volumeNumber?: string | undefined = ''
+  pageNumber?: string | undefined = ''
+  edition?: string | undefined = ''
+  publisher?: string | undefined = ''
+  year?: string | undefined = ''
+  city?: string | undefined = ''
+}
 
 export function generateFootnoteRefrence(reference: IReference): string {
   let footnote = ''

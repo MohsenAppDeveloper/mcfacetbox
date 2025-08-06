@@ -137,11 +137,14 @@
   'book': {
     'title': 'عنوان کتاب',
     'select': 'انتخاب کتاب',
+    "volumenumber":"شماره جلد",
+    "pagenumber":"شماره صفحه",
     'selectrequiredbook': 'انتخاب کتب مورد نیاز',
     'creator': 'نویسنده',
     'publisher': 'ناشر',
     'language': 'زبان',
-    'publishYear': 'سال نشر'
+    'publishYear': 'سال نشر',
+    "publishplace":"مکان نشر"
   },
   'datashelfbox': {
     "labelscount":"تعدا برچسب : '(0)' عدد",
@@ -151,7 +154,9 @@
     "connectednodesimple":"گره متصل",
     "loadingdesc":"بارگذاری توضیحات فیش",
     'addedit': 'افزودن / ویرایش فیش',
-    'addfootnote': 'افزودن پاورقی',
+    "adddescfootnote": "افزودن پاورقی توضیح",
+    "addcitationfootnote": "افزودن پاورقی استناد",
+
     "link": "لینک کردن",
     "unlink":"حذف لینک",
     'edit': 'ویرایش فیش',
