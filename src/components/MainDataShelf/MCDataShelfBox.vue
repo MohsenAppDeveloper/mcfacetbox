@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { VFadeTransition } from 'vuetify/lib/components/index.mjs'
+import MCDialogSupervisionCommentHistory from '../dialogs/MCDialogSupervisionCommentHistory.vue'
 import { DataShelfBoxModelNew, DataShelfBoxModelView } from '@/types/dataShelf'
 import { resolveSupervisionStatus } from '@/utils/dataResolver'
 import type { IDataShelfBoxNew, IDataShelfBoxView, IOrderChangedResponse, LinkDetailModel, UnlinkDataModel } from '@/types/dataShelf'
@@ -14,6 +15,7 @@ const isDialogDataShelfBoxEdit = ref(false)
 const dialogAddLabelVisible = ref(false)
 const dialogDataBoxInfo = ref(false)
 const dialogResourceHistory = ref(false)
+const dialogSupervisionHistory = ref(false)
 
 const dialogSelectNodeVisible = ref(false)
 const databoxItem = defineModel<IDataShelfBoxView>({ default: new DataShelfBoxModelView() })
@@ -134,22 +136,67 @@ const updatedataboxItem = (databoxitemResult: IDataShelfBoxView) => {
 }
 
 const changeSupervisionStatus = async (statusId: SupervisionStatus) => {
-  loadinglocal.value = true
-  try {
-    await $api(`app/excerpt/${databoxItem.value.id}/${SupervisionStatus[statusId]}`, {
-      method: 'PUT',
-    })
-    databoxItem.value.state.id = statusId
-    loadinglocal.value = false
-    emits('handlemessage', t('alert.dataActionSuccess'), MessageType.success)
-  }
-  catch (error) {
-    loadinglocal.value = false
+//   loadinglocal.value = true
 
-    if (error instanceof CustomFetchError && error.code !== '0')
-      emits('handlemessage', error.message, MessageType.error)
-    else emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
+  const serviceError = shallowRef()
+
+  const resultValue = await showSwal({
+    input: 'textarea',
+    inputLabel: t('tree.comment'),
+    inputPlaceholder: t('datashelfbox.enteryourcomment'),
+    confirmButtonText: t('$vuetify.confirmEdit.ok'),
+    cancelButtonText: t('$vuetify.confirmEdit.cancel'),
+    showConfirmButton: true,
+    showCancelButton: true,
+    showLoaderOnConfirm: true,
+    showCloseButton: true,
+    allowOutsideClick: false,
+    preConfirm: async desc => {
+      try {
+        await $api(`app/excerpt/${databoxItem.value.id}/${SupervisionStatus[statusId]}`, {
+          method: 'PUT',
+          body: { description: desc },
+          ignoreResponseError: false,
+        })
+        databoxItem.value.hasDescription = desc.length > 0
+      }
+      catch (err) {
+        serviceError.value = err
+      }
+
+      return { serviceError }
+    },
+  })
+
+  if (resultValue.isConfirmed) {
+    const err = serviceError.value
+    if (err) {
+      if (err instanceof CustomFetchError && err.message)
+        emits('handlemessage', err.message, MessageType.error)
+      else emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
+    }
+    else {
+      databoxItem.value.state.id = statusId
+      emits('handlemessage', t('alert.dataActionSuccess'), MessageType.success)
+    }
   }
+  selectedbox.value = false
+
+  //   try {
+  //     await $api(`app/excerpt/${databoxItem.value.id}/${SupervisionStatus[statusId]}`, {
+  //       method: 'PUT',
+  //     })
+
+  //     loadinglocal.value = false
+  //     emits('handlemessage', t('alert.dataActionSuccess'), MessageType.success)
+  //   }
+  //   catch (error) {
+  //     loadinglocal.value = false
+
+//     if (error instanceof CustomFetchError && error.code !== '0')
+//       emits('handlemessage', error.message, MessageType.error)
+//     else emits('handlemessage', t('httpstatuscodes.0'), MessageType.error)
+//   }
 }
 
 async function copyToNode(datashelfbox: IDataShelfBoxNew, duplicate: boolean) {
@@ -680,6 +727,17 @@ watch(isDialogDataShelfBoxEdit, () => {
           </VBtn>
         </div>
         <VDivider vertical class="mx-2" color="primary" thickness="2" />
+        <!-- v-if="databoxItem.supervisionCommentCount ?? 0 > 0" -->
+        <VBtn icon size="25" variant="text" @click="changeSupervisionStatus(SupervisionStatus.primary)">
+          <VIcon icon="tabler-timeline-event-text" size="20" />
+          <VTooltip
+            activator="parent"
+            location="top center"
+          >
+            {{ $t('supervision.comment') }}
+          </VTooltip>
+        </VBtn>
+
         <VBtn v-if="resolveSupervisionStatus(databoxItem.state?.id ?? SupervisionStatus.primary, SupervisionStatus.primary)" icon size="25" variant="text" @click="changeSupervisionStatus(SupervisionStatus.primary)">
           <VIcon icon="tabler-arrow-capsule" size="20" />
           <VTooltip
@@ -744,6 +802,11 @@ watch(isDialogDataShelfBoxEdit, () => {
   />
   <MCDialogResourceHistory
     v-if="dialogResourceHistory" v-model:is-dialog-visible="dialogResourceHistory" :selected-data-box-id="databoxItem.id ?? 0" :serviceurl="`app/excerpt/${DataBoxType[databoxItem.excerptType.id]}?SourceId=${databoxItem.sourceId}`"
+    @error-has-occured="emits('handlemessage', $event, MessageType.error)"
+  />
+
+  <MCDialogSupervisionCommentHistory
+    v-if="dialogSupervisionHistory" v-model:is-dialog-visible="dialogSupervisionHistory" :selected-data-box-id="databoxItem.id ?? 0" :serviceurl="`app/excerpt/${DataBoxType[databoxItem.excerptType.id]}?SourceId=${databoxItem.sourceId}`"
     @error-has-occured="emits('handlemessage', $event, MessageType.error)"
   />
   <!-- </div> -->
