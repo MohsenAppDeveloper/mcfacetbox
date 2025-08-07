@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useToast } from 'vue-toastification'
-import { isNumericString } from '@sindresorhus/is'
 import { VBtn } from 'vuetify/lib/components/index.mjs'
 import MCDataShelfBox from './MCDataShelfBox.vue'
 import { useTree } from '@/store/treeStore'
@@ -12,6 +11,7 @@ import useRouterForGlobalVariables from '@/composables/useRouterVariables'
 import { useDataShelfStateChanged } from '@/store/databoxStore'
 import { FacetBoxModel, SearchResultItemModel } from '@/types/SearchResult'
 import type { IFacetBox, ISearchResultItem } from '@/types/SearchResult'
+import { SHORTCUTKeys, ShortcutName } from '@/types/shortcutKeys'
 
 interface ISelectAllState {
   state: SelectAllState
@@ -56,6 +56,7 @@ const lastscrolltopposition = shallowRef(0)
 const relatedData_Overlay = shallowRef(false)
 const relatedData_Type = shallowRef<DataBoxType>(DataBoxType.hadith)
 const relatedData_CurrentItem = ref<ISearchResultItem>(new SearchResultItemModel())
+const { lastShortcutTriggered } = useShortcutManager()
 
 const toast = useToast()
 const { selectedNode } = useTree()
@@ -78,6 +79,10 @@ const { stop } = useIntersectionObserver(
 
 const { y, isScrolling: isscrolling, arrivedState: scrollarriveState } = useScroll(mainDataResult)
 
+watch(lastShortcutTriggered, newval => {
+  if (newval === ShortcutName.excerptnew && !isDialogDataShelfBoxEdit.value)
+    isDialogDataShelfBoxEdit.value = true
+})
 watch(isscrolling, () => {
   if (isscrolling && !(scrollarriveState.bottom || scrollarriveState.top))
     ispaginationFullSize.value = false
@@ -469,7 +474,7 @@ function unlinkdatabox(unlinkdata: UnlinkDataModel) {
                 activator="parent"
                 location="top center"
               >
-                {{ $t('datashelfbox.add') }}
+                {{ `${$t('datashelfbox.add')} ${SHORTCUTKeys.excerptnew.combo}` }}
               </VTooltip>
             </VBtn>
             <VBtn icon size="small" variant="text" @click="refreshDataShelf(false)">

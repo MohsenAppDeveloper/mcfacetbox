@@ -11,6 +11,8 @@ import type { ISimpleNestedNodeActionable, ISingleNodeView, ITree } from '@/type
 import { useSelectedTree, useTree } from '@/store/treeStore'
 import { SelectionType } from '@/types/baseModels'
 import useRouterForGlobalVariables from '@/composables/useRouterVariables'
+import { useShortcutManager } from '@/composables/useShortcutManager'
+import { SHORTCUTKeys, ShortcutName } from '@/types/shortcutKeys'
 
 const props = defineProps({
   title: { type: String },
@@ -40,7 +42,7 @@ const hasDividerDraggableAfter = ref(false)
 const sourceDraggableItem = ref<ISimpleNestedNodeActionable | null>(null)
 const activeDraggableItem = ref<ISimpleNestedNodeActionable | null>(null)
 const editableNode = ref()
-const activeSearch = ref(false)
+const activeSearch = shallowRef(false)
 const dialogAddNewNodeVisible = ref(false)
 const dialogMergeNodeVisible = ref(false)
 const dialogTreePreviewVisible = ref(false)
@@ -54,6 +56,7 @@ interface Emit {
   (e: 'showSelectTree'): void
 }
 const { x: cursorX, y: cursorY } = usePointer()
+const { lastShortcutTriggered } = useShortcutManager()
 
 // نمایش Tooltip هنگام کلیک
 const showNodeTooltip = (event: MouseEvent, item: ISimpleNestedNodeActionable) => {
@@ -65,19 +68,13 @@ const showNodeTooltip = (event: MouseEvent, item: ISimpleNestedNodeActionable) =
   }, 500)
 }
 
-// const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi<ITree>(createUrl(`app/tree/${currentTreeId.value}/hierarchy`), { immediate: false })
-
-// onFetchResponse(() => {
-
-// })
-// onFetchError(() => {
-//   toast.error(t('alert.dataActionFailed'))
-//   isLoading.value = false
-// })
-// watch(loadingdata, () => {
-//   if (loadingdata.value)
-//     isLoading.value = true
-// })
+watch(lastShortcutTriggered, newval => {
+  console.log('shortcutvalue', newval)
+  if (newval === ShortcutName.nodesearch)
+    activeSearch.value = true
+  if (newval === ShortcutName.nodenew)
+    dialogAddNewNodeVisible.value = true
+})
 watch(currentTreeId, async (newval, oldVal) => {
   if (newval !== oldVal)
     refreshTree()
@@ -597,7 +594,7 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleNestedNodeActionable) => 
               activator="parent"
               location="top center"
             >
-              {{ $t('tree.newnode') }}
+              {{ `${$t('tree.newnode')} ${SHORTCUTKeys.nodenew.combo}` }}
             </VTooltip>
           </VBtn>
 
@@ -608,7 +605,7 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleNestedNodeActionable) => 
               activator="parent"
               location="top center"
             >
-              {{ $t('search') }}
+              {{ `${$t('search')} ${SHORTCUTKeys.nodesearch.combo}` }}
             </VTooltip>
           </VBtn>
           <!--

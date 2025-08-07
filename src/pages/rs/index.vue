@@ -7,6 +7,7 @@ import MCMainDataShelf from '@/components/MainDataShelf/MCMainDataShelf.vue'
 import 'splitpanes/dist/splitpanes.css'
 import { useSelectedTree } from '@/store/treeStore'
 import { useNavLinkSelectState } from '@/store/baseStore'
+import { useShortcutManager } from '@/composables/useShortcutManager'
 
 const menu = ref(false)
 const isComponentSwitch = ref(false)
@@ -16,6 +17,7 @@ const dialogSelectTreeVisible = ref(false)
 const selectedTreeItem = useSelectedTree()
 const navlinkSelecState = useNavLinkSelectState()
 const toast = useToast()
+const { registerAllShortcuts } = useShortcutManager()
 
 const resolveTopComponent = (order: number) => {
   if (order === 1)
@@ -23,6 +25,8 @@ const resolveTopComponent = (order: number) => {
   else
     return MCMainDataCollection
 }
+
+registerAllShortcuts()
 
 watch(navlinkSelecState.selectState, () => {
   toast.success(navlinkSelecState.selectState.value.toString())
