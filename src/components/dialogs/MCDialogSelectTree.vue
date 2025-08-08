@@ -32,22 +32,24 @@ const refForm = ref<VForm>()
 const isloading = ref(false)
 const userData = reactive<IUserEdit>(new UserEditModel())
 const selectedGate = ref<number>(0)
-const selectedProject = ref<number>(0)
+
+// const selectedProject = ref<number>(0)
 const selectedTree = ref<ISimpleDTO<number>>(new SimpleDTOModel<number>(0, ''))
 
 const gateList = ref<ISimpleDTO<number>[]>([])
-const projectList = ref<ISimpleDTO<number>[]>([])
+
+// const projectList = ref<ISimpleDTO<number>[]>([])
 const treeList = ref<ISimpleDTO<number>[]>([])
 
 const router = useRouter()
 const selectedTreeItem = useSelectedTree()
 
-watch(selectedGate, () => {
-  loadProjects()
+// watch(selectedGate, () => {
+//   loadProjects()
 
-//   userData.role = rolesList.filter(item => selectedRoles.value.includes(item.id))
-})
-watch(selectedProject, () => {
+// //   userData.role = rolesList.filter(item => selectedRoles.value.includes(item.id))
+// })
+watch(selectedGate, () => {
   loadTrees()
 })
 
@@ -70,30 +72,30 @@ const loadGates = async () => {
   }
 }
 
-const loadProjects = async () => {
-  try {
-    isloading.value = true
+// const loadProjects = async () => {
+//   try {
+//     isloading.value = true
 
-    const projectDataResult = await $api<GridResult<ISimpleDTO<number>>>(`app/project/simple?gateid=${selectedGate.value}`)
+//     const projectDataResult = await $api<GridResult<ISimpleDTO<number>>>(`app/project/simple?gateid=${selectedGate.value}`)
 
-    selectedProject.value = 0
-    projectList.value.splice(0)
-    projectList.value.push(...projectDataResult.items)
-    isloading.value = false
-  }
-  catch (error) {
-    isloading.value = false
-    if (error instanceof CustomFetchError && error.code > 1)
-      toast.error(error.message)
-    else toast.error(t('httpstatuscodes.0'))
-  }
-}
+//     selectedProject.value = 0
+//     projectList.value.splice(0)
+//     projectList.value.push(...projectDataResult.items)
+//     isloading.value = false
+//   }
+//   catch (error) {
+//     isloading.value = false
+//     if (error instanceof CustomFetchError && error.code > 1)
+//       toast.error(error.message)
+//     else toast.error(t('httpstatuscodes.0'))
+//   }
+// }
 
 const loadTrees = async () => {
   try {
     isloading.value = true
 
-    const treeDataResult = await $api<GridResult<ISimpleDTO<number>>>(`app/tree/simple?ProjectId=${selectedProject.value}`)
+    const treeDataResult = await $api<GridResult<ISimpleDTO<number>>>(`app/tree/simple?gateid=${selectedGate.value}`)
 
     selectedTree.value.id = 0
     treeList.value.splice(0)
@@ -143,7 +145,7 @@ defineExpose({ changeTree })
     persistent @update:model-value="onReset"
   >
     <!-- 👉 Dialog close btn -->
-    <DialogCloseBtn :disabled="isloading || selectedTree === 0" @click="onReset" />
+    <DialogCloseBtn :disabled="isloading || selectedTree.id === 0" @click="onReset" />
     <!-- <PerfectScrollbar :options="{ wheelPropagation: false }"> -->
     <VCard flat :title="$t('tree.select')" :subtitle="$t('tree.selectyourtree')" class="pa-1">
       <VCardText>
@@ -161,24 +163,26 @@ defineExpose({ changeTree })
                 </VBtn>
               </template>
             </AppAutocomplete>
-            <AppAutocomplete
+            <!--
+              <AppAutocomplete
               v-model="selectedProject" :items="projectList" item-title="title" :loading="isloading && projectList.length === 0 && gateList.length > 0"
               :return-object="false"
               item-value="id" :label="$t('project.select')" :disabled="selectedGate === 0"
-            >
+              >
               <template #append>
-                <VBtn v-if="!isloading && projectList.length === 0 && gateList.length > 0 && selectedGate > 0" icon size="small" variant="text" @click="loadProjects">
-                  <VIcon icon="tabler-refresh" size="22" />
-                </VBtn>
+              <VBtn v-if="!isloading && projectList.length === 0 && gateList.length > 0 && selectedGate > 0" icon size="small" variant="text" @click="loadProjects">
+              <VIcon icon="tabler-refresh" size="22" />
+              </VBtn>
               </template>
-            </AppAutocomplete>
+              </AppAutocomplete>
+            -->
             <AppAutocomplete
-              v-model="selectedTree" :items="treeList" item-title="title" :loading="isloading && treeList.length === 0 && projectList.length > 0"
+              v-model="selectedTree" :items="treeList" item-title="title" :loading="isloading && treeList.length === 0 && gateList.length > 0"
               return-object
-              item-value="id" :label="$t('tree.select')" :disabled="selectedProject === 0"
+              item-value="id" :label="$t('tree.select')" :disabled="selectedGate === 0"
             >
               <template #append>
-                <VBtn v-if="!isloading && treeList.length === 0 && projectList.length > 0 && selectedProject > 0" icon size="small" variant="text" @click="loadTrees">
+                <VBtn v-if="!isloading && treeList.length === 0 && gateList.length > 0 && selectedGate > 0" icon size="small" variant="text" @click="loadTrees">
                   <VIcon icon="tabler-refresh" size="22" />
                 </VBtn>
               </template>
