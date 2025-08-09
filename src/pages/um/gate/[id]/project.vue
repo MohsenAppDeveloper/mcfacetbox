@@ -1,38 +1,29 @@
 <script setup lang="ts">
-// !SECTION این فرم برای مدیریت پروژه ها در این سامانه میباشد
 import { useToast } from 'vue-toastification'
 import { VDialog } from 'vuetify/lib/components/index.mjs'
 import MCDataTable from '@/components/MCDataTable.vue'
 import type { ISimpleDTO, baseDataTableModel } from '@/types/baseModels'
+import type { TreeUserRoleModel } from '@/types/tree'
+import MCDialogUserRoleSelect from '@/components/dialogs/MCDialogUserRoleSelect.vue'
 
 const { t } = useI18n({ useScope: 'global' })
-const mcdatatableProject = ref(MCDataTable)
 const mcdatatableTree = ref(MCDataTable)
-const dialogProject = ref(VDialog)
 const dialogTree = ref(VDialog)
-const isAddNewProjectDialogVisible = ref(false)
-const isAddNewTreeDialogVisible = ref(false)
-const projectApiUrl = 'app/project'
+const isAddNewTreeDialogVisible = shallowRef(false)
+const dialogAddTreeUserRole = shallowRef(false)
 const treeApiUrl = 'app/tree'
 const router = useRoute('um-gate-id-project')
+
+const expandedDetails = ref<Record<number, { loading: boolean; data?: TreeUserRoleModel[] }>>({})
 
 const currentGateId = computed((): number => {
   return useToNumber(router.params.id).value
 })
 
+const currentTreeId = shallowRef<number>(0)
+
 const toast = useToast()
 const selectedFile = ref(null)
-
-// GateHeaders
-const projectHeaders = [
-  { text: '0', value: 'num', sortable: false },
-  { title: t('project.title'), key: 'title' },
-  { title: t('role.trees'), key: 'trees', sortable: false },
-  { title: t('createDate'), key: 'creationTime' },
-  { title: t('description'), key: 'description', sortable: false },
-  { title: t('status'), key: 'isActive', sortable: false },
-  { title: t('actions'), key: 'actions', sortable: false },
-]
 
 const treeHeaders = [
   { text: '0', value: 'num', sortable: false },
@@ -41,23 +32,20 @@ const treeHeaders = [
   { title: t('description'), key: 'description', sortable: false },
   { title: t('createDate'), key: 'creationTime' },
   { title: t('status'), key: 'isActive', sortable: false },
+  { width: 1, key: 'data-table-expand', align: 'end' },
   { title: t('actions'), key: 'actions', sortable: false },
 
 ]
-
-const projectEdit = (dataItem: Record<string, any>) => {
-  isAddNewProjectDialogVisible.value = true
-  nextTick(() => dialogProject.value.updateProject(dataItem.id))
-}
 
 const treeEdit = (dataItem: Record<string, any>) => {
   isAddNewTreeDialogVisible.value = true
   nextTick(() => dialogTree.value.updateTreeTitle(dataItem.id))
 }
 
-const projectDataAdded = () => {
-  nextTick(() => mcdatatableProject.value.refreshData())
-}
+const tableHeight = computed(() => {
+  // اینجا مثلا 100% ارتفاع parent - فضای header و title
+  return 'calc(100vh - 300px)' // عدد رو متناسب با هدر صفحه‌ات بزن
+})
 
 const treeTitleDataAdded = () => {
   console.log('treeTitleDataAdded')
@@ -126,55 +114,40 @@ const importword = async (myevent: Event, item: baseDataTableModel) => {
 //   open()
 }
 
+async function fetchRowDetails(id: number) {
+  expandedDetails.value[id] = { loading: true }
+  try {
+    const res = await $api<TreeUserRoleModel[]>(`app/tree/${id}/user`)
+
+    expandedDetails.value[id] = { loading: false, data: res }
+  }
+  catch (err) {
+    expandedDetails.value[id] = { loading: false, data: undefined }
+  }
+  finally {
+    // item.isLoading = false
+  }
+}
+
+function onToggleExpandRow(item: baseDataTableModel, isExpanded: boolean, reset: boolean) {
+  if (reset && expandedDetails.value[item.id])
+    delete expandedDetails.value[item.id]
+
+  console.log('expanded', isExpanded, expandedDetails.value)
+  if (isExpanded && !expandedDetails.value[item.id])
+    fetchRowDetails(item.id)
+}
 function triggerFileInput() {
   fileInput.value.click()
+}
+function userRoleHasBeenAdded(treeid: number) {
+  fetchRowDetails(treeid)
 }
 </script>
 
 <template>
-  <section>
-    <VRow no-gutters justify="space-between" align="center">
-      <div class="page-title">
-        {{ $t('project.pageTitle') }}
-      </div>
-
-      <VBtn prepend-icon="tabler-plus" @click="isAddNewProjectDialogVisible = true">
-        {{ $t('project.add') }}
-      </VBtn>
-    </VRow>
-    <VRow>
-      <VCol cols="12">
-        <VCard>
-          <VDivider />
-          <MCDataTable
-            ref="mcdatatableProject" :headers="projectHeaders" :api-url="projectApiUrl" :gateid="currentGateId"
-            @edit-item="projectEdit"
-          >
-            <template #item.trees="{ value }">
-              <div class="d-flex align-center gap-x-4">
-                {{ value.trees && value.trees.map((item: ISimpleDTO<number>) => `${item.title}`).join(' ,') }}
-              </div>
-            </template>
-            <template #item.creationTime="{ value }">
-              <div class="d-flex align-center gap-x-4">
-                {{ usePersianDate(value.creationTime) }}
-              </div>
-            </template>
-            <template #item.isActive="{ value }">
-              <VChip
-                :color="resolveActiveColor(value.isActive)"
-                :class="`text-${resolveActiveColor(value.isActive)}`" size="small"
-                class="font-weight-medium"
-              >
-                {{ $t(resolveActiveTitle(value.isActive)) }}
-              </VChip>
-            </template>
-          </MCDataTable>
-        </VCard>
-      </VCol>
-    </VRow>
-
-    <VRow no-gutters justify="space-between" align="center" class="mt-6">
+  <div style="height: 95%;">
+    <VRow no-gutters justify="space-between" align="center" class="mt-6" style="height: 5%;">
       <div class="page-title">
         {{ $t('tree.pageTitle') }}
       </div>
@@ -182,81 +155,129 @@ function triggerFileInput() {
         {{ $t('tree.add') }}
       </VBtn>
     </VRow>
-    <VRow>
-      <VCol cols="12">
-        <VCard>
-          <MCDataTable
-            ref="mcdatatableTree" :headers="treeHeaders" :api-url="treeApiUrl" :gateid="currentGateId"
-            @edit-item="treeEdit"
-          >
-            <template #item.book="{ value }">
-              <div class="d-flex align-center gap-x-4">
-                {{ value.book && value.book.map((item: ISimpleDTO<number>) => `${item.title}`).join(' ,') }}
-              </div>
-            </template>
-            <template #item.creationTime="{ value }">
-              <div class="d-flex align-center gap-x-4">
-                {{ usePersianDate(value.creationTime) }}
-              </div>
-            </template>
-            <template #action="{ value }">
-              <!--
-                <IconBtn @click="selectBook(value.id)">
-                <VIcon icon="tabler-books" />
-                </IconBtn>
-              -->
-              <IconBtn @click="exportword(value)">
-                <VTooltip location="right center">
-                  <template #activator="{ props }">
-                    <VIcon icon="tabler-table-export" v-bind="props" />
-                  </template>
-                  {{ formatString($t('tree.exportword')) }}
-                </VTooltip>
+    <VRow style="height: 95%;">
+      <VCol cols="12" style="height: 100%;">
+        <MCDataTable
+          ref="mcdatatableTree" height="100%" :headers="treeHeaders" :api-url="treeApiUrl" :gateid="currentGateId" :tableheight="tableHeight"
+          @edit-item="treeEdit"
+        >
+          <template #item.book="{ value }">
+            <div class="d-flex align-center gap-x-4">
+              {{ value.book && value.book.map((item: ISimpleDTO<number>) => `${item.title}`).join(' ,') }}
+            </div>
+          </template>
+          <template #item.creationTime="{ value }">
+            <div class="d-flex align-center gap-x-4">
+              {{ usePersianDate(value.creationTime) }}
+            </div>
+          </template>
+          <template #action="{ value }">
+            <!--
+              <IconBtn @click="selectBook(value.id)">
+              <VIcon icon="tabler-books" />
               </IconBtn>
-              <input
-                ref="fileInput"
-                type="file"
-                style="display: none"
-                accept=".doc,.docx"
-                @change="importword($event, value)"
-              >
-              <IconBtn @click="triggerFileInput">
-                <VTooltip location="right center">
-                  <template #activator="{ props }">
-                    <VIcon icon="tabler-table-import" v-bind="props" />
-                  </template>
-                  {{ formatString($t('tree.importword')) }}
-                </VTooltip>
-              </IconBtn>
-              <IconBtn v-if="value.wordCreationTime" @click="openword(value)">
-                <VTooltip location="right center">
-                  <template #activator="{ props }">
-                    <VIcon icon="tabler-cloud-download" v-bind="props" />
-                  </template>
-                  {{ `${formatString($t('tree.getlastword'))} ${usePersianDate(value.wordCreationTime)}` }}
-                </VTooltip>
-              </IconBtn>
-            </template>
-            <template #item.isActive="{ value }">
-              <VChip
-                :color="resolveActiveColor(value.isActive)"
-                :class="`text-${resolveActiveColor(value.isActive)}`" size="small"
-                class="font-weight-medium"
-              >
-                {{ $t(resolveActiveTitle(value.isActive)) }}
-              </VChip>
-            </template>
-          </MCDataTable>
-        </VCard>
+            -->
+            <IconBtn @click="exportword(value)">
+              <VTooltip location="right center">
+                <template #activator="{ props }">
+                  <VIcon icon="tabler-table-export" v-bind="props" />
+                </template>
+                {{ formatString($t('tree.exportword')) }}
+              </VTooltip>
+            </IconBtn>
+            <input
+              ref="fileInput"
+              type="file"
+              style="display: none"
+              accept=".doc,.docx"
+              @change="importword($event, value)"
+            >
+            <IconBtn @click="triggerFileInput">
+              <VTooltip location="right center">
+                <template #activator="{ props }">
+                  <VIcon icon="tabler-table-import" v-bind="props" />
+                </template>
+                {{ formatString($t('tree.importword')) }}
+              </VTooltip>
+            </IconBtn>
+            <IconBtn v-if="value.wordCreationTime" @click="openword(value)">
+              <VTooltip location="right center">
+                <template #activator="{ props }">
+                  <VIcon icon="tabler-cloud-download" v-bind="props" />
+                </template>
+                {{ `${formatString($t('tree.getlastword'))} ${usePersianDate(value.wordCreationTime)}` }}
+              </VTooltip>
+            </IconBtn>
+          </template>
+          <template #item.isActive="{ value }">
+            <VChip
+              :color="resolveActiveColor(value.isActive)"
+              :class="`text-${resolveActiveColor(value.isActive)}`" size="small"
+              class="font-weight-medium"
+            >
+              {{ $t(resolveActiveTitle(value.isActive)) }}
+            </VChip>
+          </template>
+          <template #item.data-table-expand="{ value, internalItem, isExpanded, onToggleExpand }">
+            <IconBtn @click="() => { onToggleExpand(internalItem); onToggleExpandRow(value, isExpanded(internalItem), false) }">
+              <VTooltip location="right center">
+                <template #activator="{ props }">
+                  <VIcon :icon="isExpanded(internalItem) ? 'tabler-lock-open' : 'tabler-lock'" v-bind="props" />
+                </template>
+                {{ `${formatString($t('project.permissions'))}` }}
+              </VTooltip>
+            </IconBtn>
+          </template>
+          <template #expanded-row="{ columns, item, isExpanded }">
+            <tr>
+              <td :colspan="columns.length" class="py-2">
+                <div v-if="expandedDetails[item.id]?.loading" class="w-100 d-flex" style="justify-content: center;">
+                  <VProgressCircular indeterminate size="16" width="2" />
+                </div>
+                <div v-else-if="isNullOrUndefined(expandedDetails[item.id]?.data)" class="w-100 d-flex" style="justify-content: center;">
+                  <span class="ml-3">{{ $t('$vuetify.noDataText') }}</span>
+                  <IconBtn size="medium" @click="onToggleExpandRow(item, true, true)">
+                    <VIcon icon="tabler-refresh" size="22" />
+                  </IconBtn>
+                </div>
+                <VSheet v-else rounded="lg" border>
+                  <VTable density="compact">
+                    <tbody class="bg-surface-light">
+                      <tr>
+                        <th>{{ $t('user.name') }}</th>
+                        <th :colspan="columns.length - 1">
+                          {{ $t('role.pageTitle') }}
+                        </th>
+                        <th class="text-end">
+                          <VBtn append-icon="tabler-plus" size="small" variant="text" @click="() => { currentTreeId = item.id, dialogAddTreeUserRole = true }">
+                            {{ $t('user.add') }}
+                          </VBtn>
+                        </th>
+                      </tr>
+                    </tbody>
+
+                    <tbody>
+                      <tr v-for="detailItem in expandedDetails[item.id].data" :key="detailItem.id">
+                        <td>
+                          {{ detailItem.fullName }}
+                        </td>
+                        <td>
+                          {{ detailItem.roles.map((role) => role.title).join(' , ') }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </vtable>
+                </vsheet>
+              </td>
+            </tr>
+          </template>
+        </MCDataTable>
       </VCol>
     </VRow>
-    <MCDialogProjectAdd
-      v-if="isAddNewProjectDialogVisible" ref="dialogProject" v-model:is-dialog-visible="isAddNewProjectDialogVisible"
-      :api-url="projectApiUrl" :gate-id="currentGateId" @project-data-added="projectDataAdded" @project-data-updated="projectDataAdded"
-    />
     <MCDialogTreeAdd
       v-if="isAddNewTreeDialogVisible" ref="dialogTree" v-model:is-dialog-visible="isAddNewTreeDialogVisible"
       :api-url="treeApiUrl" :gate-id="currentGateId" @tree-title-data-added="treeTitleDataAdded" @tree-title-data-updated="treeTitleDataAdded"
     />
-  </section>
+    <MCDialogUserRoleSelect v-if="dialogAddTreeUserRole" v-model:is-dialog-visible="dialogAddTreeUserRole" :gate-id="currentGateId" :treeid="currentTreeId" @user-role-has-been-added="userRoleHasBeenAdded" @error-has-occured="(message) => toast.error(message)" />
+  </div>
 </template>

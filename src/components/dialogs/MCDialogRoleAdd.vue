@@ -159,7 +159,8 @@ const updateRole = async (roleId: string) => {
 
     selectedPermissions.value.splice(0)
 
-    selectedPermissions.value.push(...roleListResult.permissions.map(item => item.name))
+    selectedPermissions.value.push(...roleListResult.permissions)
+    console.log('permission', selectedPermissions.value, roleListResult.permissions)
 
     objectMap(roleData, useCloned(roleListResult))
     roleData.permissions.splice(0)
@@ -205,40 +206,17 @@ defineExpose({ updateRole })
             </VCol>
 
             <VCol cols="12">
-              <!--
-                <VRow>
-                <VCol cols="12">
-              -->
-              <!--
-                <VTreeview
-                v-model:selected="selectedProjects" :items="projectList" :return-object="false"
-                expand-icon="mdi-menu-left" item-value="name" item-title="title"
-                select-strategy="leaf" density="compact" height="300px" lines="one" selectable
-                >
-                <template #title="{ item }">
-                <VTooltip :text="item.title">
-                <template #activator="{ props }">
-                <span v-bind="props"> {{ item.title }}</span>
-                </template>
-                </VTooltip>
-                </template>
-                </VTreeview>
-                </VCol>
-                <VCol cols="6" sm="6">
-              -->
               <VLabel
                 class="mb-1 text-body-2"
                 text="انتخاب دسترسی"
               />
-              <div class="mc-data-scrolly">
+              <div class="mc-data-scrolly mc-main-tree">
                 <VTreeview
-                  v-model:selected="selectedPermissions" density="compact" :items="permissionList" height="300px"
+                  v-model:selected="selectedPermissions"
+                  open-all density="compact" :items="permissionList" height="300px"
                   width="100%" item-value="name" item-title="title" :return-object="false"
                   expand-icon="mdi-menu-left" select-strategy="classic" selectable
                 >
-                  <template #header="{ props }">
-                    <span>{{ props.title = 'asdasdasd   ' }} </span>
-                  </template>
                   <template #title="{ item }">
                     <!--
                       <VTooltip :text="item.title">

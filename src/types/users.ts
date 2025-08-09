@@ -20,7 +20,7 @@ export interface IUser extends baseDataTableModel {
   expireDate: string
 }
 export interface IUserBase {
-  id: number
+  id: number | string
   fullName: string
   phoneNumber: string
   email: string
@@ -29,7 +29,7 @@ export interface IUserBase {
 }
 export class UserEditModel implements IUserEdit {
   roles: string[] = []
-  id: number = 0
+  id: number | string = 0
   fullName: string = ''
   phoneNumber: string = ''
   email: string = ''
@@ -38,7 +38,7 @@ export class UserEditModel implements IUserEdit {
   avatarUrl: string = ''
 }
 export class UserBaseModel implements IUserBase {
-  id: number = 0
+  id: number | string = 0
   fullName: string = ''
   phoneNumber: string = ''
   email: string = ''

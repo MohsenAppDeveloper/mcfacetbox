@@ -11,13 +11,13 @@ export interface IRoleEdit extends IRoleBase {
 
 export interface IRoleView extends IRoleBase {
   trees: IBasePermissionTree[]
-  permissions: IBasePermissionTree[]
+  permissions: string[]
 
 }
 
 export class RoleViewModel implements IRoleView {
   trees: IBasePermissionTree[] = []
-  permissions: IBasePermissionTree[] = []
+  permissions: string[] = []
   id: string = '0'
   name: string = ''
   isActive: boolean = false

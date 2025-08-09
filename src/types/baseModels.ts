@@ -83,6 +83,7 @@ export interface baseDataTableModel extends Record<string, any> {
   isLoading: boolean
   selectable: boolean
   disabled: boolean
+  details: Record<string, any>[]
 }
 export class ActionDates {
   private _creationTime?: string
@@ -118,6 +119,9 @@ export class ActionDates {
     this._lastModificationTime = value
     this.modificationTimePersianCache = undefined
   }
+
+  creatorFullName: string = ''
+  lastModifierFullName: string = ''
 }
 export class SimpleSelectableDTOModel<T extends stringNumber> implements ISimpleSelectableDTO<T> {
   id: T

@@ -1,4 +1,5 @@
-import type { ISimpleTree, baseItemAction, baseItemState } from './baseModels'
+import { ActionDates } from './baseModels'
+import type { ISimpleDTO, ISimpleTree, baseItemAction, baseItemState } from './baseModels'
 import type { IDataShelfBoxView, IExerptSupervisionStat } from './dataShelf'
 
 export function createTreeIndex(tree: ISimpleTree[]): Record<number, ISimpleTree> {
@@ -180,6 +181,18 @@ export class SimpleNestedNodeExcerptAcionableModel implements ISimpleNestedNodeE
     this.title = title
     this.parentId = parentid
   }
+}
+
+/**
+ * نقش کاربر در یک درخت
+ */
+export class TreeUserRoleModel extends ActionDates {
+  id: number = 0
+  fullName: string = ''
+  avatarUrl: string = ''
+  lastLoginDate: string = ''
+  userId: string = ''
+  roles: ISimpleDTO<string>[] = []
 }
 
 /**

@@ -608,33 +608,6 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleNestedNodeActionable) => 
               {{ `${$t('search')} ${SHORTCUTKeys.nodesearch.combo}` }}
             </VTooltip>
           </VBtn>
-          <!--
-            <VBtn size="small" variant="text">
-            <VIcon icon="tabler-box-multiple" size="22" />
-
-            <VTooltip
-            activator="parent"
-            location="top center"
-            >
-            {{ $t('tree.duplicate') }}
-            </VTooltip>
-            </VBtn>
-          -->
-          <!-- <VBtn icon="tabler-select" size="small" variant="text" /> -->
-
-          <!--
-            <VBtn size="small" :variant="showDisconnectedDatabox ? 'elevated' : 'text'" @click="showDisconnectedDatabox = !showDisconnectedDatabox">
-            <VIcon icon="tabler-arrow-capsule" size="22" />
-
-            <VTooltip
-            activator="parent"
-            location="top center"
-            >
-            {{ $t('showdisconnectedfish') }}
-            </VTooltip>
-            </VBtn>
-          -->
-
           <VBtn size="small" variant="text" @click="refreshTree">
             <VIcon icon="tabler-refresh" size="22" />
 

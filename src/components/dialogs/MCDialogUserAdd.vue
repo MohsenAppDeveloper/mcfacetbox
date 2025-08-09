@@ -6,7 +6,6 @@ import { VForm } from 'vuetify/components/VForm'
 import AppTextarea from '@/@core/components/app-form-elements/AppTextarea.vue'
 import type { IUser, IUserEdit } from '@/types/users'
 import { UserEditModel } from '@/types/users'
-import type { GridResult, ISimpleDTO } from '@/types/baseModels'
 
 const props = defineProps({
   isDialogVisible: { type: Boolean, default: false },
@@ -30,14 +29,6 @@ const refForm = ref<VForm>()
 const isloading = ref(false)
 const opening = ref(false)
 const userData = reactive<IUserEdit>(new UserEditModel())
-const rolesList = reactive<ISimpleDTO<string>[]>([])
-const selectedRoles = ref<string[]>([])
-
-watch(selectedRoles, () => {
-  console.log('selectedroles', selectedRoles)
-
-//   userData.role = rolesList.filter(item => selectedRoles.value.includes(item.id))
-})
 
 const onReset = () => {
   userData.id = 0
@@ -94,10 +85,8 @@ async function userEdit() {
 const onSubmit = () => {
   refForm.value?.validate().then(({ valid }) => {
     if (valid) {
-      userData.roles.splice(0)
-      userData.roles.push(...selectedRoles.value)
       isloading.value = true
-      if (userData.id > 0)
+      if (useToNumber(userData.id.toString()).value > 0)
         userEdit()
 
       else
@@ -105,28 +94,6 @@ const onSubmit = () => {
     }
   })
 }
-
-const loadRoles = async () => {
-  const roleDataResult = await $api<GridResult<ISimpleDTO<string>>>(`app/role/simple?gateId=${props.gateId}`)
-
-  rolesList.splice(0)
-  rolesList.push(...roleDataResult.items)
-}
-
-onMounted(async () => {
-  try {
-    opening.value = true
-    await loadRoles()
-    opening.value = false
-  }
-  catch (error) {
-    opening.value = false
-    if (error instanceof CustomFetchError && error.code > 1)
-      toast.error(error.message)
-    else toast.error(t('httpstatuscodes.0'))
-    emit('update:isDialogVisible', false)
-  }
-})
 
 // watch(userData.role, (newdata, olddata) => {
 //     console.log('watchuserdata', newdata, olddata);
@@ -138,9 +105,6 @@ const updateUser = async (userId: number) => {
 
     const userDataResult = await $api<IUser>(`${props.apiUrl}/${userId}`)
 
-    await loadRoles()
-
-    // selectedTrees.value.push(...projectDataResult.trees)
     Object.assign(userData, userDataResult)
 
     opening.value = false
@@ -154,7 +118,6 @@ const updateUser = async (userId: number) => {
   }
 
 //   objectMap(userData, useCloned(userDataItem))
-//   selectedRoles.value = userData.role.map(item => item.id)
 }
 
 defineExpose({ updateUser })
@@ -186,7 +149,6 @@ defineExpose({ updateUser })
 
             <VCol cols="12">
               <VRow>
-                <!-- 👉 Contact -->
                 <VCol cols="12" sm="6">
                   <AppTextField
                     v-model="userData.phoneNumber" type="number"
@@ -206,17 +168,6 @@ defineExpose({ updateUser })
             </VCol>
             <VCol cols="12">
               <VRow>
-                <!-- 👉 Name -->
-                <VCol sm="10" cols="12">
-                  <AppAutocomplete
-                    v-model="selectedRoles" :items="rolesList" item-title="title"
-                    item-value="id" :label="$t('role.select')"
-                    :rules="[requiredValidator(selectedRoles, $t('validatorrequired'))]" chips
-                    closable-chips multiple
-                  />
-                  <!-- :rules="[requiredValidator(userData.role, $t('validatorrequired'))]"  -->
-                </VCol>
-
                 <VCol sm="2" cols="12" align-self="end">
                   <VSwitch v-model="userData.isActive" :label="$t('active')" />
                 </VCol>

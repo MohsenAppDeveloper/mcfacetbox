@@ -68,6 +68,7 @@
   "modifieddate":"اخرین ویرایش",
   "modifieduser":"ویرایش کننده",
   'user': {
+      "name":"کاربر",
     'pageTitle': 'کاربران',
     'add': 'افزودن کاربر',
     'addedit': 'افزودن / ویرایش کاربر',
@@ -76,6 +77,7 @@
     'addeditsubtitle': 'اطلاعات مورد نظر برای کاربر را وارد نمایید'
   },
   'role': {
+    "permissionCount":"تعداد دسترسی ها",
     'trees': 'پروژه ها',
     'treeselect': 'انتخاب پروژه',
     'permissionselect': 'انتخاب دسترسی',
@@ -88,6 +90,7 @@
     'addeditsubtitle': 'اطلاعات مورد نظر برای نقش را وارد نمایید'
   },
   'project': {
+    "permissions":"دسترسی های این پروژه",
     'title': 'عنوان گروه',
     "select":"انتخاب گروه",
     'pageTitle': 'گروه ها',

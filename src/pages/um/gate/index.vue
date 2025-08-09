@@ -60,7 +60,7 @@ const routeWithGateId = (page: string, gateid: number, gatetitle: string) => {
   currentGate.value.id = gateid
   currentGate.value.title = gatetitle
   nextTick(() => {
-    router.push(`gate/${gateid}/${page}`)
+    router.replace(`gate/${gateid}/${page}`)
   })
 }
 
