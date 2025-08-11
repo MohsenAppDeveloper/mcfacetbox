@@ -27,7 +27,7 @@ function isComboMatch(combo: string, e: KeyboardEvent): boolean {
 
   // بررسی کلید اصلی
   const keyMatch = keyPart
-    ? e.key.toLowerCase() === keyPart.toLowerCase()
+    ? e.code.toLowerCase() === keyPart.toLowerCase()
     : true
 
   return modifiersMatch && keyMatch

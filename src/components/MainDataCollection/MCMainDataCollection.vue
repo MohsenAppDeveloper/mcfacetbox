@@ -199,11 +199,16 @@ function handleSearchKeydown(event: KeyboardEvent) {
       break;
   }
 }
-function resetData() {
+function resetData(resetSearcPhrase: boolean) {
   // apiQueryParamData.resetDynamicFields()
+  if (resetSearcPhrase)
+    searchPhrase.value = ''
+
   ispaginationFullSize.value = false
-  resultDataOnState[dataTabValue.value].results.splice(0)
-  resultDataOnState[dataTabValue.value].facets.splice(0)
+  resultDataOnState[dataTabValue.value] = { facets: [], results: [], totalItems: 0, page: 0, selectedFacets: {}, loading: false }
+
+//   resultDataOnState[dataTabValue.value].results.splice(0)
+//   resultDataOnState[dataTabValue.value].facets.splice(0)
 }
 
 function searchResultItemChaneged(searchresultItem: SearchResultItemModel) {
@@ -236,7 +241,7 @@ async function runSearch(resetToDefault: boolean) {
 
     const resultCastedData = data.value as GridResultFacet<ISearchResultItem>
 
-    resetData()
+    resetData(false)
     resultDataOnState[contentType].totalItems = resultCastedData.totalCount
     if (resultCastedData.items.length > 0) {
       resultDataOnState[contentType].results = resultCastedData.items.map(item => {
@@ -293,8 +298,9 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
       <VCol cols="12" md="3" />
       <VCol cols="12" md="6" class="mx-auto">
         <VTextField
-          v-model="searchPhrase" :placeholder="$t('search')" class="search-bar" single-line clearable :loading="resultDataOnState[dataTabValue].loading"
-          @keydown="handleSearchKeydown"
+          v-model="searchPhrase" :placeholder="$t('search')" class="search-bar" single-line clearable persistent-clear
+          :loading="resultDataOnState[dataTabValue].loading"
+          @keydown="handleSearchKeydown" @click:clear="resetData(true)" @keydown.esc="resetData(true)"
         >
           <template #append-inner>
             <VBtn icon size="small" variant="text" @click="runSearch(true)">

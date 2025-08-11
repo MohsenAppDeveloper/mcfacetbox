@@ -28,6 +28,8 @@ const page = ref(1)
 const selectedItemsLocal = ref<number[]>([])
 const searchResult = reactive<ISimpleSelectableDTO<number>[]>([])
 const searchPhrase = ref('')
+const replacePhrase = ref('')
+
 const actionInprogress = ref(false)
 const showReplace = ref(false)
 const isRegex = ref(false)
@@ -75,7 +77,7 @@ onFetchError(() => {
 })
 
 const onReset = () => {
-  searchPhrase.value = ''
+  replacePhrase.value = searchPhrase.value = ''
   searchResult.splice(0)
 }
 
@@ -108,11 +110,11 @@ watch(searchResult, () => {
       <VTextField
         v-model:model-value="searchPhrase"
         class="mb-1" autofocus :placeholder="$t('search')" append-inner-icon="tabler-search"
-        clearable density="compact" :loading="loadingdata" @click:clear="onReset"
+        clearable persistent-clear density="compact" :loading="loadingdata" @click:clear="onReset" @keydown.esc="onReset"
       >
         <template #append>
           <VBtn :variant="isRegex ? 'tonal' : 'plain'" icon="tabler-regex" size="small" rounded="lg" @click="isRegex = !isRegex" />
-          <VBtn :variant="ismatchCase ? 'tonal' : 'plain'" icon="tabler-abc" size="small" rounded="lg" @click="ismatchCase = !ismatchCase" />
+          <!-- <VBtn :variant="ismatchCase ? 'tonal' : 'plain'" icon="tabler-abc" size="small" rounded="lg" @click="ismatchCase = !ismatchCase" /> -->
           <VBtn :variant="iswholeWord ? 'tonal' : 'plain'" icon="tabler-alphabet-latin" size="small" rounded="lg" @click="iswholeWord = !iswholeWord" />
           <VDivider vertical />
           <VBtn variant="plain" :icon="showReplace ? 'tabler-chevron-down' : 'tabler-chevron-right'" size="small" @click="showReplace = !showReplace" />
@@ -121,12 +123,12 @@ watch(searchResult, () => {
       <VExpandTransition>
         <VTextField
           v-if="showReplace"
-          v-model:model-value="searchPhrase" :placeholder="$t('replace')"
+          v-model:model-value="replacePhrase" :placeholder="$t('replace')"
           clearable density="compact" @click:clear="onReset"
         >
           <template #append>
             <VBtn variant="plain" icon="tabler-replace" rounded="lg" size="small" />
-            <VBtn variant="plain" icon="tabler-replace-filled" rounded="lg" size="small" />
+            <!-- <VBtn variant="plain" icon="tabler-replace-filled" rounded="lg" size="small" /> -->
           </template>
         </VTextField>
       </VExpandTransition>

@@ -70,6 +70,7 @@ export const useApi = createFetch({
               loginState.Loginstate.value = LoginState.MustLogout
             }, 5000)
           }
+          else { throw (result.error) }
         }
         catch (error) {
 
@@ -148,7 +149,7 @@ export const useApiFake = createFetch({
               const loginState = useLoginState()
 
               loginState.Loginstate.value = LoginState.MustLogout
-            }, 5000)
+            }, 3000)
           }
         }
         catch (error) {

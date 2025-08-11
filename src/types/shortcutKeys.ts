@@ -16,11 +16,11 @@ export enum ShortcutName {
 
 export const SHORTCUTKeys: Record<ShortcutName, ShortcutConfig> = {
   none: { combo: '====', preventDefault: false },
-  save: { combo: 'Ctrl+S', preventDefault: true },
-  nodesearch: { combo: 'Ctrl+F', preventDefault: true },
-  nodenew: { combo: 'Ctrl+Alt+N', preventDefault: true },
-  nodemove: { combo: 'Ctrl+M', preventDefault: true },
-  excerptnew: { combo: 'Ctrl+E', preventDefault: true },
+  save: { combo: 'Ctrl+KeyS', preventDefault: true },
+  nodesearch: { combo: 'Ctrl+KeyF', preventDefault: true },
+  nodenew: { combo: 'Ctrl+Alt+KeyN', preventDefault: true },
+  nodemove: { combo: 'Ctrl+KeyM', preventDefault: true },
+  excerptnew: { combo: 'Ctrl+KeyE', preventDefault: true },
 }
 export interface ShortcutConfig {
   combo: string

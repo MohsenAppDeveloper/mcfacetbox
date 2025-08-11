@@ -5,7 +5,7 @@ import ContextMenu from '@imengyu/vue3-context-menu'
 import MCLoading from '../MCLoading.vue'
 import MCDialogTransferNode from '../dialogs/MCDialogTransferNode.vue'
 import MCDialogTreePreview from '../dialogs/MCDialogTreePreview.vue'
-import { type ISimpleTree, SizeType } from '@/types/baseModels'
+import { type IRootServiceError, type ISimpleTree, SizeType } from '@/types/baseModels'
 import { NodeType, SimpleNestedNodeAcionableModel, createTreeIndex, getNodeTypeNameSpace } from '@/types/tree'
 import type { ISimpleNestedNodeActionable, ISingleNodeView, ITree } from '@/types/tree'
 import { useSelectedTree, useTree } from '@/store/treeStore'
@@ -74,7 +74,7 @@ const showNodeTooltip = (event: MouseEvent, item: ISimpleNestedNodeActionable) =
 watch(lastShortcutTriggered, newval => {
   console.log('shortcutvalue', newval)
   if (newval === ShortcutName.nodesearch)
-    activeSearch.value = true
+    activeSearch.value = !activeSearch.value
   if (newval === ShortcutName.nodenew)
     dialogAddNewNodeVisible.value = true
 })
@@ -434,6 +434,9 @@ const refreshTree = async () => {
     isLoading.value = true
 
     const { data } = await useApi<ITree>(createUrl(`app/node/hierarchy/${currentTreeId.value}`), { refetch: false })
+
+    console.log('data', data.value)
+
     if (data.value) {
       activatedNode.value.splice(0)
       clearTreeData()
