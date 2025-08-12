@@ -14,6 +14,7 @@ const props = defineProps({
   gateid: { type: Number, default: 0 },
   autostart: { type: Boolean, default: true },
   tableheight: { type: String, default: '' },
+  showsearch: { type: Boolean, default: true },
 })
 
 const emit = defineEmits<Emit>()
@@ -175,6 +176,7 @@ defineExpose({ refreshData })
       <div class="d-flex align-center flex-wrap gap-4 ma-2">
         <!-- 👉 Search  -->
         <AppTextField
+          v-if="props.showsearch"
           v-model="searchQuery"
           :placeholder="searchLabelDefault"
           style="inline-size: 15.625rem;"

@@ -48,7 +48,7 @@ onMounted(async () => {
         <VSpacer />
       </VCardTitle>
       <VDivider />
-      <MCDataTable ref="mcstatehistory" :headers="tableHeaders" :api-url="props.serviceurl" :gateid="0" :autostart="false">
+      <MCDataTable ref="mcstatehistory" :headers="tableHeaders" :api-url="props.serviceurl" :gateid="0" :autostart="false" :showsearch="false">
         <template #item.content="{ value }">
           <div style="white-space: pre-line;">
             {{ value.content }}

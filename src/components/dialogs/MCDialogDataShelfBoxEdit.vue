@@ -127,8 +127,6 @@ const refreshfootnote = () => {
 const canFootnoteAction = () => {
   const selection = window.getSelection()
 
-  console.log('can', selection)
-
   if ((selection?.rangeCount ?? 0) > 0) {
     const range = selection?.getRangeAt(0)
     const selectedText = range?.toString().trim()

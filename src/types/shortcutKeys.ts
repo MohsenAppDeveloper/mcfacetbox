@@ -15,16 +15,17 @@ export enum ShortcutName {
 // Alt+F4	بستن پنجره
 
 export const SHORTCUTKeys: Record<ShortcutName, ShortcutConfig> = {
-  none: { combo: '====', preventDefault: false },
-  save: { combo: 'Ctrl+KeyS', preventDefault: true },
-  nodesearch: { combo: 'Ctrl+KeyF', preventDefault: true },
-  nodenew: { combo: 'Ctrl+Alt+KeyN', preventDefault: true },
-  nodemove: { combo: 'Ctrl+KeyM', preventDefault: true },
-  excerptnew: { combo: 'Ctrl+KeyE', preventDefault: true },
+  none: { combo: '====', preventDefault: false, keyTitle: '' },
+  save: { combo: 'Ctrl+KeyS', preventDefault: true, keyTitle: 'Ctrl+S' },
+  nodesearch: { combo: 'Ctrl+KeyF', preventDefault: true, keyTitle: 'Ctrl+F' },
+  nodenew: { combo: 'Ctrl+Alt+KeyN', preventDefault: true, keyTitle: 'Ctrl+N' },
+  nodemove: { combo: 'Ctrl+KeyM', preventDefault: true, keyTitle: 'Ctrl+M' },
+  excerptnew: { combo: 'Ctrl+KeyE', preventDefault: true, keyTitle: 'Ctrl+E' },
 }
 export interface ShortcutConfig {
   combo: string
   preventDefault?: boolean
+  keyTitle: string
 }
 
 // export const SHORTCUT_LABELS: Record<ShortcutName, string> = {

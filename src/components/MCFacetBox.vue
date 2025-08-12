@@ -28,7 +28,7 @@ const treeItems = computed(() =>
 const selectedTreeFacetItems = ref<string[]>([])
 const selectedFacetItems = ref<string[]>([])
 
-const switchState = ref<boolean>(props.dataitems[0].key === 'true')
+const switchState = ref<boolean>(props.dataitems[0].key === 'false')
 const searchText = ref('')
 const filteredItems = ref<IFacetItem[]>(props.dataitems)
 
@@ -76,8 +76,6 @@ watch((selectedTreeFacetItems), newval => {
   emit('update:selectedItems', newval.map(item => item.toString()))
 })
 watch((selectedFacetItems), newval => {
-  console.log('selectedItems', newval)
-
   emit('update:selectedItems', newval.map(item => item.toString()))
 })
 watch(switchState, () => {

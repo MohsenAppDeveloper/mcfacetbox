@@ -3,7 +3,7 @@ import { useToast } from 'vue-toastification'
 import { VBtn } from 'vuetify/lib/components/index.mjs'
 import MCDataShelfBox from './MCDataShelfBox.vue'
 import { useTree } from '@/store/treeStore'
-import type { GridResultFacet } from '@/types/baseModels'
+import type { GridResultFacet, IRootServiceError } from '@/types/baseModels'
 import { DataBoxType, MessageType, QueryRequestModel, SelectAllState, SizeType } from '@/types/baseModels'
 import type { IDataShelfBoxView, LinkDetailModel, UnlinkDataModel } from '@/types/dataShelf'
 import { DataShelfRouteQueryParams } from '@/types/dataShelf'
@@ -35,7 +35,7 @@ const facetboxItems = ref<IFacetBox[]>([])
 const databoxrefs = ref<IMCDataShelfBoxREF[]>([])
 const increasebtn = shallowRef<VBtn>()
 const decreasebtn = shallowRef<VBtn>()
-const apiQueryParamtData = reactive<QueryRequestModel>(new QueryRequestModel())
+const apiQueryParamData = reactive<QueryRequestModel>(new QueryRequestModel())
 const routeQueryParamData = reactive<DataShelfRouteQueryParams>(new DataShelfRouteQueryParams())
 const isDialogDataShelfBoxEdit = ref(false)
 
@@ -65,9 +65,10 @@ const shelfState = useDataShelfStateChanged()
 const route = useRoute()
 const router = useRouter()
 const ispaginationFullSize = ref(false)
+const trackrouterparam = shallowRef(true)
 
 // const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi(createUrl('app/excerpt', {
-//   query: apiQueryParamtData,
+//   query: apiQueryParamData,
 // }), { immediate: false, refetch: false })
 
 const { stop } = useIntersectionObserver(
@@ -114,21 +115,21 @@ watch(selectAll.value, () => {
   selectAll.value.count = resultdataItemsSort.value.filter(item => item.selected).length
 })
 watch(() => routeQueryParamData.pageNumber, (newVal, oldVal) => {
-  if (newVal === oldVal)
+  if (newVal === oldVal || !trackrouterparam.value)
     return // از تغییرات مشابه جلوگیری می‌کنیم
-
   updateRouteIfNeeded(excerptPageQuery(newVal))
 })
 watch(() => routeQueryParamData.pageSize, (newVal, oldVal) => {
-  if (newVal === oldVal)
+  if (newVal === oldVal || !trackrouterparam.value)
     return
 
   // اگر اندازه صفحه تغییر کرده باشد شماره صفحه باید 1 باشد
   updateRouteIfNeeded({ ...excerptPageSizeQuery(newVal), ...excerptPageQuery(1) })
 })
 watch(() => routeQueryParamData.rawFacets, (newVal, oldVal) => {
-  if (newVal === oldVal)
+  if (newVal === oldVal || !trackrouterparam.value)
     return
+  console.log('facetwatch', newVal, 'oldval', oldVal)
 
   // اگر فیلترها تغییر کرده باشند صفحه باید یک شود
   updateRouteIfNeeded({ ...excerptFacetQuery(newVal), ...excerptPageQuery(1) })
@@ -157,43 +158,46 @@ async function checkRoute() {
   try {
     if (routerTreeId.value === 0)
       return
-    apiQueryParamtData.resetDynamicFields()
-    currentNodeId.value = 0
-    apiQueryParamtData.nodeId = 0
-    currentTreeId.value = routerTreeId.value
-    apiQueryParamtData.treeId = currentTreeId.value
+    trackrouterparam.value = false
+    apiQueryParamData.resetDynamicFields()
 
+    currentNodeId.value = 0
+    apiQueryParamData.nodeId = 0
+    currentTreeId.value = routerTreeId.value
+    apiQueryParamData.treeId = currentTreeId.value
     if (routerNodeId.value > 0) {
       currentNodeId.value = routerNodeId.value
-      apiQueryParamtData.nodeId = currentNodeId.value
+      apiQueryParamData.nodeId = routerNodeId.value
     }
     const temprouteQueryParam = new DataShelfRouteQueryParams()
     if (routerExcerptPage.value > 0)
-      temprouteQueryParam.pageNumber = apiQueryParamtData.PageNumber = routerExcerptPage.value
+      temprouteQueryParam.pageNumber = apiQueryParamData.PageNumber = routerExcerptPage.value
     if (routerExcerptPageSize.value > 0)
-      temprouteQueryParam.pageSize = apiQueryParamtData.PageSize = routerExcerptPageSize.value
+      temprouteQueryParam.pageSize = apiQueryParamData.PageSize = routerExcerptPageSize.value
     if (routerExcerptFacet.value.length > 0) {
       const facetlist = routerExcerptFacet.value.split('#')
 
       facetlist.forEach(facetitem => {
         if (facetitem.includes('=')) {
           temprouteQueryParam.selectedFacetItems[facetitem.split('=')[0]] = facetitem.split('=')[1].split(',')
-          apiQueryParamtData[facetitem.split('=')[0]] = facetitem.split('=')[1].split(',')
+          apiQueryParamData[facetitem.split('=')[0]] = facetitem.split('=')[1].split(',')
         }
       })
     }
-    Object.assign(routeQueryParamData, temprouteQueryParam)
 
+    // console.log('temp:', temprouteQueryParam.rawFacets, 'routequery:', routeQueryParamData.rawFacets)
+    Object.assign(routeQueryParamData, temprouteQueryParam)
     refreshDataShelf(false)
   }
   catch (error) {
-    console.log('checkrouteeroor', error)
+    // console.log('checkrouteeroor', error)
   }
 }
 function updateRouteIfNeeded(params: Record<string, any>) {
   const newQuery = { ...route.query }
 
   changeRouteQueryIfNeeded(params, newQuery)
+
   router.replace({ query: newQuery })
 }
 
@@ -212,7 +216,7 @@ async function refreshDataShelf(changescroll: boolean) {
   loadingdata.value = true
   try {
     const { data } = await useApi(createUrl('app/excerpt', {
-      query: apiQueryParamtData,
+      query: apiQueryParamData,
     }), { refetch: false })
 
     if (data.value && data.value.error) {
@@ -227,10 +231,8 @@ async function refreshDataShelf(changescroll: boolean) {
     resetData()
     totalItems.value = resultCastedData.totalCount
 
-    if (resultCastedData.items.length > 0) {
-      setTimeout(() => {
-        loadingdata.value = false
-
+    if (resultCastedData.items.length > 0 || resultCastedData.facets.length > 0) {
+      await setTimeout(() => {
         facetboxItems.value.push(...resultCastedData.facets.map(f => new FacetBoxModel(f)))
 
         // console.log('facetboxitems', facetboxItems.value)
@@ -242,11 +244,13 @@ async function refreshDataShelf(changescroll: boolean) {
         })
       }, 1000)
     }
-    else { loadingdata.value = false }
   }
   catch (error) {
-    loadingdata.value = false
     toast.error(t('alert.probleminLoadExcerpt'))
+  }
+  finally {
+    loadingdata.value = false
+    trackrouterparam.value = true
   }
 
 //   await fetchData()
@@ -286,7 +290,7 @@ async function deleteSelectedItem() {
     true, 'warning',
     async () => {
       try {
-        await $api(('app/excerpt/'), {
+        await $api(('app/excerpt'), {
           method: 'DELETE',
           body: JSON.stringify(resultdataItemsSort.value.filter(item => item.selected === true).map(a => a.id)),
         })
@@ -489,7 +493,7 @@ function unlinkdatabox(unlinkdata: UnlinkDataModel) {
                 activator="parent"
                 location="top center"
               >
-                {{ `${$t('datashelfbox.add')} ${SHORTCUTKeys.excerptnew.combo}` }}
+                {{ `${$t('datashelfbox.add')} ${SHORTCUTKeys.excerptnew.keyTitle}` }}
               </VTooltip>
             </VBtn>
             <VBtn icon size="small" variant="text" @click="refreshDataShelf(false)">
@@ -542,7 +546,7 @@ function unlinkdatabox(unlinkdata: UnlinkDataModel) {
       <MCLoading :showloading="loadingdata" :loadingsize="SizeType.MD" />
       <VCol md="12">
         <VFadeTransition>
-          <VRow v-if="resultdataItems.length > 0" style="padding-block-end: 5px;">
+          <VRow v-if="resultdataItems.length > 0 || facetboxItems.length > 0" style="padding-block-end: 5px;">
             <VCol v-if="activefilter" md="3">
               <div v-if="facetboxItems.length > 0">
                 <MCFacetBox
@@ -553,7 +557,7 @@ function unlinkdatabox(unlinkdata: UnlinkDataModel) {
               </div>
             </VCol>
             <VCol :md="activefilter ? 9 : 12">
-              <div style="position: relative;">
+              <div v-if="resultdataItems.length > 0" style="position: relative;">
                 <div v-show="!loadingdata" ref="loadmorestart" />
                 <MCDataShelfBox
                   v-for="(item, i) in resultdataItemsSort" :key="item.id" :ref="(el) => setdataboxref(el, item)" v-model="resultdataItemsSort[i]" :item-index="i"
@@ -566,11 +570,14 @@ function unlinkdatabox(unlinkdata: UnlinkDataModel) {
                 />
                 <div v-show="!loadingdata" ref="loadmoreend" />
               </div>
+
+              <div v-else-if="totalItems === 0 && !loadingdata" class="w-100 h-100 d-flex align-top justify-center">
+                <p style="position: absolute;">
+                  {{ $t('datashelfbox.fishnotexist') }}
+                </p>
+              </div>
             </VCol>
           </VRow>
-          <div v-else-if="!loadingdata" class="w-100 h-100 d-flex align-center justify-center">
-            <p>{{ $t('datashelfbox.fishnotexist') }}</p>
-          </div>
         </VFadeTransition>
       </VCol>
     </VRow>

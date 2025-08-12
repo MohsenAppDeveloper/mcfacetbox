@@ -80,7 +80,7 @@ watch(lastShortcutTriggered, newval => {
 })
 watch(currentTreeId, async (newval, oldVal) => {
   if (newval !== oldVal)
-    refreshTree()
+    await refreshTree()
 })
 watch(searchResultSelectedNodes, () => {
   activatedNode.value.splice(0)
@@ -115,13 +115,16 @@ const setPermissions = async (): Promise<boolean> => {
 const selectTreeNode = (item: ISimpleNestedNodeActionable) => {
   const newQuery = { ...route.query }
 
+  console.log('selectnode1', newQuery)
+
   clearUnNeededQueryItems(newQuery)
 
   addTreeIdToQuery(currentTreeId.value, newQuery)
   if (item.id > 0)
     addNodeIdToQuery(item.id, newQuery)
+  console.log('selectnode2', newQuery)
 
-  router.push({ query: newQuery })
+  router.replace({ query: newQuery })
 }
 
 function checkTreeRoute(deselectAll: boolean) {
@@ -633,7 +636,7 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleNestedNodeActionable) => 
               activator="parent"
               location="top center"
             >
-              {{ `${$t('tree.newnode')} ${SHORTCUTKeys.nodenew.combo}` }}
+              {{ `${$t('tree.newnode')} ${SHORTCUTKeys.nodenew.keyTitle}` }}
             </VTooltip>
           </VBtn>
 
@@ -644,7 +647,7 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleNestedNodeActionable) => 
               activator="parent"
               location="top center"
             >
-              {{ `${$t('search')} ${SHORTCUTKeys.nodesearch.combo}` }}
+              {{ `${$t('search')} ${SHORTCUTKeys.nodesearch.keyTitle}` }}
             </VTooltip>
           </VBtn>
           <VBtn size="small" variant="text" @click="refreshTree">
