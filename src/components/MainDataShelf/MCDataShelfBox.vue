@@ -70,6 +70,7 @@ const onContextMenu = (e: MouseEvent) => {
     y: e.y,
     items: [
       {
+        disabled: !(databoxItem.value.excerptType.id === DataBoxType.quran || databoxItem.value.excerptType.id === DataBoxType.hadith),
         label: t('datashelfbox.refreshtobase'),
         onClick: () => {
           alert('You click a menu item')
@@ -741,7 +742,7 @@ watch(isDialogDataShelfBoxEdit, () => {
         </div>
         <VDivider vertical class="mx-2" color="primary" thickness="2" />
         <!-- v-if="databoxItem.supervisionCommentCount ?? 0 > 0" -->
-        <VBtn icon size="25" variant="text" @click="dialogStateHistory = true">
+        <VBtn :disabled="(databoxItem.stateCount ?? 0) === 0" icon size="25" variant="text" @click="dialogStateHistory = true">
           <VIcon icon="tabler-timeline-event-text" size="20" />
           <VTooltip
             activator="parent"

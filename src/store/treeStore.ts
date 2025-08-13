@@ -1,13 +1,21 @@
 import { createGlobalState } from '@vueuse/core'
 import type { ISimpleDTO } from '@/types/baseModels'
 import { SimpleDTOModel, SimpleTreeModel } from '@/types/baseModels'
-import { type ISimpleNestedNodeActionable, NodeType, SimpleNestedNodeAcionableModel } from '@/types/tree'
+import { NodeRelationType, NodeType, SimpleNestedNodeAcionableModel } from '@/types/tree'
+import type { type ISimpleNestedNodeActionable } from '@/types/tree'
 
 export const useSelectedNode = createGlobalState(
   () => {
     const simpleTreeModelStored = reactive<SimpleTreeModel>(new SimpleTreeModel())
 
     return { simpleTreeModelStored }
+  },
+)
+export const useSelectTreeNode = createGlobalState(
+  () => {
+    const treeNodeIdMustBeSelect = ref<number>(0)
+
+    return { treeNodeIdMustBeSelect }
   },
 )
 export const useSelectedTree = createGlobalState(() => {
@@ -181,6 +189,14 @@ export function useTree() {
     return { count: seen.size, duplicates }
   }
 
+  const setRelatedNode = (nodeid: number, relationtype: NodeRelationType) => {
+    if (relationtype === NodeRelationType.relation)
+      treeIndex[nodeid].relationCount = (treeIndex[nodeid].relationCount ?? 0) + 1
+
+    else
+      treeIndex[nodeid].referenceCount = (treeIndex[nodeid].referenceCount ?? 0) + 1
+  }
+
   const mergeNode = (sourceNodeID: number, destinationNodeID: number) => {
     // NOTE - 1- چک کردن اینکه مبدا و مقصد وجود داشته باشند
     // NOTE - 2- چک کردن اینکه مقصد بچه داشته باشد
@@ -322,6 +338,7 @@ export function useTree() {
     createTreeIndex,
     isLastNode,
     getNodePath,
+    setRelatedNode,
   }
 }
 

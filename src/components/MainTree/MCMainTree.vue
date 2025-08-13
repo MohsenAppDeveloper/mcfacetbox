@@ -2,13 +2,15 @@
 import { VTreeview } from 'vuetify/labs/VTreeview'
 import { useToast } from 'vue-toastification'
 import ContextMenu from '@imengyu/vue3-context-menu'
+import { VDialog } from 'vuetify/lib/components/index.mjs'
 import MCLoading from '../MCLoading.vue'
 import MCDialogTransferNode from '../dialogs/MCDialogTransferNode.vue'
 import MCDialogTreePreview from '../dialogs/MCDialogTreePreview.vue'
-import { type IRootServiceError, type ISimpleTree, RootServiceErrorModel, SizeType } from '@/types/baseModels'
-import { NodeType, SimpleNestedNodeAcionableModel, createTreeIndex, getNodeTypeNameSpace } from '@/types/tree'
+import MCDialogNodeRelationList from '../dialogs/MCDialogNodeRelationList.vue'
+import { type IRootServiceError, type ISimpleTree, MessageType, SizeType } from '@/types/baseModels'
+import { NodeRelationType, NodeType, SimpleNestedNodeAcionableModel, createTreeIndex, getNodeTypeNameSpace } from '@/types/tree'
 import type { ISimpleNestedNodeActionable, ISingleNodeView, ITree } from '@/types/tree'
-import { useSelectedTree, useTree } from '@/store/treeStore'
+import { useSelectTreeNode, useSelectedTree, useTree } from '@/store/treeStore'
 import { SelectionType } from '@/types/baseModels'
 import useRouterForGlobalVariables from '@/composables/useRouterVariables'
 import { useShortcutManager } from '@/composables/useShortcutManager'
@@ -48,10 +50,16 @@ const dialogAddNewNodeVisible = ref(false)
 const dialogMergeNodeVisible = ref(false)
 const dialogTreePreviewVisible = ref(false)
 const dialogDescriptionVisible = shallowRef(false)
-const dialogTransferNodeVisible = ref(false)
+const dialogTransferNodeVisible = shallowRef(false)
+const dialogNodeRelationVisible = shallowRef(false)
+const dialogNodeRelationListVisible = shallowRef(false)
+
+const dialognoderelationlist = ref(VDialog)
+
 const activeTooltipPath = shallowRef('')
 const ability = useAbility()
 const { routerTreeId, routerNodeId, clearUnNeededQueryItems, addTreeIdToQuery, addNodeIdToQuery } = useRouterForGlobalVariables()
+const { treeNodeIdMustBeSelect } = useSelectTreeNode()
 interface Emit {
   (e: 'close'): void
   (e: 'open'): void
@@ -71,6 +79,14 @@ const showNodeTooltip = (event: MouseEvent, item: ISimpleNestedNodeActionable) =
   }, 500)
 }
 
+watch(treeNodeIdMustBeSelect, newval => {
+  console.log('newval', newval)
+
+  if (newval > 0) {
+    selectTreeNode({ id: newval, parentId: 0, priority: 0, title: '' })
+    treeNodeIdMustBeSelect.value = 0
+  }
+})
 watch(lastShortcutTriggered, newval => {
 //   console.log('shortcutvalue', newval)
   if (newval === ShortcutName.nodesearch)
@@ -92,8 +108,6 @@ watch(route, () => {
 }, { immediate: true })
 
 onMounted(async () => {
-  console.log('indexmounted')
-
   if (routerTreeId.value > 0)
     await setPermissions()
 })
@@ -115,14 +129,11 @@ const setPermissions = async (): Promise<boolean> => {
 const selectTreeNode = (item: ISimpleNestedNodeActionable) => {
   const newQuery = { ...route.query }
 
-  console.log('selectnode1', newQuery)
-
   clearUnNeededQueryItems(newQuery)
 
   addTreeIdToQuery(currentTreeId.value, newQuery)
   if (item.id > 0)
     addNodeIdToQuery(item.id, newQuery)
-  console.log('selectnode2', newQuery)
 
   router.replace({ query: newQuery })
 }
@@ -159,6 +170,24 @@ function updateTreeIndex(dataItems: ISimpleTree[]) {
 
   // به‌روزرسانی مقادیر در treeIndex
   Object.assign(treeIndex, { ...newTreeIndex })
+}
+function handleDataBoxMessages(message: string, messagetype: MessageType) {
+  switch (messagetype) {
+  case MessageType.error:
+    toast.error(message)
+    break;
+  case MessageType.info:
+    toast.info(message)
+    break;
+  case MessageType.warning:
+    toast.warning(message)
+    break;
+  case MessageType.success:
+    toast.success(message)
+    break;
+  default:
+    break;
+  }
 }
 
 const openParents = (nodeItems: ISimpleTree[], id: number) => {
@@ -285,8 +314,6 @@ const deleteSelectedNode = async (nodeItem: ISimpleNestedNodeActionable) => {
   )
 
   if (result.isConfirmed) {
-    console.log('error', serviceError.value)
-
     const err = serviceError.value
     if (err) {
       if (err instanceof CustomFetchError && err.message)
@@ -604,10 +631,18 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleNestedNodeActionable) => 
         icon: 'tabler-affiliate',
 
         onClick: () => {
-          alert('You click a menu item')
+          selectTreeNode(nodeItem)
+          dialogNodeRelationVisible.value = true
         },
       },
     ],
+  })
+}
+
+function showNodeRelationList(nodeid: number, relationtype: NodeRelationType) {
+  dialogNodeRelationListVisible.value = true
+  nextTick(() => {
+    dialognoderelationlist.value.loadrelations(nodeid, relationtype)
   })
 }
 </script>
@@ -626,6 +661,14 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleNestedNodeActionable) => 
     <MCDialogTransferNode
       v-if="dialogTransferNodeVisible" v-model:is-dialog-visible="dialogTransferNodeVisible" :selected-tree-id="currentTreeId" :parent-node-title="parentNodeTitle(activatedNode.length > 0 ? activatedNode[0] : null)" :selected-node="isValidActivateNode() ? treeIndex[activatedNode[0]] : new SimpleNestedNodeAcionableModel(-1, '', -1)"
       @node-transfered="nodeTransfered" @node-transfer-faild="nodeaddfailed"
+    />
+    <MCDialogNodeRelation
+      v-if="dialogNodeRelationVisible" v-model:is-dialog-visible="dialogNodeRelationVisible" :selected-tree-id="currentTreeId" :parent-node-title="parentNodeTitle(activatedNode.length > 0 ? activatedNode[0] : null)" :selected-node="isValidActivateNode() ? treeIndex[activatedNode[0]] : new SimpleNestedNodeAcionableModel(-1, '', -1)"
+      @message-has-occured="handleDataBoxMessages"
+    />
+    <MCDialogNodeRelationList
+      v-if="dialogNodeRelationListVisible" ref="dialognoderelationlist" v-model:is-dialog-visible="dialogNodeRelationListVisible"
+      @message-has-occured="handleDataBoxMessages"
     />
     <VRow no-gutters class="btn-box toolbar">
       <VCol md="12">
@@ -742,6 +785,24 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleNestedNodeActionable) => 
                   <div>
                     <VBtn v-if="item.hasDescription" size="xsmall" variant="plain" @click="addcomment(item)">
                       <VIcon size="16" icon="tabler-message" />
+                    </VBtn>
+                    <VBtn v-if="(item.relationCount ?? 0) > 0" size="xsmall" variant="plain" @click="showNodeRelationList(item.id, NodeRelationType.relation)">
+                      <VTooltip
+                        activator="parent"
+                        location="top center"
+                      >
+                        {{ $t('relations') }}
+                      </VTooltip>
+                      <VIcon size="16" icon="tabler-bounce-left-filled" />
+                    </VBtn>
+                    <VBtn v-if="(item.referenceCount ?? 0) > 0" size="xsmall" variant="plain" @click="showNodeRelationList(item.id, NodeRelationType.reference)">
+                      <VTooltip
+                        activator="parent"
+                        location="top center"
+                      >
+                        {{ $t('references') }}
+                      </VTooltip>
+                      <VIcon size="16" icon="tabler-bounce-left" />
                     </VBtn>
                   </div>
                 </div>

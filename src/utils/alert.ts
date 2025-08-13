@@ -25,12 +25,12 @@ const defaultSwalOptions: Partial<SweetAlertOptions> = {
   buttonsStyling: false,
 }
 
-export function showSwal(options: SweetAlertOptions): Promise<SweetAlertResult> {
-  return Swal.fire({ ...defaultSwalOptions, ...options })
+export async function showSwal(options: SweetAlertOptions): Promise<SweetAlertResult> {
+  return await Swal.fire({ ...defaultSwalOptions, ...options })
 }
 
-export const showLoadingSwal = (title: string, callback: () => Promise<void>) => {
-  return Swal.fire({
+export const showLoadingSwal = async (title: string, callback: () => Promise<void>) => {
+  return await Swal.fire({
     title,
     backdrop: false,
     allowOutsideClick: false,
@@ -51,7 +51,7 @@ export const showLoadingSwal = (title: string, callback: () => Promise<void>) =>
   })
 }
 
-export const confirmSwal = (
+export const confirmSwal = async (
   title: string,
   text: string,
   confirmText?: string,

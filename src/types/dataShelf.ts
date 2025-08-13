@@ -22,6 +22,7 @@ export interface IDataShelfBoxView {
   // NOTE - مشخص کننده، حدیث، متن، آیه و یا لغت
   excerptType: ISimpleDTO<DataBoxType>
   state: ISimpleDTO<SupervisionStatus>
+  stateCount?: number
   order: number
   priority: number
 
@@ -130,6 +131,7 @@ export class DataShelfRouteQueryParams {
  *
  */
 export class DataShelfBoxModelView implements IDataShelfBoxView {
+  stateCount?: number = 0
   state: ISimpleDTO<SupervisionStatus> = { id: SupervisionStatus.primary, title: '' }
   supervisionState: ISimpleDTO<SupervisionStatus> = { id: SupervisionStatus.primary, title: '' }
   linkId?: number | undefined = 0

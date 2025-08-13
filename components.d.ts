@@ -359,6 +359,8 @@ declare module 'vue' {
     MCDialogDescription: typeof import('./src/components/dialogs/MCDialogDescription.vue')['default']
     MCDialogGateAdd: typeof import('./src/components/dialogs/MCDialogGateAdd.vue')['default']
     MCDialogMergeNode: typeof import('./src/components/dialogs/MCDialogMergeNode.vue')['default']
+    MCDialogNodeRelation: typeof import('./src/components/dialogs/MCDialogNodeRelation.vue')['default']
+    MCDialogNodeRelationList: typeof import('./src/components/dialogs/MCDialogNodeRelationList.vue')['default']
     MCDialogProjectAdd: typeof import('./src/components/dialogs/MCDialogProjectAdd.vue')['default']
     MCDialogResourceHistory: typeof import('./src/components/dialogs/MCDialogResourceHistory.vue')['default']
     MCDialogRoleAdd: typeof import('./src/components/dialogs/MCDialogRoleAdd.vue')['default']

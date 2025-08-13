@@ -278,7 +278,7 @@ function changeselectAllState() {
     selectAll.value.state = SelectAllState.Select
 }
 async function deleteSelectedItem() {
-  if (!can('Delete', 'Excerpt'))
+  if (!can('Delete', 'Excerpt') || !resultdataItemsSort.value.find(dataItem => dataItem.selected === true))
     return
   const serviceError = shallowRef()
 

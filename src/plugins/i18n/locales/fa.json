@@ -39,6 +39,11 @@
   "thereisnoitem":"موردی وجود ندارد",
   "before":"قبل از",
   "after":"بعد از ",
+  "reference":"ارجاع",
+  "relation":"ارتباط",
+   "references":"ارجاعات",
+  "relations":"ارتباطات",
+"selectintree":"انتخاب در درخت",
 "content":"محتوا",
 
   'projectcount':"تعداد پروژه ها",

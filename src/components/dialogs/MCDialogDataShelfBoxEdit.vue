@@ -86,7 +86,7 @@ const acceptchanged = async () => {
       body: JSON.stringify(new DataShelfBoxModelNew(tempdataItem.id, props.datashelfboxid === 0 ? props.treeid ?? 0 : tempdataItem.treeId, props.datashelfboxid === 0 ? props.nodeid ?? 0 : tempdataItem.node?.id ?? 0, tempdataItem.content, tempdataItem.description, tempdataItem.footNotes, tempdataItem.labels.map(item => item.id))),
     })
 
-    if (result && result.id > 0) {
+    if (result || (result?.id ?? 0) > 0) {
       emits('handlemessage', t('alert.dataActionSuccess'), MessageType.success)
       if (props.datashelfboxid === 0)
         emits('insertdataboxItem')

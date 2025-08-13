@@ -1,5 +1,5 @@
 import { ActionDates } from './baseModels'
-import type { ISimpleDTO, ISimpleTree, baseItemAction, baseItemState } from './baseModels'
+import type { ISimpleDTO, ISimpleTree, baseItemAction, baseItemState, stringnumber } from './baseModels'
 import type { IDataShelfBoxView, IExerptSupervisionStat } from './dataShelf'
 
 export function createTreeIndex(tree: ISimpleTree[]): Record<number, ISimpleTree> {
@@ -121,6 +121,8 @@ export interface ISimpleNestedNodeActionable extends baseItemAction, baseItemSta
   parentId: number
   priority: number
   hasDescription?: boolean
+  relationCount?: number
+  referenceCount?: number
 }
 
 /**
@@ -135,6 +137,12 @@ export interface ISimpleNestedNodeExcerptActionable extends baseItemAction, base
   excerptCount: IExerptSupervisionStat | null
   excerpts: IDataShelfBoxView[] | null
   hasDescription?: boolean
+}
+export interface INodeRelation<T extends stringnumber> extends ISimpleDTO<T>, baseItemState {
+
+  parentId: number
+  parentTitle: string
+  nodeId: number
 }
 
 /**
@@ -212,4 +220,9 @@ export interface ITreeExcerpt extends ITree {
   title: string
   excerptCount: IExerptSupervisionStat | null
   nodes: ISimpleNestedNodeExcerptActionable[]
+}
+
+export enum NodeRelationType {
+  relation = 1,
+  reference = 2,
 }
