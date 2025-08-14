@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useToast } from 'vue-toastification'
 import { VDataTableServer } from 'vuetify/lib/components/index.mjs'
+import { boolean } from 'zod'
 import type { GridResult, IRootServiceError, baseDataTableModel } from '@/types/baseModels'
 
 // const currentdate = ref('');
@@ -15,6 +16,7 @@ const props = defineProps({
   autostart: { type: Boolean, default: true },
   tableheight: { type: String, default: '' },
   showsearch: { type: Boolean, default: true },
+  rowSelectable: { type: Boolean, default: true },
 })
 
 const emit = defineEmits<Emit>()
@@ -232,10 +234,10 @@ defineExpose({ refreshData })
       item-value="id"
       :items-length="resultData?.totalCount === undefined ? 0 : resultData.totalCount"
       :headers="props.headers"
-      class="text-no-wrap"
+      class="text-no-wrap text-body-2"
       :height="props.tableheight"
       density="compact"
-      show-select
+      :show-select="props.rowSelectable"
       :loading="loadingdata"
       select-strategy="single"
       hover

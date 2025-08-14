@@ -27,9 +27,9 @@ interface Emit {
 }
 
 const tableHeaders = [
-  { title: t('content'), key: 'content', maxWidth: 700, width: 700, nowrap: true, sortable: false },
+  { title: t('content'), key: 'content', maxWidth: 600, width: '45%', nowrap: true, sortable: false },
   { title: t('datashelfbox.connectednodesimple'), key: 'node', sortable: true },
-  { title: t('description'), key: 'description', sortable: false },
+  { title: t('description'), key: 'description', nowrap: true, sortable: false },
   { title: t('labels'), key: 'labels', sortable: false },
   { title: t('creatoruser'), key: 'creatorFullName', sortable: false },
   { title: t('createDate'), key: 'creationTime' },
@@ -38,24 +38,6 @@ const tableHeaders = [
 onMounted(async () => {
   nextTick(() => mcsourcehistory.value.refreshData())
 })
-async function getDataBoxItem() {
-  opening.value = true
-  try {
-    const result = await $api <IDataShelfBoxView>(`app/excerpt/${props.selectedDataBoxId}`, {
-      method: 'GET',
-    })
-
-    Object.assign(databoxItem, result)
-    opening.value = false
-  }
-  catch (error) {
-    opening.value = false
-    if (error instanceof CustomFetchError && error.code !== '0')
-      emit('errorHasOccured', error.message)
-    else emit('errorHasOccured', t('httpstatuscodes.0'))
-    emit('update:isDialogVisible', false)
-  }
-}
 </script>
 
 <template>
@@ -69,22 +51,25 @@ async function getDataBoxItem() {
         <VSpacer />
       </VCardTitle>
       <VDivider />
-      <MCDataTable ref="mcsourcehistory" :headers="tableHeaders" :api-url="props.serviceurl" :gateid="0" :autostart="false" :showsearch="false">
+      <MCDataTable
+        ref="mcsourcehistory" :row-selectable="false" :headers="tableHeaders" :api-url="props.serviceurl" :gateid="0" :autostart="false"
+        :showsearch="false"
+      >
         <template #item.content="{ value }">
-          <div style="white-space: pre-line;">
-            {{ value.content }}
-          </div>
+          <div style="white-space: pre-line;" class="py-2" v-html="value.content" />
         </template>
         <template #item.labels="{ value }">
           <div class="d-flex align-center gap-x-4">
             {{ value.labels && value.labels.map((item: ISimpleDTO<number>) => `${item.title}`).join(' ,') }}
           </div>
         </template>
+
         <template #item.node="{ value }">
           <div class="d-flex align-center gap-x-4">
-            {{ value.node.title }}
+            {{ value.node?.title ?? '' }}
           </div>
         </template>
+
         <template #item.creationTime="{ value }">
           <div class="d-flex align-center gap-x-4">
             {{ usePersianDate(value.creationTime) }}

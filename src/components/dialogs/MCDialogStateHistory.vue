@@ -43,12 +43,14 @@ onMounted(async () => {
 
     <VCard variant="flat" :loading="opening" :min-height="400" class="pa-1">
       <MCLoading :loadingsize="SizeType.MD" :showloading="opening" />
-      <VCardTitle class="primary white--text">
+      <VCardTitle class="primary white--text pa-2">
         {{ $t('supervision.history') }}
         <VSpacer />
       </VCardTitle>
-      <VDivider />
-      <MCDataTable ref="mcstatehistory" :headers="tableHeaders" :api-url="props.serviceurl" :gateid="0" :autostart="false" :showsearch="false">
+      <MCDataTable
+        ref="mcstatehistory" :row-selectable="false" :headers="tableHeaders" :api-url="props.serviceurl" :gateid="0" :autostart="false"
+        :showsearch="false"
+      >
         <template #item.content="{ value }">
           <div style="white-space: pre-line;">
             {{ value.content }}
