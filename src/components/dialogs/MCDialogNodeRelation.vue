@@ -17,7 +17,7 @@ const selectedNodes = ref<number[]>([])
 const activeActions = ref(false)
 const nodeTitle = ref('')
 const loading = ref(false)
-const { setRelatedNode } = useTree()
+const { increaseRelatedNode } = useTree()
 const relationtype = ref(NodeRelationType.relation)
 const { t } = useI18n({ useScope: 'global' })
 
@@ -55,7 +55,7 @@ const transferNodeLocal = async () => {
       ignoreResponseError: false,
     })
 
-    setRelatedNode(props.selectedNode.id, relationtype.value)
+    increaseRelatedNode(props.selectedNode.id, relationtype.value)
 
     // setRelatedNode(selectedNodes.value[0], relationtype.value)
     loading.value = false

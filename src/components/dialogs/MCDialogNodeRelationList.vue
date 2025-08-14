@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useSelectTreeNode } from '@/store/treeStore'
+import { useSelectTreeNode, useTree } from '@/store/treeStore'
 import { MessageType, SizeType } from '@/types/baseModels'
 import type { INodeRelation } from '@/types/tree'
 import { NodeRelationType } from '@/types/tree'
@@ -10,12 +10,14 @@ interface Prop {
 const props = defineProps<Prop>()
 const emit = defineEmits<Emit>()
 const { treeNodeIdMustBeSelect } = useSelectTreeNode()
-const relationList = shallowRef<INodeRelation<number>[]>([])
+const relationList = ref<INodeRelation<number>[]>([])
 const loading = ref(false)
 const opening = shallowRef(false)
 const relationtypetitle = shallowRef('')
 const currentRelationTypeTitle = shallowRef(NodeRelationType.relation)
+const currentNodeId = shallowRef(0)
 const { t } = useI18n({ useScope: 'global' })
+const { decreaseRelatedNode } = useTree()
 
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
@@ -28,6 +30,7 @@ const onReset = (closedialog: boolean = false) => {
 }
 
 const loadrelations = async (nodeid: number, relationtype: NodeRelationType) => {
+  currentNodeId.value = nodeid
   currentRelationTypeTitle.value = relationtype
   relationtypetitle.value = relationtype === NodeRelationType.relation ? 'relations' : 'references'
   opening.value = true
@@ -55,10 +58,18 @@ const deleterelation = async (relationItem: INodeRelation<number>) => {
   relationtypetitle.value = currentRelationTypeTitle.value === NodeRelationType.relation ? 'relations' : 'references'
   relationItem.loading = true
   try {
-    await $api(`app/node/${relationItem.nodeId}/${relationtypetitle.value}/${relationItem.id}`, {
+    await $api(`app/node/${currentNodeId.value}/${relationtypetitle.value}/${relationItem.id}`, {
       method: 'Delete',
     })
+
+    // setTimeout(() => {
+    relationItem.loading = false
+
+    decreaseRelatedNode(currentNodeId.value, currentRelationTypeTitle.value)
+
     relationList.value.splice(relationList.value.indexOf(relationItem), 1)
+
+    // }, 1000)
   }
   catch (error) {
     relationItem.loading = false
@@ -119,14 +130,14 @@ defineExpose({
                     </VTooltip>
                     <VIcon size="16" icon="tabler-eye-up" />
                   </VBtn>
-                  <VBtn :loading="item.loading" size="small" variant="plain" @click="selectnodeintree(item.nodeId)">
+                  <VBtn :loading="item.loading" size="small" variant="plain" @click="deleterelation(item)">
                     <VTooltip
                       activator="parent"
                       location="top center"
                     >
                       {{ $t('selectintree') }}
                     </VTooltip>
-                    <VIcon size="16" icon="tabler-trash" color="error" @click="deleterelation(item)" />
+                    <VIcon size="16" icon="tabler-trash" color="error" />
                   </VBtn>
                 </div>
               </div>

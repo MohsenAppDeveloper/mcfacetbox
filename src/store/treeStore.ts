@@ -189,12 +189,20 @@ export function useTree() {
     return { count: seen.size, duplicates }
   }
 
-  const setRelatedNode = (nodeid: number, relationtype: NodeRelationType) => {
+  const increaseRelatedNode = (nodeid: number, relationtype: NodeRelationType) => {
     if (relationtype === NodeRelationType.relation)
       treeIndex[nodeid].relationCount = (treeIndex[nodeid].relationCount ?? 0) + 1
 
     else
       treeIndex[nodeid].referenceCount = (treeIndex[nodeid].referenceCount ?? 0) + 1
+  }
+
+  const decreaseRelatedNode = (nodeid: number, relationtype: NodeRelationType) => {
+    if (relationtype === NodeRelationType.relation)
+      treeIndex[nodeid].relationCount = (treeIndex[nodeid].relationCount ?? 0) === 0 ? treeIndex[nodeid].relationCount : treeIndex[nodeid].relationCount - 1
+
+    else
+      treeIndex[nodeid].referenceCount = (treeIndex[nodeid].referenceCount ?? 0) === 0 ? treeIndex[nodeid].referenceCount : treeIndex[nodeid].referenceCount - 1
   }
 
   const mergeNode = (sourceNodeID: number, destinationNodeID: number) => {
@@ -338,7 +346,8 @@ export function useTree() {
     createTreeIndex,
     isLastNode,
     getNodePath,
-    setRelatedNode,
+    increaseRelatedNode,
+    decreaseRelatedNode,
   }
 }
 

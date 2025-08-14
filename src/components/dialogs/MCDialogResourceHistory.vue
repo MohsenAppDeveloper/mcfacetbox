@@ -64,7 +64,7 @@ async function getDataBoxItem() {
 
     <VCard variant="flat" :loading="opening" :min-height="400" class="pa-1">
       <MCLoading :loadingsize="SizeType.MD" :showloading="opening" />
-      <VCardTitle class="primary white--text">
+      <VCardTitle class="primary white--text pa-2">
         {{ $t('datashelfbox.about') }}
         <VSpacer />
       </VCardTitle>

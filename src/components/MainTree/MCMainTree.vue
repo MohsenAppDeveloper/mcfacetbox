@@ -80,8 +80,6 @@ const showNodeTooltip = (event: MouseEvent, item: ISimpleNestedNodeActionable) =
 }
 
 watch(treeNodeIdMustBeSelect, newval => {
-  console.log('newval', newval)
-
   if (newval > 0) {
     selectTreeNode({ id: newval, parentId: 0, priority: 0, title: '' })
     treeNodeIdMustBeSelect.value = 0
@@ -773,7 +771,7 @@ function showNodeRelationList(nodeid: number, relationtype: NodeRelationType) {
                   :class="`d-flex justify-space-between ${(activeDraggableItem && activeDraggableItem.id === item.id && (!hasDividerDraggableBefore && !hasDividerDraggableAfter)) ? 'draggablebox' : ''}`" @mouseleave="treeItemMouseLeave($event, item)"
                   @mouseenter="treeItemMouseEnter($event, item)" @mouseup="treeItemMouseUp($event, item)" @mousedown="treeItemMouseDown($event, item)"
                 >
-                  <div style="width: 95%;">
+                  <div style="width: 90%;">
                     <span v-if="!(item.editing ?? false)">{{ item.title }}</span>
                     <VTextField
                       v-else ref="editableNode" v-model:model-value="nodeTempTitleForEdit" :color="item.failed ? 'error' : 'primary'" autofocus :placeholder="item.title"
