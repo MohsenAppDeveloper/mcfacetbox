@@ -128,7 +128,7 @@ function searchinfacet(e: any) {
       v-if="!(props.istree ?? false) && (isNullOrUndefined(props.facettype) || props.facettype === FacetType.flat)" v-model:selected="selectedFacetItems" item-value="key" item-title="title"
       lines="one"
       select-strategy="leaf"
-      :return-object="false" :height="(filteredItems.length ?? 10) * 35" :max-height="(props.scrollItemCount ?? 10) * 35"
+      :return-object="false" :height="(filteredItems.length ?? 10) * 36" :max-height="(props.scrollItemCount ?? 10) * 35"
     >
       <!-- <VVirtualScroll :items="filteredItems" :height="(props.scrollItemCount ?? 10) * 20"> -->
       <VListItem v-for="item in filteredItems" :key="item.key" :title="item.title" :value="item.key">

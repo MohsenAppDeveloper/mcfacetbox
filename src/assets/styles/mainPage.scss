@@ -415,6 +415,7 @@
 
         .v-list-item {
             min-block-size: 28px;
+            padding: 0;
 
             .v-list-item-title {
                 font-size: 0.9em;
@@ -427,6 +428,8 @@
             }
         }
     }
+
+
 }
 
 .v-list-sm {
@@ -545,6 +548,13 @@
 
 .mc-data-scrolly {
     block-size: calc(100% - 40px);
+    margin-block-start: 1.5px;
+    overflow-y: scroll;
+    overflow-x: auto;
+}
+
+.mc-data-scrolly-float {
+    block-size: calc(100% - var(--block-size-offset));
     margin-block-start: 1.5px;
     overflow-y: scroll;
     overflow-x: auto;

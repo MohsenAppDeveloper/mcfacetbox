@@ -46,7 +46,7 @@ export interface IBookSearchResult {
 export interface ISelectableBookInfo extends ISelectable, IBookInfo {
 
 }
-export class selectableBookInfo implements ISelectable, IBookInfo {
+export class SelectableBookInfo implements ISelectable, IBookInfo {
   bookId: number = 0
   creatorList: IBookCreator[] = []
   publisherList: IBookPublisher[] = []
@@ -58,6 +58,11 @@ export class selectableBookInfo implements ISelectable, IBookInfo {
   title: string = ''
   selectable?: boolean | undefined = true
   selected?: boolean | undefined = false
+  constructor(bookid: number, booktitle: string, itemselected: boolean) {
+    this.bookId = bookid
+    this.title = booktitle
+    this.selected = itemselected
+  }
 }
 
 export class BookSearchRequestModel implements Record<string, any> {

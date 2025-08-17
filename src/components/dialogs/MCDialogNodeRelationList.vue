@@ -32,7 +32,7 @@ const onReset = (closedialog: boolean = false) => {
 const loadrelations = async (nodeid: number, relationtype: NodeRelationType) => {
   currentNodeId.value = nodeid
   currentRelationTypeTitle.value = relationtype
-  relationtypetitle.value = relationtype === NodeRelationType.relation ? 'relations' : 'references'
+  relationtypetitle.value = relationtype === NodeRelationType.relation ? 'relation' : 'reference'
   opening.value = true
 
   try {
@@ -55,7 +55,7 @@ const loadrelations = async (nodeid: number, relationtype: NodeRelationType) => 
 }
 
 const deleterelation = async (relationItem: INodeRelation<number>) => {
-  relationtypetitle.value = currentRelationTypeTitle.value === NodeRelationType.relation ? 'relations' : 'references'
+  relationtypetitle.value = currentRelationTypeTitle.value === NodeRelationType.relation ? 'relation' : 'reference'
   relationItem.loading = true
   try {
     await $api(`app/node/${currentNodeId.value}/${relationtypetitle.value}/${relationItem.id}`, {

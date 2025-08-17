@@ -48,7 +48,7 @@ function dataEntryChanged(phrase: string) {
 const transferNodeLocal = async () => {
   loading.value = true
 
-  const relationtypetitle = relationtype.value === NodeRelationType.relation ? 'relations' : 'references'
+  const relationtypetitle = relationtype.value === NodeRelationType.relation ? 'relation' : 'reference'
   try {
     await $api(`app/node/${props.selectedNode.id}/${relationtypetitle}/${selectedNodes.value[0]}`, {
       method: 'POST',

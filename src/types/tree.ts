@@ -200,6 +200,7 @@ export class TreeUserRoleModel extends ActionDates {
   avatarUrl: string = ''
   lastLoginDate: string = ''
   userId: string = ''
+  bookCount: number = 0
   roles: ISimpleDTO<string>[] = []
 }
 

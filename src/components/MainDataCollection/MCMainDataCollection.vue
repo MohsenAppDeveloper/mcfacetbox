@@ -301,7 +301,6 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
       </template>
     </VOverlay>
     <VRow dense class="align-center">
-      <MCDialogBookSelect v-if="isDialogSelectBookVisible" v-model:is-dialog-visible="isDialogSelectBookVisible" />
       <VCol cols="12" md="3" />
       <VCol cols="12" md="6" class="mx-auto">
         <VTextField
@@ -344,7 +343,7 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
           {{ $t('word') }}
         </VTab>
       </VTabs>
-      <VBtn icon size="26" variant="text" @click="isDialogSelectBookVisible = true">
+      <VBtn v-if="dataTabValue === DataBoxType.hadith" icon size="26" variant="text" @click="">
         <VIcon icon="tabler-book" size="22" />
       </VBtn>
     </VRow>

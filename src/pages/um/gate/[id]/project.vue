@@ -2,6 +2,7 @@
 import { useToast } from 'vue-toastification'
 import { VDialog } from 'vuetify/lib/components/index.mjs'
 import MCDataTable from '@/components/MCDataTable.vue'
+import { MessageType } from '@/types/baseModels'
 import type { ISimpleDTO, baseDataTableModel } from '@/types/baseModels'
 import type { TreeUserRoleModel } from '@/types/tree'
 import MCDialogUserRoleSelect from '@/components/dialogs/MCDialogUserRoleSelect.vue'
@@ -11,6 +12,7 @@ const mcdatatableTree = ref(MCDataTable)
 const dialogTree = ref(VDialog)
 const isAddNewTreeDialogVisible = shallowRef(false)
 const dialogAddTreeUserRole = shallowRef(false)
+const dialogSelectBookVisible = shallowRef(false)
 const treeApiUrl = 'app/tree'
 const router = useRoute('um-gate-id-project')
 
@@ -21,7 +23,7 @@ const currentGateId = computed((): number => {
 })
 
 const currentTreeId = shallowRef<number>(0)
-
+const currentUserId = shallowRef<string>('0')
 const toast = useToast()
 const selectedFile = ref(null)
 
@@ -42,6 +44,25 @@ const treeEdit = (dataItem: Record<string, any>) => {
   nextTick(() => dialogTree.value.updateTreeTitle(dataItem.id))
 }
 
+function handleMessages(message: string, messagetype: MessageType) {
+  switch (messagetype) {
+  case MessageType.error:
+    toast.error(message)
+    break;
+  case MessageType.info:
+    toast.info(message)
+    break;
+  case MessageType.warning:
+    toast.warning(message)
+    break;
+  case MessageType.success:
+    toast.success(message)
+    break;
+  default:
+    break;
+  }
+}
+
 const tableHeight = computed(() => {
   // اینجا مثلا 100% ارتفاع parent - فضای header و title
   return 'calc(100vh - 300px)' // عدد رو متناسب با هدر صفحه‌ات بزن
@@ -52,10 +73,6 @@ const treeTitleDataAdded = () => {
 }
 
 const fileInput = ref()
-
-const selectBook = (treeid: number) => {
-
-}
 
 const exportword = async (item: baseDataTableModel) => {
   item.isLoading = true
@@ -167,7 +184,7 @@ function onToggleExpandRow(item: baseDataTableModel, isExpanded: boolean, reset:
   if (reset && expandedDetails.value[item.id])
     delete expandedDetails.value[item.id]
 
-  console.log('expanded', isExpanded, expandedDetails.value)
+  console.log('expanded', isExpanded, item)
   if (isExpanded && !expandedDetails.value[item.id])
     fetchRowDetails(item.id)
 }
@@ -312,6 +329,15 @@ function userRoleHasBeenAdded(treeid: number) {
                                 />
                               -->
                             </IconBtn>
+                            <IconBtn :color="detailItem.bookCount > 0 ? 'warning' : ''" @click="() => { currentTreeId = item.id, currentUserId = detailItem.userId, dialogSelectBookVisible = true }">
+                              <VTooltip location="top center">
+                                <template #activator="{ props }">
+                                  <VIcon icon="tabler-books" v-bind="props" />
+                                </template>
+                                {{ formatString($t('bookrangelimit')) }}
+                              </VTooltip>
+                            </IconBtn>
+
                             <!--
                               <IconBtn @click="editUserRole(item)">
                               <VIcon icon="tabler-pencil" />
@@ -335,5 +361,9 @@ function userRoleHasBeenAdded(treeid: number) {
       :api-url="treeApiUrl" :gate-id="currentGateId" @tree-title-data-added="treeTitleDataAdded" @tree-title-data-updated="treeTitleDataAdded"
     />
     <MCDialogUserRoleSelect v-if="dialogAddTreeUserRole" v-model:is-dialog-visible="dialogAddTreeUserRole" :gate-id="currentGateId" :treeid="currentTreeId" @user-role-has-been-added="userRoleHasBeenAdded" @error-has-occured="(message) => toast.error(message)" />
+    <MCDialogBookSelect
+      v-if="dialogSelectBookVisible" v-model:is-dialog-visible="dialogSelectBookVisible" :treeid="currentTreeId" :user-id="currentUserId"
+      @set-book-permission-has-occured="fetchRowDetails" @handlemessage="handleMessages"
+    />
   </div>
 </template>

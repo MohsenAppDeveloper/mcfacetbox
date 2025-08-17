@@ -44,6 +44,7 @@
    "references":"ارجاعات",
   "relations":"ارتباطات",
 "selectintree":"انتخاب در درخت",
+"bookrangelimit":"محدود کردن کتب",
 "content":"محتوا",
 
   'projectcount':"تعداد پروژه ها",
@@ -155,7 +156,8 @@
     'publisher': 'ناشر',
     'language': 'زبان',
     'publishYear': 'سال نشر',
-    "publishplace":"مکان نشر"
+    "publishplace":"مکان نشر",
+    "selectedbooks":"کتب انتخاب شده",
   },
   'datashelfbox': {
     "labelscount":"تعدا برچسب : '(0)' عدد",
