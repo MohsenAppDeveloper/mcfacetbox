@@ -16,6 +16,7 @@ declare global {
   const DialogSizeSM: typeof import('./src/utils/constants')['DialogSizeSM']
   const DialogSizeXS: typeof import('./src/utils/constants')['DialogSizeXS']
   const EffectScope: typeof import('vue')['EffectScope']
+  const FirstPageDefaultNumber: typeof import('./src/utils/constants')['FirstPageDefaultNumber']
   const HttpStatusCodesWasHandled: typeof import('./src/utils/constants')['HttpStatusCodesWasHandled']
   const MainPage: typeof import('./src/utils/constants')['MainPage']
   const MainPageURI: typeof import('./src/utils/constants')['MainPageURI']
@@ -444,6 +445,7 @@ declare module 'vue' {
     readonly DialogSizeSM: UnwrapRef<typeof import('./src/utils/constants')['DialogSizeSM']>
     readonly DialogSizeXS: UnwrapRef<typeof import('./src/utils/constants')['DialogSizeXS']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly FirstPageDefaultNumber: UnwrapRef<typeof import('./src/utils/constants')['FirstPageDefaultNumber']>
     readonly HttpStatusCodesWasHandled: UnwrapRef<typeof import('./src/utils/constants')['HttpStatusCodesWasHandled']>
     readonly NewUUID: UnwrapRef<typeof import('./src/utils/general')['NewUUID']>
     readonly QueryParamAlias: UnwrapRef<typeof import('./src/composables/useRouterVariables')['QueryParamAlias']>

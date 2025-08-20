@@ -1,4 +1,5 @@
 import type { IFacetBox } from './SearchResult'
+import { FirstPageDefaultNumber, PageDefaultSize } from '@/utils/constants'
 
 export class GridResult<T> implements Record<string, any> {
   [x: string]: any;
@@ -151,10 +152,20 @@ export class SimpleTreeModel implements ISimpleTree {
  */
 export class QueryRequestModel implements Record<string, any> {
   [x: string]: any;
-  PageSize: number = 10
+  PageSize: number = PageDefaultSize
   PageNumber: number = 1
   Sorting: string = ''
   Filter: string = ''
+  TreeId: number = 0
+
+  public resetAll() {
+    this.resetDynamicFields()
+    this.PageNumber = PageDefaultSize
+    this.PageNumber = FirstPageDefaultNumber
+    this.Sorting = ''
+    this.Filter = ''
+    this.TreeId = 0
+  }
 
   /** کلید های داینامیک شیء را حذف میکنیم تا شیء به حالت اولیه برگردد */
   resetDynamicFields() {

@@ -28,7 +28,7 @@ const treeItems = computed(() =>
 const selectedTreeFacetItems = ref<string[]>([])
 const selectedFacetItems = ref<string[]>([])
 
-const switchState = ref<boolean>(props.dataitems[0].key === 'false')
+const switchState = ref<boolean>((props.dataitems[0]?.key ?? 'false') === 'false')
 const searchText = ref('')
 const filteredItems = ref<IFacetItem[]>(props.dataitems)
 
@@ -65,7 +65,7 @@ onMounted(() => {
   }
   else { // Flat list
     if (JSON.stringify(selectedFacetItems.value) !== JSON.stringify(props.selectedItems))
-      selectedTreeFacetItems.value = [...props.selectedItems].map(item => item)
+      selectedFacetItems.value = [...props.selectedItems].map(item => item)
   }
 })
 watch(filteredItems, () => {

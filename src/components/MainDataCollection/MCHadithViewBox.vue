@@ -38,6 +38,13 @@ interface Emit {
   (e: 'oncontextmenuselect', mouseEvent: MouseEvent, contenttype: DataBoxType, boxdata: IDataShelfBoxNew): void
 }
 async function selectmorelessHadith() {
+  console.log('showfulltext', showfulltext.value, props.dataitem.text.length, props.dataitem.highlightText, props.dataitem.shortText)
+  console.log('text', showfulltext.value, props.dataitem.text)
+
+  console.log('highlightText', props.dataitem.highlightText)
+
+  console.log('shortText', props.dataitem.shortText)
+
   if (showfulltext.value) {
     showfulltext.value = false
 

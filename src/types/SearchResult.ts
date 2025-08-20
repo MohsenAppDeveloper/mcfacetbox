@@ -2,6 +2,7 @@ import { isNull, isUndefined } from '@sindresorhus/is'
 import type { FacetType } from './baseModels'
 import { joinWithDots } from '@/utils/stringUtils'
 import type { IReference } from '@/utils/refrenceUtils'
+import { FirstPageDefaultNumber, PageDefaultSize } from '@/utils/constants'
 
 export function convertFacetItemToFacetTree(items: IFacetItem[]): IFacetTreeItem[] {
   const map = new Map<string, IFacetTreeItem>()
@@ -172,4 +173,33 @@ export interface ITabSearchStateResult {
   selectedFacets: Record<string, string[]>
   results: ISearchResultItem[]
   loading: boolean
+}
+export class TabSearchStateResultModel implements ITabSearchStateResult {
+  page: number = FirstPageDefaultNumber
+  totalItems: number = 0
+  facets: IFacetBox[] = []
+  selectedFacets: Record<string, string[]> = {}
+  results: ISearchResultItem[] = []
+  loading: boolean = false
+
+  public resetCollections = () => {
+    this.facets.splice(0)
+    this.results.splice(0)
+    this.loading = false
+  }
+
+  public resetPaging = () => {
+    this.page = FirstPageDefaultNumber
+    this.totalItems = 0
+  }
+
+  public resetAll = () => {
+    this.resetCollections()
+
+    Object.keys(this.selectedFacets).forEach(key => {
+      delete this.selectedFacets[key]
+    })
+    this.page = FirstPageDefaultNumber
+    this.totalItems = 0
+  }
 }
