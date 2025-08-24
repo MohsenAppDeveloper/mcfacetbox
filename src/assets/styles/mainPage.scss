@@ -573,6 +573,20 @@
     margin-block-start: 1.5px;
     overflow-y: scroll;
     overflow-x: auto;
+
+    &::-webkit-scrollbar {
+        inline-size: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        border-radius: 2.5px;
+        background: #ccd0dc;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 2.5px;
+        background: #576363;
+    }
 }
 
 .paging-container-fixed {
@@ -597,4 +611,27 @@
     border-radius: 7px;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
     z-index: 3;
+}
+
+
+.mc-list-item-container {
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: default;
+    transition: all 0.2s ease;
+
+    .item-title {
+        transition: color 0.2s ease;
+    }
+
+
+    &:hover {
+        background-color: #f0f0f0;
+        transform: translateY(-1px);
+    }
+
+    &:hover .item-title {
+        color: #1976d2;
+        font-weight: 500;
+    }
 }

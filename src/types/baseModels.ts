@@ -132,6 +132,7 @@ export class SimpleSelectableDTOModel<T extends stringNumber> implements ISimple
   title: string = ''
   selectable?: boolean | undefined = false
   selected?: boolean | undefined = false
+  loading?: boolean | undefined = false
   constructor(id: T, title: string) {
     this.id = id
     this.title = title
@@ -158,6 +159,8 @@ export class QueryRequestModel implements Record<string, any> {
   Sorting: string = ''
   Filter: string = ''
   TreeId: number = 0
+  IsFullText: boolean = false
+  SearchIn: number = 1
   SearchType: SearchConfig = SearchConfig.OneOrMore
   public resetAll() {
     this.resetDynamicFields()
@@ -169,17 +172,36 @@ export class QueryRequestModel implements Record<string, any> {
     this.SearchType = SearchConfig.OneOrMore
   }
 
+  private staticKeys = ['PageSize', 'PageNumber', 'Sorting', 'Filter', 'TreeId', 'SearchType', 'IsFullText', 'SearchIn', 'staticKeys']
+
   /** کلید های داینامیک شیء را حذف میکنیم تا شیء به حالت اولیه برگردد */
   resetDynamicFields() {
     // لیست کلیدهای اصلی (غیر داینامیک)
-    const staticKeys = ['PageSize', 'PageNumber', 'Sorting', 'Filter']
+    // const staticKeys = ['PageSize', 'PageNumber', 'Sorting', 'Filter', 'TreeId', 'SearchType']
 
     // تمام کلیدهای شیء فعلی را بررسی می‌کنیم
     Object.keys(this).forEach(key => {
       // اگر کلید جزو کلیدهای اصلی نبود، آن را حذف می‌کنیم
-      if (!staticKeys.includes(key))
+      if (!this.staticKeys.includes(key))
         delete this[key]
     })
+  }
+
+  /** دریافت لیست کلیدهای داینامیک */
+  getDynamicKeys(): string[] {
+    return Object.keys(this).filter(key => !this.staticKeys.includes(key))
+  }
+
+  /** دریافت مقادیر داینامیک به صورت آبجکت */
+  getDynamicProperties(): Record<string, any> {
+    const dynamicProps: Record<string, any> = {}
+
+    Object.keys(this).forEach(key => {
+      if (!this.staticKeys.includes(key))
+        dynamicProps[key] = this[key]
+    })
+
+    return dynamicProps
   }
 }
 

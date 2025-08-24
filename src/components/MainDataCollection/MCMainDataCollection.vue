@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useToast } from 'vue-toastification'
+import MCDialogRepositorySearchHistory from '../dialogs/MCDialogRepositorySearchHistory.vue'
 import type { GridResultFacet, IRootServiceError } from '@/types/baseModels'
 import { DataBoxType, MessageType, QueryRequestModel, SearchConfig, SizeType } from '@/types/baseModels'
-import type { ISearchResultItem } from '@/types/SearchResult'
+import type { ISearchResultItem, SearchResultConfigModel } from '@/types/SearchResult'
 import { FacetBoxModel, SearchResultItemModel, TabSearchStateResultModel } from '@/types/SearchResult'
 import { HadithSearchResultItemModel } from '@/types/hadithResult'
 import { useSelectedTree, useTree } from '@/store/treeStore'
@@ -38,6 +39,8 @@ const toast = useToast()
 const allHadith = shallowRef(false)
 const watchSearchFilters = shallowRef(false)
 const dialogSearchConfigVisible = shallowRef(false)
+const dialogSearchHistoryVisible = shallowRef(false)
+
 const currentSearchConfig = ref(SearchConfig.All)
 
 const apiQueryParamData = reactive<Record<DataBoxType, QueryRequestModel>>(
@@ -138,7 +141,6 @@ watch(() => resultDataOnState[dataTabValue.value].page, async newval => {
   }
 })
 watch(() => resultDataOnState[dataTabValue.value].selectedFacets, async newval => {
-  console.log('selectedfacet', resultDataOnState[dataTabValue.value].selectedFacets)
   if (!watchSearchFilters.value)
     return
   let facetChange = false
@@ -208,32 +210,28 @@ function resetData(filterType: ChangeFilterType, deactiveWatchFilters: boolean =
   switch (filterType) {
     case ChangeFilterType.Facet:
       resultDataOnState[dataTabValue.value].resetCollections()
-      resultDataOnState[dataTabValue.value].resetPaging()
+      resultDataOnState[dataTabValue.value].page = 1
       apiQueryParamData[dataTabValue.value].PageNumber = 1
 
-      //   resultDataOnState[dataTabValue.value].selectedFacets = {}
       break;
     case ChangeFilterType.ChangePageSize:
     case ChangeFilterType.ChangePageNumber:
       resultDataOnState[dataTabValue.value].resetCollections()
       break;
     case ChangeFilterType.SearchPhrase:
-    // if (apiQueryParamData[dataTabValue.value].Filter !== searchPhrase.value)
-    // if (apiQueryParamData[dataTabValue.value].Filter.length > 0)
       resultDataOnState[dataTabValue.value].selectedFacets = {}
       apiQueryParamData[dataTabValue.value].resetDynamicFields()
       apiQueryParamData[dataTabValue.value].IsFullText = false
-
-      //   apiQueryParamData[dataTabValue.value].Filter = searchPhrase.value
       apiQueryParamData[dataTabValue.value].PageNumber = 1
       apiQueryParamData[dataTabValue.value].SearchIn = 1
       resultDataOnState[dataTabValue.value].resetCollections()
-      resultDataOnState[dataTabValue.value].resetPaging()
+      resultDataOnState[dataTabValue.value].page = 1
 
       break;
     case ChangeFilterType.Clear:
       resultDataOnState[dataTabValue.value].resetAll()
       apiQueryParamData[dataTabValue.value].resetAll()
+      currentSearchConfig.value = SearchConfig.All
     break;
     default:
       break;
@@ -310,6 +308,22 @@ async function runSearch(filterType: ChangeFilterType) {
   }
 }
 
+const loadSearchHistory = async (historySetting: SearchResultConfigModel) => {
+  watchSearchFilters.value = false
+  Object.keys(historySetting.setting).forEach(settingitem => {
+    // console.log('settingitem', settingitem, apiQueryParamData[dataTabValue.value][settingitem], historySetting.setting[settingitem])
+    apiQueryParamData[dataTabValue.value][settingitem] = historySetting.setting[settingitem]
+  })
+
+  resultDataOnState[dataTabValue.value].page = apiQueryParamData[dataTabValue.value].PageNumber
+
+  Object.keys(apiQueryParamData[dataTabValue.value].getDynamicProperties()).forEach(settingitem => {
+    resultDataOnState[dataTabValue.value].selectedFacets[settingitem] = apiQueryParamData[dataTabValue.value].getDynamicProperties()[settingitem]
+  })
+  currentSearchConfig.value = apiQueryParamData[dataTabValue.value].SearchType
+  await runSearch(ChangeFilterType.ChangePageSize)
+}
+
 const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
   currentitem.value = tabBoxItem
   maximizBoxOverlay.value = true
@@ -368,7 +382,7 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
             </VTooltip>
             <VIcon icon="tabler-settings" size="22" />
           </VBtn>
-          <VBtn icon size="small" variant="text" @click="">
+          <VBtn icon size="small" variant="text" @click="dialogSearchHistoryVisible = true">
             <VIcon icon="tabler-history" size="22" />
           </VBtn>
           <VBtn v-if="dataTabValue === DataBoxType.hadith" icon size="small" variant="text" @click="showAllHadith">
@@ -471,6 +485,11 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
       </VCol>
       </VRow>
     -->
+    <MCDialogRepositorySearchHistory
+      v-if="dialogSearchHistoryVisible" v-model:is-dialog-visible="dialogSearchHistoryVisible"
+      :loc-x="cursorX" :loc-y="cursorY" :search-result-config="{ category: dataTabValue.toString(), setting: apiQueryParamData[dataTabValue], title: '' }"
+      @message-has-occured="searchResultBoxMessageHandle" @settinghasbeenselected="loadSearchHistory"
+    />
     <MCDialogSearchConfig
       v-if="dialogSearchConfigVisible" v-model:is-dialog-visible="dialogSearchConfigVisible"
       v-model:model-value="currentSearchConfig" :loc-x="cursorX" :loc-y="cursorY"

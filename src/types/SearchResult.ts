@@ -1,4 +1,5 @@
 import { isNull, isUndefined } from '@sindresorhus/is'
+import { DataBoxType } from './baseModels'
 import type { FacetType } from './baseModels'
 import { joinWithDots } from '@/utils/stringUtils'
 import type { IReference } from '@/utils/refrenceUtils'
@@ -201,5 +202,23 @@ export class TabSearchStateResultModel implements ITabSearchStateResult {
     })
     this.page = FirstPageDefaultNumber
     this.totalItems = 0
+  }
+}
+
+export interface ISearchResultConfig {
+  title: string
+  setting: Record<string, string>
+  category: string
+}
+
+export class SearchResultConfigModel implements ISearchResultConfig {
+  title: string = ''
+  setting: Record<string, string> = {}
+  category: string = DataBoxType.hadith.toString()
+
+  constructor(config: Partial<ISearchResultConfig> = {}) {
+    this.title = config.title || ''
+    this.category = config.category || DataBoxType.hadith.toString()
+    this.setting = config.setting || {}
   }
 }

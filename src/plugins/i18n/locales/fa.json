@@ -47,6 +47,8 @@
 "bookrangelimit":"محدود کردن کتب",
 "allHadith":"تمام احادیث",
 "content":"محتوا",
+"historytitle":"عنوان تاریخچه",
+"searchhistory":"تاریخچه جستجو",
 "searchconfig":{
    "OneOrMore":"یکی از کلمات",
     "All":"تمام کلمات",
