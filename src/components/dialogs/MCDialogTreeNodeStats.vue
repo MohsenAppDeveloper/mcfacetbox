@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 // !SECTION این دیالوگ برای جستجو لیست های تک سطحی و انتخاب یک یا چند مورد میباشد
 
-import type { IDataShelfBoxView } from '@/types/dataShelf'
 import { DataShelfBoxModelView } from '@/types/dataShelf'
 import type { ISimpleDTO } from '@/types/baseModels'
 import { SizeType } from '@/types/baseModels'
@@ -27,10 +26,9 @@ interface Emit {
 }
 
 const tableHeaders = [
-  { title: t('content'), key: 'content', maxWidth: 600, width: '45%', nowrap: true, sortable: false },
-  { title: t('datashelfbox.connectednodesimple'), key: 'node', sortable: false },
-  { title: t('description'), key: 'description', nowrap: true, sortable: false },
-  { title: t('labels'), key: 'labels', sortable: false },
+  { title: t('nodetitle'), key: 'fullName', maxWidth: 600, width: '45%', nowrap: true, sortable: false },
+  { title: t('excerptcount'), key: 'excerptCount', sortable: true },
+  { title: t('childcount'), key: 'subcategoryCount', nowrap: true, sortable: true },
   { title: t('creatoruser'), key: 'creatorFullName', sortable: false },
   { title: t('createDate'), key: 'creationTime' },
 ]

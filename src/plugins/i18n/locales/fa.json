@@ -49,6 +49,9 @@
 "content":"محتوا",
 "historytitle":"عنوان تاریخچه",
 "searchhistory":"تاریخچه جستجو",
+"nodetitle":"عنوان گره",
+"excerptcount":"تعداد فیش ها",
+"childcount" :"تعداد فرزندان",
 "searchconfig":{
    "OneOrMore":"یکی از کلمات",
     "All":"تمام کلمات",

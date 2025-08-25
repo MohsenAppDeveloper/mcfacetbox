@@ -55,6 +55,23 @@ const loadrelations = async (nodeid: number, relationtype: NodeRelationType) => 
 }
 
 const deleterelation = async (relationItem: INodeRelation<number>) => {
+  relationItem.selected = true
+
+  //   const result = await confirmSwal(
+  //     t('alert.deleteSelectedItem?'),
+  //     '',
+  //     t('$vuetify.confirmEdit.ok'),
+  //     t('$vuetify.confirmEdit.cancel'),
+  //     true, 'warning',
+  //     async () => {
+  //       await setTimeout(() => {
+  //       }, 500)
+  //     },
+  //   )
+
+  //   if (!result.isConfirmed)
+  //     return
+
   relationtypetitle.value = currentRelationTypeTitle.value === NodeRelationType.relation ? 'relation' : 'reference'
   relationItem.loading = true
   try {
@@ -64,7 +81,7 @@ const deleterelation = async (relationItem: INodeRelation<number>) => {
 
     // setTimeout(() => {
     relationItem.loading = false
-
+    relationItem.selected = false
     decreaseRelatedNode(currentNodeId.value, currentRelationTypeTitle.value)
 
     relationList.value.splice(relationList.value.indexOf(relationItem), 1)
@@ -115,7 +132,8 @@ defineExpose({
           <VListItem v-for="item in relationList" :key="item.id" :title="item.title" :value="item.id">
             <VDivider />
             <template #title>
-              <div class=" w-100 px-3 pb-2 d-flex justify-space-between">
+              <!-- <div :class="`${item.selected ? 'selectedbox' : ''} 'w-100 px-3 pb-2 d-flex justify-space-between'`"> -->
+              <div class="w-100 px-3 pb-1 d-flex justify-space-between align-center">
                 <div>
                   <span v-if="item.parentTitle && item.parentTitle.length > 0" class="opacity-60">{{ item.parentTitle }} / </span>
                   <span>{{ item.title }}</span>

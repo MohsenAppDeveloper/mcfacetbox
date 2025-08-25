@@ -839,7 +839,7 @@ const treeViewStyle = computed(() => ({
 
       <!-- Tooltip موقعیت‌یابی شده -->
     </div>
-    <VBtn v-if="selectedNode.id" class="selected-node pr-1 pl-1 pb-1 text-body-2" variant="text" @click="gotoNode(selectedNode.id)">
+    <VBtn v-if="selectedNode.id" class="selected-node pr-1 pl-1 text-body-2" variant="text" @click="gotoNode(selectedNode.id)">
       <p>
         {{ $t('tree.selectednode') }}: <span>
           {{ selectedNode.title }}

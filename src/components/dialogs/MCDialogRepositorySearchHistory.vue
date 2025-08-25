@@ -148,7 +148,7 @@ async function deleteSearchHistory(item: SimpleSelectableDTOModel<number>) {
             </div>
           </template>
         </VTextField>
-        <div v-for="item in searchHistoryItems" :key="item.id" class="d-flex flex-row justify-space-between mc-list-item-container" @dblclick="loadSearchHistoryItem(item.id)">
+        <div v-for="item in searchHistoryItems" :key="item.id" class="d-flex flex-row justify-space-between align-center mc-list-item-container" @dblclick="loadSearchHistoryItem(item.id)">
           <span class="item-title no-select">{{ item.title }}</span>
           <VBtn icon size="small" variant="text" :loading="item.loading" @click="deleteSearchHistory(item)">
             <VIcon icon="tabler-trash" size="18" color="error" />
