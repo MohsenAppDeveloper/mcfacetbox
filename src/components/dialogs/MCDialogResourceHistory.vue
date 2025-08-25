@@ -1,10 +1,9 @@
 <script lang="ts" setup>
 // !SECTION این دیالوگ برای جستجو لیست های تک سطحی و انتخاب یک یا چند مورد میباشد
 
-import type { IDataShelfBoxView } from '@/types/dataShelf'
 import { DataShelfBoxModelView } from '@/types/dataShelf'
 import type { ISimpleDTO } from '@/types/baseModels'
-import { SizeType } from '@/types/baseModels'
+import { DataBoxType, SizeType } from '@/types/baseModels'
 
 interface Prop {
   isDialogVisible: boolean
@@ -47,7 +46,7 @@ onMounted(async () => {
     <VCard variant="flat" :loading="opening" :min-height="400" class="pa-1">
       <MCLoading :loadingsize="SizeType.MD" :showloading="opening" />
       <VCardTitle class="primary white--text pa-2">
-        {{ $t('datashelfbox.about') }}
+        {{ `${$t('datashelfbox.otherusage')} ${$t(DataBoxType[databoxItem.excerptType.id])}` }}
         <VSpacer />
       </VCardTitle>
       <VDivider />

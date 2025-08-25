@@ -1,0 +1,25 @@
+$scrollbar-width: 4px;
+$scrollbar-radius: 2.5px;
+$scrollbar-track-color: #dde1ee;
+$scrollbar-thumb-color: #92a1a1;
+
+// mixin با پارامترهای قابل تنظیم
+@mixin custom-scrollbar($width: $scrollbar-width,
+    $radius: $scrollbar-radius,
+    $track-color: $scrollbar-track-color,
+    $thumb-color: $scrollbar-thumb-color) {
+
+    &::-webkit-scrollbar {
+        inline-size: $width;
+    }
+
+    &::-webkit-scrollbar-track {
+        border-radius: $radius;
+        background: $track-color;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: $radius;
+        background: $thumb-color;
+    }
+}

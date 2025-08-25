@@ -1,3 +1,5 @@
+@use "mc-variables.scss" as mcvariables;
+
 .layout-navbar {
     .navbar-content-container {
         .app-logo {
@@ -33,11 +35,10 @@ div {
 
 .tree-view-scroll {
     overflow: auto;
-    block-size: calc(100vh - 250px);
+    block-size: calc(100vh - var(--tree-block-size-offset));
 
-    &::-webkit-scrollbar {
-        height: 8px;
-    }
+
+    @include mcvariables.custom-scrollbar;
 }
 
 .v-treeview {

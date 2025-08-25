@@ -34,6 +34,7 @@ const toast = useToast()
 const activatedNode = ref<number[]>([])
 const openedNode = ref<number[]>([])
 const isLoading = ref(false)
+const searchbox = ref()
 const selectedTreeStore = useSelectedTree()
 const { treeData, treeIndex, selectNode, selectedNode, getNodePath, clearTreeData, deselectAllTreeNodes, deleteNode, transferNode, isLastNode } = useTree()
 const currentTreeId = ref(0)
@@ -53,7 +54,7 @@ const dialogDescriptionVisible = shallowRef(false)
 const dialogTransferNodeVisible = shallowRef(false)
 const dialogNodeRelationVisible = shallowRef(false)
 const dialogNodeRelationListVisible = shallowRef(false)
-
+const treeBlockSize = ref(220)
 const dialognoderelationlist = ref(VDialog)
 
 const activeTooltipPath = shallowRef('')
@@ -78,6 +79,8 @@ const showNodeTooltip = (event: MouseEvent, item: ISimpleNestedNodeActionable) =
     dialogDescriptionVisible.value = true
   }, 500)
 }
+
+const { height: searchBoxHeight } = useElementSize(searchbox)
 
 watch(treeNodeIdMustBeSelect, newval => {
   if (newval > 0) {
@@ -643,10 +646,20 @@ function showNodeRelationList(nodeid: number, relationtype: NodeRelationType) {
     dialognoderelationlist.value.loadrelations(nodeid, relationtype)
   })
 }
+watch(() => searchBoxHeight.value, () => {
+  if (activeSearch.value)
+    treeBlockSize.value = 220 + searchBoxHeight.value
+  else
+    treeBlockSize.value = 220
+})
+
+const treeViewStyle = computed(() => ({
+  '--tree-block-size-offset': `${treeBlockSize.value}px`,
+}))
 </script>
 
 <template>
-  <div class="mc-main-tree" @keydown="handleKeydown">
+  <div class="mc-main-tree d-flex flex-column justify-space-between" @keydown="handleKeydown">
     <MCLoading :showloading="isLoading" :loadingsize="SizeType.XL" />
     <MCDialogAddNewNode
       v-if="dialogAddNewNodeVisible" v-model:is-dialog-visible="dialogAddNewNodeVisible" :selected-tree-id="currentTreeId" :selected-node="isValidActivateNode() ? treeIndex[activatedNode[0]] : new SimpleNestedNodeAcionableModel(-1, '', -1)"
@@ -668,81 +681,78 @@ function showNodeRelationList(nodeid: number, relationtype: NodeRelationType) {
       v-if="dialogNodeRelationListVisible" ref="dialognoderelationlist" v-model:is-dialog-visible="dialogNodeRelationListVisible"
       @message-has-occured="handleDataBoxMessages"
     />
-    <VRow no-gutters class="btn-box toolbar">
-      <VCol md="12">
-        <div class="d-flex toolbar">
-          <VBtn size="small" variant="text" :disabled="!$can('Create', 'Node')" @click=" dialogAddNewNodeVisible = true">
-            <VIcon icon="tabler-plus" size="22" />
-            <VTooltip
-              activator="parent"
-              location="top center"
-            >
-              {{ `${$t('tree.newnode')} ${SHORTCUTKeys.nodenew.keyTitle}` }}
-            </VTooltip>
-          </VBtn>
+    <div class="btn-box toolbar">
+      <div class="d-flex toolbar">
+        <VBtn size="small" variant="text" :disabled="!$can('Create', 'Node')" @click=" dialogAddNewNodeVisible = true">
+          <VIcon icon="tabler-plus" size="22" />
+          <VTooltip
+            activator="parent"
+            location="top center"
+          >
+            {{ `${$t('tree.newnode')} ${SHORTCUTKeys.nodenew.keyTitle}` }}
+          </VTooltip>
+        </VBtn>
 
-          <VBtn size="small" :variant="activeSearch ? 'elevated' : 'text'" @click="selectSearchTree">
-            <VIcon icon="tabler-search" size="22" />
+        <VBtn size="small" :variant="activeSearch ? 'elevated' : 'text'" @click="selectSearchTree">
+          <VIcon icon="tabler-search" size="22" />
 
-            <VTooltip
-              activator="parent"
-              location="top center"
-            >
-              {{ `${$t('search')} ${SHORTCUTKeys.nodesearch.keyTitle}` }}
-            </VTooltip>
-          </VBtn>
-          <VBtn size="small" variant="text" @click="refreshTree">
-            <VIcon icon="tabler-refresh" size="22" />
+          <VTooltip
+            activator="parent"
+            location="top center"
+          >
+            {{ `${$t('search')} ${SHORTCUTKeys.nodesearch.keyTitle}` }}
+          </VTooltip>
+        </VBtn>
+        <VBtn size="small" variant="text" @click="refreshTree">
+          <VIcon icon="tabler-refresh" size="22" />
 
-            <VTooltip
-              activator="parent"
-              location="top center"
-            >
-              {{ $t('refresh') }}
-            </VTooltip>
-          </VBtn>
-          <VBtn size="small" variant="text" :disabled="!can('Cleanup', 'Node')">
-            <VIcon icon="tabler-eraser" size="22" />
+          <VTooltip
+            activator="parent"
+            location="top center"
+          >
+            {{ $t('refresh') }}
+          </VTooltip>
+        </VBtn>
+        <VBtn size="small" variant="text" :disabled="!can('Cleanup', 'Node')">
+          <VIcon icon="tabler-eraser" size="22" />
 
-            <VTooltip
-              activator="parent"
-              location="top center"
-            >
-              {{ $t('tree.treecleaning') }}
-            </VTooltip>
-          </VBtn>
-          <VBtn icon size="small" variant="text" :disabled="!can('Preview', 'Node')" @click="dialogTreePreviewVisible = (true && (can('Preview', 'Node') ?? false))">
-            <VIcon icon="tabler-list-tree" size="22" />
-            <VTooltip
-              activator="parent"
-              location="top center"
-            >
-              {{ $t('tree.preview') }}
-            </VTooltip>
-          </VBtn>
-        </div>
-      </VCol>
-    </VRow>
+          <VTooltip
+            activator="parent"
+            location="top center"
+          >
+            {{ $t('tree.treecleaning') }}
+          </VTooltip>
+        </VBtn>
+        <VBtn icon size="small" variant="text" :disabled="!can('Preview', 'Node')" @click="dialogTreePreviewVisible = (true && (can('Preview', 'Node') ?? false))">
+          <VIcon icon="tabler-list-tree" size="22" />
+          <VTooltip
+            activator="parent"
+            location="top center"
+          >
+            {{ $t('tree.preview') }}
+          </VTooltip>
+        </VBtn>
+      </div>
+    </div>
     <VExpandTransition>
-      <VRow v-if="activeSearch" class="mt-0 mb-2">
-        <VCol md="12">
-          <MCSearchApiTree
-            v-model:selected-items="searchResultSelectedNodes"
-            auto-focus :max-height="300" :api-url="`app/node/simple?treeid=${currentTreeId}`" :selection-type="SelectionType.Single" class="pt-1"
-          />
-          <VDivider thickness="2" color="primary" />
-        </VCol>
-      </VRow>
+      <div v-show="activeSearch" ref="searchbox" class="mt-0 mb-2 flex-shrink-0">
+        <MCSearchApiTree
+
+          v-model:selected-items="searchResultSelectedNodes"
+          auto-focus :max-height="200" :api-url="`app/node/simple?treeid=${currentTreeId}`" :selection-type="SelectionType.Single" class="pt-1"
+        />
+        <VDivider thickness="2" color="primary" />
+      </div>
     </VExpandTransition>
 
-    <VRow dense class="header">
-      <VCol />
-      <VCol cols="1">
+    <div class="d-flex flex-row justify-space-between flex-shrink-0 w-100">
+      <div style="height: 90%;" />
+      <div class="header">
         {{ $t('tree.nodes') }}
-      </VCol>
-    </VRow>
+      </div>
+    </div>
 
-    <div class="tree-view-scroll ">
+    <div class="tree-view-scroll" :style="treeViewStyle">
       <VTreeview
         ref="treeview" v-model:activated="activatedNode" v-model:opened="openedNode"
         activatable :items="treeData" expand-icon="mdi-menu-left" item-value="id"
@@ -829,7 +839,7 @@ function showNodeRelationList(nodeid: number, relationtype: NodeRelationType) {
 
       <!-- Tooltip موقعیت‌یابی شده -->
     </div>
-    <VBtn v-if="selectedNode.id" class="selected-node pr-1 pl-1 pb-1" variant="text" @click="gotoNode(selectedNode.id)">
+    <VBtn v-if="selectedNode.id" class="selected-node pr-1 pl-1 pb-1 text-body-2" variant="text" @click="gotoNode(selectedNode.id)">
       <p>
         {{ $t('tree.selectednode') }}: <span>
           {{ selectedNode.title }}
@@ -846,10 +856,19 @@ function showNodeRelationList(nodeid: number, relationtype: NodeRelationType) {
 
 <style lang="scss">
 .selected-node {
+
     border-radius: 6px;
     background-color: #f9f9f9;
     position: fixed;
     bottom: 15px;
     right: 10px;
 }
+// .tree-view-scroll {
+//     overflow: auto;
+//     block-size: calc(100vh - var(--tree-block-size-offset));
+
+//     &::-webkit-scrollbar {
+//         height: 4px;
+//     }
+// }
 </style>

@@ -117,7 +117,7 @@ watch(searchResult, () => {
           <!-- <VBtn :variant="ismatchCase ? 'tonal' : 'plain'" icon="tabler-abc" size="small" rounded="lg" @click="ismatchCase = !ismatchCase" /> -->
           <VBtn :variant="iswholeWord ? 'tonal' : 'plain'" icon="tabler-alphabet-latin" size="small" rounded="lg" @click="iswholeWord = !iswholeWord" />
           <VDivider vertical />
-          <VBtn variant="plain" :icon="showReplace ? 'tabler-chevron-down' : 'tabler-chevron-right'" size="small" @click="showReplace = !showReplace" />
+          <!-- <VBtn variant="plain" :icon="showReplace ? 'tabler-chevron-down' : 'tabler-chevron-right'" size="small" @click="showReplace = !showReplace" /> -->
         </template>
       </VTextField>
       <VExpandTransition>
@@ -136,7 +136,7 @@ watch(searchResult, () => {
 
     <VList
       v-model:selected="selectedItemsLocal" item-value="key" item-title="title"
-      lines="one"
+      lines="one" density="compact"
       :select-strategy="selectionStrategy"
       :return-object="false"
       :max-height="`${props.maxHeight ?? 400}px`"

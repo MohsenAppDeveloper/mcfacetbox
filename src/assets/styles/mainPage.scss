@@ -1,4 +1,6 @@
 //rs main
+@use "mc-variables.scss" as mcvariables;
+
 .main {
     .splitpanes {
         &.default-theme {
@@ -70,6 +72,8 @@
     }
 
     .mc-main-tree {
+        --tree-block-size-offset: 220px;
+
         .toolbar {
             border-radius: 6px;
             background-color: rgba(var(--v-theme-primary), 0.1);
@@ -81,8 +85,11 @@
 
         .header {
             padding: 0 0px;
+            padding-inline-start: 3px;
             margin-top: 0;
             font-size: 0.9em;
+            width: 10%;
+            text-align: center;
 
             div {
                 &:nth-child(2) {
@@ -553,19 +560,8 @@
     overflow-y: scroll;
     overflow-x: auto;
 
-    &::-webkit-scrollbar {
-        inline-size: 4px;
-    }
+    @include mcvariables.custom-scrollbar;
 
-    &::-webkit-scrollbar-track {
-        border-radius: 2.5px;
-        background: #ccd0dc;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        border-radius: 2.5px;
-        background: #576363;
-    }
 }
 
 .mc-data-scrolly-float {
@@ -574,19 +570,8 @@
     overflow-y: scroll;
     overflow-x: auto;
 
-    &::-webkit-scrollbar {
-        inline-size: 4px;
-    }
+    @include mcvariables.custom-scrollbar;
 
-    &::-webkit-scrollbar-track {
-        border-radius: 2.5px;
-        background: #ccd0dc;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        border-radius: 2.5px;
-        background: #576363;
-    }
 }
 
 .paging-container-fixed {
