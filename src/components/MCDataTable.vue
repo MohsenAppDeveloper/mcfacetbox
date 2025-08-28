@@ -13,6 +13,8 @@ const props = defineProps({
   activeDeleteAction: { type: Boolean, default: true },
   activeEditAction: { type: Boolean, default: true },
   gateid: { type: Number, default: 0 },
+  defaultPageSize: { type: Number, default: 10 },
+
   autostart: { type: Boolean, default: true },
   tableheight: { type: String, default: '' },
   showsearch: { type: Boolean, default: true },
@@ -33,27 +35,29 @@ const { t } = useI18n({ useScope: 'global' })
 const searchQuery = ref('')
 const searchQueryFinal = ref('')
 const selectedItem = ref<Array<number>>([])
-const selectedPlan = ref()
-const selectedStatus = ref()
 const highlightedItemIndex = ref(0)
 const datatableItems = ref<Array<baseDataTableModel>>([])
 
 const pageSize = ref(10)
 const pageNumber = ref(1)
 const sorting = ref()
+const sortby = ref()
 
-const updateOptions = (options: any) => {
-  if (options.sortBy && options.sortBy[0])
-    sorting.value = `${options.sortBy[0].key} ${options.sortBy[0].order}`
-
-//   orderBy.value = options.sorting[0]?.order
-}
+// watch(pageSize, () => {
+//   console.log('pageSize', pageSize.value)
+// })
+// watch(pageNumber, () => {
+//   console.log('pageNumber', pageNumber.value)
+// })
+watch(sortby, () => {
+  if (sortby.value[0])
+    sorting.value = `${sortby.value[0].key} ${sortby.value[0].order}`
+  else sorting.value = ''
+})
 
 const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi(createUrl(props.apiUrl, {
   query: {
     Filter: searchQueryFinal,
-    status: selectedStatus,
-    plan: selectedPlan,
     pageSize,
     pageNumber,
     sorting,
@@ -119,7 +123,10 @@ const searchLabelDefault = computed(() => {
 })
 
 const refreshData = async () => {
-  await fetchData(false)
+  if (pageSize.value !== props.defaultPageSize)
+    pageSize.value = props.defaultPageSize
+  else
+    await fetchData(false)
 }
 
 const updateAction = (dataModel: Record<string, any>) => {
@@ -183,6 +190,7 @@ defineExpose({ refreshData })
           :placeholder="searchLabelDefault"
           style="inline-size: 15.625rem;"
           clearable
+          @click:clear="() => { searchQuery = '';searchQueryFinal = '' }"
         />
         <!--
           <AppSelect v-model="selectedRole" placeholder="Select Role" :items="roles" clearable
@@ -216,6 +224,7 @@ defineExpose({ refreshData })
 
     <VDataTableServer
       ref="datatable"
+      v-model:sort-by="sortby"
       v-model="selectedItem"
       v-model:items-per-page="pageSize"
       v-model:page="pageNumber"
@@ -241,7 +250,6 @@ defineExpose({ refreshData })
       :loading="loadingdata"
       select-strategy="single"
       hover
-      @update:options="updateOptions"
     >
       <!--
         <template v-for="slotName in Object.keys($slots)" #[slotName]="slotScope">
@@ -272,7 +280,7 @@ defineExpose({ refreshData })
                 v-show="props.activeDeleteAction"
                 @click="deleteAction(item, index)"
               >
-                <VIcon icon="tabler-trash" />
+                <VIcon icon="tabler-trash" color="error" />
                 <!--
                   <VProgressCircular
                   v-else

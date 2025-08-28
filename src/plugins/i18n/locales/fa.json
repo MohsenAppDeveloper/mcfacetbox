@@ -152,7 +152,7 @@
     'addnewnode':'افزدودن گره جدید',
     'samelevelnode':'گره همسطح',
     'childnode':'گره فرزند',
-    "treecleaning":"پاکسازی درخت",
+    "stats":"آمار درخت",
     "loadingnodedetail":"بارگذاری اطلاعات گره",
     "mergenode":"ادغام گره ها",
     "adddestinationnode":"گره مقصد را انتخاب کنید"
