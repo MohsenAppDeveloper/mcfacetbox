@@ -3,12 +3,19 @@ import { useDate } from 'vuetify/lib/framework.mjs'
 
 // import { staticPrimaryColor } from '@/plugins/vuetify/theme'
 import jMoment from 'moment-jalaali'
+import moment from 'moment'
+import { convertToEnglishNumbers } from '@/utils/stringUtils'
 
 interface Emit {
-  (e: 'update:selectedDate', value: string): void
+  (e: 'update:solarDate', value: string): void
+  (e: 'update:gregorianDate', value: string): void
+
 }
 interface Props {
-  selectedDate: string
+  solarDate: string
+  gregorianDate: string
+  placeholder?: string
+
 }
 
 // const parsedDate = new Date(dateString);
@@ -50,15 +57,30 @@ const getTodayJalaali = () => {
 
 //     return ''
 // }
+
+const convertJalaaliToGregorian = (jalaaliDate: string): string => {
+  // فرض بر این که تاریخ شمسی به فرمت YYYY-MM-DD باشد
+  const [year, month, day] = jalaaliDate.split('-').map(Number)
+
+  return jMoment(`${year}/${month}/${day}`, 'jYYYY/jMM/jDD')
+    .format('YYYY-MM-DD')
+}
+
 const selectToday = () => {
   draftDate.value = getTodayJalaali()
-  emit('update:selectedDate', date.format(draftDate.value, 'keyboardDate'))
+
+  console.log('miladidate', moment(draftDate.value).format('YYYY-MM-DD'))
+  console.log('miladidate2', convertJalaaliToGregorian(date.format(draftDate.value, 'keyboardDate')))
+
+  emit('update:solarDate', date.format(draftDate.value, 'keyboardDate'))
+  emit('update:gregorianDate', convertToEnglishNumbers(jMoment(draftDate.value).format('YYYY-MM-DD')))
 }
 
 const acceptDate = () => {
   if (draftDate.value !== undefined) {
     // selectedDate.value = date.format(draftDate.value, 'keyboardDate')
-    emit('update:selectedDate', date.format(draftDate.value, 'keyboardDate'))
+    emit('update:solarDate', date.format(draftDate.value, 'keyboardDate'))
+    emit('update:gregorianDate', convertToEnglishNumbers(jMoment(draftDate.value).format('YYYY-MM-DD')))
   }
   isDialogVisible.value = false
 }
@@ -71,7 +93,8 @@ const onReset = () => {
 //   selectedDate.value = ''
   draftDate.value = null
   isDialogVisible.value = false
-  emit('update:selectedDate', '')
+  emit('update:solarDate', '')
+  emit('update:gregorianDate', '')
 
   // emit('update:isDialogVisible', false)
 }
@@ -83,8 +106,8 @@ const onReset = () => {
   <VDialog v-model="isDialogVisible" width="auto" persistent>
     <template #activator="{ props: activatorProps }">
       <VTextField
-        v-bind="activatorProps" :value="props.selectedDate" width="150px" class="px-1" style="height: 45px;"
-        :placeholder="$t('$vuetify.datePicker.title')" required clearable
+        v-bind="activatorProps" :value="props.solarDate" width="150px" class="px-1" style="height: 45px;"
+        :placeholder="placeholder" required clearable
       />
     </template>
     <VCard>

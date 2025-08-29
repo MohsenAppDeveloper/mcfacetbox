@@ -43,6 +43,18 @@ const pageNumber = ref(1)
 const sorting = ref()
 const sortby = ref()
 
+const serverURL = computed(() => {
+  return createUrl(() => props.apiUrl, {
+    query: {
+      Filter: searchQueryFinal,
+      pageSize,
+      pageNumber,
+      sorting,
+      GateId: props.gateid,
+    },
+  })
+})
+
 // watch(pageSize, () => {
 //   console.log('pageSize', pageSize.value)
 // })
@@ -55,15 +67,7 @@ watch(sortby, () => {
   else sorting.value = ''
 })
 
-const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi(createUrl(props.apiUrl, {
-  query: {
-    Filter: searchQueryFinal,
-    pageSize,
-    pageNumber,
-    sorting,
-    GateId: props.gateid,
-  },
-}), { immediate: false })
+const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi(serverURL.value, { immediate: false, refetch: false })
 
 setTimeout(async () => {
   if (props.autostart)

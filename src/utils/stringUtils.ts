@@ -26,3 +26,20 @@ export function joinWithDots(
 
   return limited.join(separator)
 }
+
+export const convertToEnglishNumbers = (input: string): string => {
+  const persianNumbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']
+  const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩']
+
+  let output = input
+
+  persianNumbers.forEach((persianNum, index) => {
+    output = output.replace(new RegExp(persianNum, 'g'), index.toString())
+  })
+
+  arabicNumbers.forEach((arabicNum, index) => {
+    output = output.replace(new RegExp(arabicNum, 'g'), index.toString())
+  })
+
+  return output
+}

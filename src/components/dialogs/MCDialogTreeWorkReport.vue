@@ -17,15 +17,41 @@ const loading = ref(false)
 const opening = ref(false)
 const { t } = useI18n({ useScope: 'global' })
 const mainCard = ref()
-const startdate = ref('')
-const enddate = ref('')
+const startsolardate = ref('')
+const endsolardate = ref('')
+const startgregoriandate = ref('')
+const endgregoriandate = ref('')
 const users = reactive<ISimpleDTO<string>[]>([])
-const selectedUser = ref<string>('')
+const selectedUser = ref<string>('-1')
 
 // const apiUrl = ref('')
 const { height: tableheight } = useElementSize(mainCard)
 const { height: windowheight } = useWindowSize()
 const mctree = ref()
+
+const reportURL = computed(() => {
+  if (selectedUser.value !== '-1') {
+    return createUrl(props.serviceurl, {
+      query: {
+        From: startgregoriandate.value,
+        To: endgregoriandate.value,
+        Users: selectedUser.value,
+
+      },
+    }).value
+  }
+  else {
+    return createUrl(props.serviceurl, {
+      query: {
+        From: startgregoriandate.value,
+        To: endgregoriandate.value,
+      },
+    }).value
+  }
+
+//   return result
+})
+
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
 
@@ -82,19 +108,24 @@ onMounted(async () => {
       <MCDataTable
         ref="mctree"
         :active-edit-action="false" :active-delete-action="false" :tableheight="`${tableheight - 150}px`"
-        :default-page-size="50" :row-selectable="false" :autostart="false" :headers="tableHeaders" :api-url="props.serviceurl" :gateid="0"
+        :default-page-size="50" :row-selectable="false" :autostart="false" :headers="tableHeaders" :api-url="reportURL" :gateid="0"
         :showsearch="false"
       >
         <template #tools>
           <div class="d-flex flex-row">
-            <MCInputDatePicker v-model:selected-date="startdate" />
-            <MCInputDatePicker v-model:selected-date="enddate" />
+            <MCInputDatePicker v-model:solar-date="startsolardate" v-model:gregorian-date="startgregoriandate" :placeholder="$t('fromdate')" />
+            <MCInputDatePicker v-model:solar-date="endsolardate" v-model:gregorian-date="endgregoriandate" :placeholder="$t('todate')" />
             <VAutocomplete
               v-model="selectedUser" style="width: 180px"
               class="px-1" :items="users" item-title="title"
               item-value="id"
               :label="$t('user.select')"
             />
+            <VBtn class="me-3" @click="mctree.refreshData()">
+              <span>
+                {{ $t('accept') }}
+              </span>
+            </VBtn>
           </div>
         </template>
         <template #item.actions="{ value }">

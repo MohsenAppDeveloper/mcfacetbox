@@ -43,6 +43,7 @@ declare global {
   const controlledComputed: typeof import('@vueuse/core')['controlledComputed']
   const controlledRef: typeof import('@vueuse/core')['controlledRef']
   const convertSimpleTreeToSimpleDtoArray: typeof import('./src/composables/objectUtils')['convertSimpleTreeToSimpleDtoArray']
+  const convertToEnglishNumbers: typeof import('./src/utils/stringUtils')['convertToEnglishNumbers']
   const convertTreeToArray: typeof import('./src/utils/objectUtils')['convertTreeToArray']
   const createApp: typeof import('vue')['createApp']
   const createAyahUrl: typeof import('./src/utils/dataResolver')['createAyahUrl']
@@ -467,6 +468,7 @@ declare module 'vue' {
     readonly controlledComputed: UnwrapRef<typeof import('@vueuse/core')['controlledComputed']>
     readonly controlledRef: UnwrapRef<typeof import('@vueuse/core')['controlledRef']>
     readonly convertSimpleTreeToSimpleDtoArray: UnwrapRef<typeof import('./src/composables/objectUtils')['convertSimpleTreeToSimpleDtoArray']>
+    readonly convertToEnglishNumbers: UnwrapRef<typeof import('./src/utils/stringUtils')['convertToEnglishNumbers']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
     readonly createAyahUrl: UnwrapRef<typeof import('./src/utils/dataResolver')['createAyahUrl']>
     readonly createEventHook: UnwrapRef<typeof import('@vueuse/core')['createEventHook']>

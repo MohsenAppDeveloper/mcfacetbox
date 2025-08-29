@@ -376,6 +376,6 @@ function userRoleHasBeenAdded(treeid: number) {
       v-if="dialogSelectBookVisible" v-model:is-dialog-visible="dialogSelectBookVisible" :treeid="currentTreeId" :user-id="currentUserId"
       @set-book-permission-has-occured="fetchRowDetails" @handlemessage="handleMessages"
     />
-    <MCDialogTreeWorkReport v-if="dialogTreeWordReport" v-model:is-dialog-visible="dialogTreeWordReport" :gateid="currentGateId" :serviceurl="`app/tree/${currentTreeId}/user/logs`" @handlemessage="handleMessages" />
+    <MCDialogTreeWorkReport v-if="dialogTreeWordReport" v-model:is-dialog-visible="dialogTreeWordReport" :gateid="currentGateId" :serviceurl="`app/tree/${currentTreeId}/user/activity`" @handlemessage="handleMessages" />
   </div>
 </template>
