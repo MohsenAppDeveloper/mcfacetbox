@@ -1,21 +1,32 @@
 <script lang="ts" setup>
-import { staticPrimaryColor } from '@/plugins/vuetify/theme';
-import { useDate } from 'vuetify/lib/framework.mjs';
+import { useDate } from 'vuetify/lib/framework.mjs'
 
+// import { staticPrimaryColor } from '@/plugins/vuetify/theme'
+import jMoment from 'moment-jalaali'
 
 interface Emit {
-    (e: 'update:selectedDate', value: string): void
+  (e: 'update:selectedDate', value: string): void
 }
 interface Props {
-    selectedDate: string
+  selectedDate: string
 }
+
+// const parsedDate = new Date(dateString);
+const props = defineProps<Props>()
+const emit = defineEmits<Emit>()
+
+jMoment.loadPersian({ dialect: 'persian-modern', usePersianDigits: true })
+
 const date = useDate()
 const draftDate = ref()
-const selectedDate = ref(' ');
+
+// const selectedDate = ref(' ')
 const isDialogVisible = ref(false)
-// const parsedDate = new Date(dateString);
-defineProps<Props>()
-const emit = defineEmits<Emit>()
+
+const getTodayJalaali = () => {
+  return jMoment()
+}
+
 // const formatedDate = (dateInputLabel: string) => {
 //     if (selectedDate.value != undefined) {
 //         console.log('date1', selectedDate.value);
@@ -39,50 +50,64 @@ const emit = defineEmits<Emit>()
 
 //     return ''
 // }
+const selectToday = () => {
+  draftDate.value = getTodayJalaali()
+  emit('update:selectedDate', date.format(draftDate.value, 'keyboardDate'))
+}
 
 const acceptDate = () => {
-    if (draftDate.value != undefined) {
-        selectedDate.value = date.format(draftDate.value, 'keyboardDate')
-        emit('update:selectedDate', selectedDate.value)
-    }
-    isDialogVisible.value = false
+  if (draftDate.value !== undefined) {
+    // selectedDate.value = date.format(draftDate.value, 'keyboardDate')
+    emit('update:selectedDate', date.format(draftDate.value, 'keyboardDate'))
+  }
+  isDialogVisible.value = false
 }
-const onReset = () => {
 
-    selectedDate.value = '';
-    draftDate.value = null
-    isDialogVisible.value = false
-    emit('update:selectedDate', selectedDate.value)
-    // emit('update:isDialogVisible', false)
+// watch(draftDate, () => {
+//   console.log('draftdate', draftDate.value)
+// })
+
+const onReset = () => {
+//   selectedDate.value = ''
+  draftDate.value = null
+  isDialogVisible.value = false
+  emit('update:selectedDate', '')
+
+  // emit('update:isDialogVisible', false)
 }
 </script>
+
 <!-- :label="formatedDate($t('$vuetify.datePicker.title'))" -->
 <!-- @update:model-value="onReset" -->
 <template>
-    <VDialog width="auto" v-model="isDialogVisible" persistent>
-        <template v-slot:activator="{ props: activatorProps }">
-            <VTextField v-bind="activatorProps" :value="selectedDate" width="250px"
-                :placeholder='$t("$vuetify.datePicker.title")' required clearable></VTextField>
-        </template>
-        <VCard>
-            <!-- <DialogCloseBtn @click="onReset" /> -->
-            <VDatePicker v-model="draftDate" :show-adjacent-months="true" :show-current="true" no-title
-                :color="staticPrimaryColor">
-            </VDatePicker>
+  <VDialog v-model="isDialogVisible" width="auto" persistent>
+    <template #activator="{ props: activatorProps }">
+      <VTextField
+        v-bind="activatorProps" :value="props.selectedDate" width="250px"
+        :placeholder="$t('$vuetify.datePicker.title')" required clearable
+      />
+    </template>
+    <VCard>
+      <!-- <DialogCloseBtn @click="onReset" /> -->
+      <VDatePicker
+        v-model="draftDate" show-adjacent-months show-current no-title
+        color="primary"
+      />
 
-            <template v-slot:actions>
-                <div class="d-flex align-end w-100">
-
-                    <VBtn :text="$t('accept')" @click="acceptDate"></VBtn>
-                    <VBtn :text="$t('cancel')" @click="() => isDialogVisible = false"></VBtn>
-                    <VBtn :text="$t('$vuetify.input.clear')" @click="onReset"></VBtn>
-
-                </div>
-            </template>
-        </VCard>
-    </VDialog>
+      <template #actions>
+        <div class="d-flex align-end w-100">
+          <VBtn :text="$t('accept')" @click="acceptDate" />
+          <VBtn :text="$t('cancel')" @click="() => isDialogVisible = false" />
+          <VBtn :text="$t('$vuetify.input.clear')" @click="onReset" />
+          <VBtn :text="$t('today')" @click="selectToday" />
+        </div>
+      </template>
+    </VCard>
+  </VDialog>
 </template>
 
-<!-- <style lang="scss">
+<!--
+  <style lang="scss">
 
-</style> -->
+  </style>
+-->

@@ -738,7 +738,6 @@ const treeViewStyle = computed(() => ({
     <VExpandTransition>
       <div v-show="activeSearch" ref="searchbox" class="mt-0 mb-2 flex-shrink-0">
         <MCSearchApiTree
-
           v-model:selected-items="searchResultSelectedNodes"
           auto-focus :max-height="200" :api-url="`app/node/simple?treeid=${currentTreeId}`" :selection-type="SelectionType.Single" class="pt-1"
         />

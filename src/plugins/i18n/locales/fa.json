@@ -52,6 +52,8 @@
 "nodetitle":"عنوان گره",
 "excerptcount":"تعداد فیش ها",
 "childcount" :"تعداد فرزندان",
+"today" :"امروز",
+
 "searchconfig":{
    "OneOrMore":"یکی از کلمات",
     "All":"تمام کلمات",

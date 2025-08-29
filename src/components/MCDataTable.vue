@@ -192,10 +192,12 @@ defineExpose({ refreshData })
           clearable
           @click:clear="() => { searchQuery = '';searchQueryFinal = '' }"
         />
+
         <!--
-          <AppSelect v-model="selectedRole" placeholder="Select Role" :items="roles" clearable
-          clear-icon="tabler-x" style="inline-size: 10rem;" />
-          <MCInputDatePicker v-model:selected-date="currentdate"></MCInputDatePicker>
+          <AppSelect
+          v-model="selectedRole" placeholder="Select Role" :items="roles" clearable
+          clear-icon="tabler-x" style="inline-size: 10rem;"
+          />
         -->
 
         <VSpacer />
@@ -208,11 +210,12 @@ defineExpose({ refreshData })
         <AppSelect
           :model-value="pageSize"
           :items="[
-            { value: 5, title: '5' },
+            { value: 10, title: '5' },
             { value: 25, title: '25' },
             { value: 50, title: '50' },
             { value: 100, title: '100' },
-            { value: -1, title: 'All' },
+            { value: 1000, title: '1000' },
+
           ]"
           style="inline-size: 5.5rem;"
           @update:model-value="pageSize = parseInt($event, 10)"

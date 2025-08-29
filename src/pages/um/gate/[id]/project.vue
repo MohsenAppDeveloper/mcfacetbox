@@ -26,6 +26,7 @@ const currentTreeId = shallowRef<number>(0)
 const currentUserId = shallowRef<string>('0')
 const toast = useToast()
 const selectedFile = ref(null)
+const currentdate = ref('')
 
 const treeHeaders = [
   { text: '0', value: 'num', sortable: false },
@@ -184,7 +185,6 @@ function onToggleExpandRow(item: baseDataTableModel, isExpanded: boolean, reset:
   if (reset && expandedDetails.value[item.id])
     delete expandedDetails.value[item.id]
 
-  console.log('expanded', isExpanded, item)
   if (isExpanded && !expandedDetails.value[item.id])
     fetchRowDetails(item.id)
 }
@@ -205,6 +205,7 @@ function userRoleHasBeenAdded(treeid: number) {
       <VBtn prepend-icon="tabler-plus" @click="isAddNewTreeDialogVisible = true">
         {{ $t('tree.add') }}
       </VBtn>
+      <!-- <MCInputDatePicker v-model:selected-date="currentdate" /> -->
     </VRow>
     <VRow style="height: 95%;">
       <VCol cols="12" style="height: 100%;">
