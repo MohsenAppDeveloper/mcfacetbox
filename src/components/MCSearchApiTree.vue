@@ -23,7 +23,6 @@ interface Emit {
   (e: 'searchPhraseChanged', searchPhrase: string): void
 
 }
-const itemsPerPage = ref(30)
 const page = ref(1)
 const selectedItemsLocal = ref<number[]>([])
 const searchResult = reactive<ISimpleSelectableDTO<number>[]>([])
@@ -55,7 +54,6 @@ const selectionStrategy = computed(() => {
 const { execute: fetchData, isFetching: loadingdata, data: searchResultFirst, onFetchResponse, onFetchError } = useApi<GridResult<ISimpleSelectableDTO<number>>>(createUrl(props.apiUrl ?? '', {
   query: {
     filter: searchPhrase,
-    itemsPerPage,
     page,
   },
 }), {
@@ -145,7 +143,8 @@ watch(searchResult, () => {
       <VListItem v-for="item in searchResult" :key="item.id" :title="item.title" :value="item.id">
         <template #title>
           <span v-if="item.parentTitle && item.parentTitle.length > 0" class="opacity-60">{{ item.parentTitle }} / </span>
-          <span>{{ item.title }}</span>
+          <div v-html="item.title" />
+          <!-- <span>{{ item.title }}</span> -->
         </template>
         <template #prepend="{ isSelected }">
           <VListItemAction start>

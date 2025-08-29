@@ -246,7 +246,7 @@ async function nodeEditProgress(nodeitem: ISimpleNestedNodeActionable) {
     nodeitem.loading = nodeitem.editing = false
     setTimeout(() => {
       treeIndex[nodeitem.id].title = nodeTempTitleForEdit.value
-      if (selectedNode.id > 0)
+      if (selectedNode.id > 0 && nodeitem.id === selectedNode.id)
         selectedNode.title = nodeTempTitleForEdit.value
 
       treeview.value.$el.focus()
@@ -736,7 +736,7 @@ const treeViewStyle = computed(() => ({
       </div>
     </div>
     <VExpandTransition>
-      <div v-show="activeSearch" ref="searchbox" class="mt-0 mb-2 flex-shrink-0">
+      <div v-if="activeSearch" ref="searchbox" class="mt-0 mb-2 flex-shrink-0">
         <MCSearchApiTree
           v-model:selected-items="searchResultSelectedNodes"
           auto-focus :max-height="200" :api-url="`app/node/simple?treeid=${currentTreeId}`" :selection-type="SelectionType.Single" class="pt-1"

@@ -28,7 +28,7 @@ interface Emit {
 }
 
 const tableHeaders = [
-  { title: t('nodetitle'), key: 'fullName', width: '50%', nowrap: true, sortable: false },
+  { title: t('nodetitle'), key: 'fullName', width: '500', nowrap: true, sortable: false },
   { title: t('excerptcount'), key: 'excerptCount.total', sortable: true },
   { title: t('childcount'), key: 'subcategoryCount', nowrap: true, sortable: true },
   { title: t('creatoruser'), key: 'creatorFullName', sortable: false },
@@ -65,8 +65,10 @@ onMounted(async () => {
         showsearch
       >
         <template #item.fullName="{ value }">
-          <span v-if="value.fullName.parentTitle && value.fullName.parentTitle.length > 0" class="opacity-60">{{ value.fullName.parentTitle }} / </span>
-          <span>{{ value.title }}</span>
+          <div style="white-space: pre-line;" class="py-1">
+            <span v-if="value.fullName.parentTitle && value.fullName.parentTitle.length > 0" class="opacity-60">{{ value.fullName.parentTitle }} / </span>
+            <span>{{ value.title }}</span>
+          </div>
         </template>
 
         <template #item.excerptCount.total="{ value }">

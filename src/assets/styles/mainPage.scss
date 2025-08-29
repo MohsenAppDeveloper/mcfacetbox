@@ -620,3 +620,7 @@
         font-weight: 500;
     }
 }
+
+.v-table--fixed-height>.v-table__wrapper {
+    @include mcvariables.custom-scrollbar;
+}
