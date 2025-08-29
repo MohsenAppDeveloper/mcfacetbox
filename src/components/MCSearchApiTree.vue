@@ -23,6 +23,8 @@ interface Emit {
   (e: 'searchPhraseChanged', searchPhrase: string): void
 
 }
+const { t } = useI18n({ useScope: 'global' })
+
 const page = ref(1)
 const selectedItemsLocal = ref<number[]>([])
 const searchResult = reactive<ISimpleSelectableDTO<number>[]>([])
@@ -54,7 +56,7 @@ const selectionStrategy = computed(() => {
 const { execute: fetchData, isFetching: loadingdata, data: searchResultFirst, onFetchResponse, onFetchError } = useApi<GridResult<ISimpleSelectableDTO<number>>>(createUrl(props.apiUrl ?? '', {
   query: {
     filter: searchPhrase,
-    page,
+    PageSize: 1000,
   },
 }), {
   refetch: false,
@@ -71,7 +73,7 @@ onFetchResponse(response => {
 })
 
 onFetchError(() => {
-  emit('errorHasOccured', 'probleminGetInformation')
+  emit('errorHasOccured', t('alert.probleminGetInformation'))
 })
 
 const onReset = () => {

@@ -740,6 +740,7 @@ const treeViewStyle = computed(() => ({
         <MCSearchApiTree
           v-model:selected-items="searchResultSelectedNodes"
           auto-focus :max-height="200" :api-url="`app/node/simple?treeid=${currentTreeId}`" :selection-type="SelectionType.Single" class="pt-1"
+          @error-has-occured="toast.error"
         />
         <VDivider thickness="2" color="primary" />
       </div>
