@@ -52,7 +52,7 @@ const editfootnote = () => {
 </script>
 
 <template>
-  <div class="d-flex flex-grow-1 flex-shrink-0 pb-0">
+  <div class="d-flex flex-grow-1 pb-0">
     <!--
       <VChip
       v-if="!(props.editing ?? false)"
@@ -62,9 +62,14 @@ const editfootnote = () => {
       >
       </VChip>
     -->
-    <div v-if="!(props.editing ?? false)">
-      <span class="footenote-index">{{ props.order }} -</span>
-      <span class="no-select foot-note" @dblclick="editfootnote">{{ props.text }}</span>
+    <div v-if="!(props.editing ?? false)" class="d-flex align-center w-100">
+      <div class="px-1">
+        <span class="footenote-index">{{ props.order }} -</span>
+        <span class="no-select foot-note" @dblclick="editfootnote">{{ props.text }}</span>
+      </div>
+      <VBtn icon size="small" variant="text" @click.left="editfootnote">
+        <VIcon icon="tabler-edit" size="16" />
+      </VBtn>
       <VBtn icon size="small" variant="text" @click.left="deletefootnote">
         <VIcon icon="tabler-trash" color="error" size="16" />
       </VBtn>
@@ -78,7 +83,7 @@ const editfootnote = () => {
       width="100%"
       @keydown.enter="
         acceptfootnote($event)"
-      @keydown.esc="deletefootnote"
+      @keydown.esc="footnoteText.length > 0 ? iseditMode = false : deletefootnote()"
       @blur="iseditMode = false
       "
     />

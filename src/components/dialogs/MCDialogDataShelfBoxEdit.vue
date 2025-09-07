@@ -22,6 +22,7 @@ const tempdataItem = reactive<IDataShelfBoxView>(new DataShelfBoxModelView())
 const footNotes = reactive<IFootNote[]>([])
 const opening = shallowRef(false)
 const dialogSupervisionHistory = shallowRef(false)
+const dialogCitation = ref()
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
   (e: 'updatedataboxItem', databoxItem: IDataShelfBoxView): void
@@ -158,6 +159,20 @@ const addFootnote = () => {
   }
 }
 
+const deletefootnote = (footnoteId: string) => {
+  if (editor.value) {
+    const removedsup = editor.value.querySelector(`sup[footnote-id="${footnoteId}"]`)
+
+    if (removedsup != null) {
+      const parent = removedsup.parentNode // والد را پیدا کنید
+
+      parent?.removeChild(removedsup)
+    }
+    footNotes.splice(footNotes.findIndex(item => item.id === footnoteId), 1)
+    refreshfootnote()
+  }
+}
+
 const startInsertBookCitation = () => {
   if (!canFootnoteAction())
     return
@@ -196,20 +211,6 @@ const footnoteSort = computed(() => {
   return footNotes.sort((a, b) => a.order - b.order)
 })
 
-const deletefootnote = (footnoteId: string) => {
-  if (editor.value) {
-    const removedsup = editor.value.querySelector(`sup[footnote-id="${footnoteId}"]`)
-
-    if (removedsup != null) {
-      const parent = removedsup.parentNode // والد را پیدا کنید
-
-      parent?.removeChild(removedsup)
-    }
-    footNotes.splice(footNotes.findIndex(item => item.id === footnoteId), 1)
-    refreshfootnote()
-  }
-}
-
 function handlepasteaction(event: ClipboardEvent) {
   event.preventDefault()
 
@@ -238,6 +239,10 @@ function checkForRemovedFootnotes() {
     })
   }
 }
+function editfootnote(isediting: boolean, footnote: IFootNote) {
+  if (isediting && footnote.isReference)
+    dialogCitation.value.editCitation(footnote.reference)
+}
 
 // defineExpose({ updateGate })
 </script>
@@ -264,7 +269,7 @@ function checkForRemovedFootnotes() {
           <MCDataBoxEditableFootnote
             v-for="(footnote, i) in footnoteSort" :id="footnote.id" :key="footnote.id" v-model:editing="footnote.editing"
             v-model:text="footnote.title"
-            :index="i + 1" :order="i + 1" @deletefootnote="deletefootnote"
+            :index="i + 1" :order="i + 1" @deletefootnote="deletefootnote" @update:editing="(editing) => editfootnote(editing, footnote)"
           />
         </div>
         <VDivider />
@@ -297,7 +302,8 @@ function checkForRemovedFootnotes() {
       </VCardText>
     </VCard>
     <MCDialogAddCitation
-      v-if="dialogSupervisionHistory" v-model:is-dialog-visible="dialogSupervisionHistory"
+      v-if="dialogSupervisionHistory"
+      ref="dialogCitation" v-model:is-dialog-visible="dialogSupervisionHistory"
       @error-has-occured="emits('handlemessage', $event, MessageType.error)" @citationcreated="finishInsertBookCitation"
     />
     <!-- </PerfectScrollbar> -->

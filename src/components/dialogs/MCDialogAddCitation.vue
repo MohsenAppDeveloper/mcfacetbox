@@ -25,6 +25,10 @@ const onSubmit = () => {
   })
 }
 
+function editCitation(citation: IReference) {
+  bookcitation.value = citation
+}
+defineExpose({ editCitation })
 onMounted(async () => {
 //   try {
 //     opening.value = true

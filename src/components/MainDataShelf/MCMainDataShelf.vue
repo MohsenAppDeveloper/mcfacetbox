@@ -230,6 +230,7 @@ async function refreshDataShelf(changescroll: boolean) {
     const resultCastedData = data.value as GridResultFacet<IDataShelfBoxView>
 
     resetData()
+    listHasFilter.value = resultCastedData.hasFilter
     totalItems.value = resultCastedData.totalCount
 
     if (resultCastedData.items.length > 0 || resultCastedData.facets.length > 0) {
@@ -506,7 +507,7 @@ function unlinkdatabox(unlinkdata: UnlinkDataModel) {
                 {{ $t('refresh') }}
               </VTooltip>
             </VBtn>
-            <div v-if="selectAll.count === 1 && listHasFilter" :disabled="!can('Move', 'Excerpt')" class="border-thin rounded d-flex align-center">
+            <div v-if="selectAll.count === 1 && !listHasFilter" :disabled="!can('Move', 'Excerpt')" class="border-thin rounded d-flex align-center">
               <VBtn ref="decreasebtn" icon size="25" variant="text" @click="decreaseOrder">
                 <VIcon icon="tabler-arrow-up" size="22" />
                 <VTooltip
