@@ -10,23 +10,25 @@ const emit = defineEmits<Emit>()
 
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'citationcreated', citation: IReference | null): void
+  (e: 'citationcreated', citation: IReference | null, footnoteid: string): void
 
 }
 
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
 const bookcitation = ref<IReference>(new BookReferenceModel())
+const footNoteId = ref('')
 
 const onSubmit = () => {
   refForm.value?.validate().then(({ valid }) => {
     if (valid)
-      emit('citationcreated', bookcitation.value)
+      emit('citationcreated', bookcitation.value, footNoteId.value)
   })
 }
 
-function editCitation(citation: IReference) {
+function editCitation(citation: IReference, footnoteid: string) {
   bookcitation.value = citation
+  footNoteId.value = footnoteid
 }
 defineExpose({ editCitation })
 onMounted(async () => {
@@ -48,10 +50,10 @@ onMounted(async () => {
 <template>
   <VDialog
     v-if="props.isDialogVisible" :width="$vuetify.display.smAndDown ? 'auto' : 900" :model-value="props.isDialogVisible"
-    persistent @update:model-value="$emit('citationcreated', null)"
+    persistent @update:model-value="$emit('citationcreated', null, '')"
   >
     <!-- 👉 Dialog close btn -->
-    <DialogCloseBtn @click="emit('citationcreated', null)" />
+    <DialogCloseBtn @click="emit('citationcreated', null, '')" />
     <!-- <PerfectScrollbar :options="{ wheelPropagation: false }"> -->
     <VCard flat :title="$t('user.addedit')" :subtitle="$t('user.addeditsubtitle')" class="pa-1">
       <VCardText>
@@ -122,7 +124,7 @@ onMounted(async () => {
                   {{ $t('accept') }}
                 </span>
               </VBtn>
-              <VBtn type="reset" variant="tonal" color="error" @click="emit('citationcreated', null)">
+              <VBtn type="reset" variant="tonal" color="error" @click="emit('citationcreated', null, '')">
                 {{ $t('cancel') }}
               </VBtn>
             </VCol>

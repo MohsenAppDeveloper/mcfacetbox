@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { v4 as uuidV4 } from 'uuid'
+import { VDialog } from 'vuetify/lib/components/index.mjs'
 import MCDialogAddCitation from './MCDialogAddCitation.vue'
 import { DataShelfBoxModelNew, DataShelfBoxModelView } from '@/types/dataShelf'
 import type { IDataShelfBoxView, IFootNote } from '@/types/dataShelf'
@@ -21,8 +22,8 @@ const { t } = useI18n({ useScope: 'global' })
 const tempdataItem = reactive<IDataShelfBoxView>(new DataShelfBoxModelView())
 const footNotes = reactive<IFootNote[]>([])
 const opening = shallowRef(false)
-const dialogSupervisionHistory = shallowRef(false)
-const dialogCitation = ref()
+const dialogAddCitationVisible = shallowRef(false)
+const dialogCitation = ref(VDialog)
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
   (e: 'updatedataboxItem', databoxItem: IDataShelfBoxView): void
@@ -64,8 +65,6 @@ async function getDataBoxItem() {
     opening.value = false
   }
   catch (error) {
-    console.log('error', error)
-
     opening.value = false
     if (error instanceof CustomFetchError && error.code !== '0')
       emits('handlemessage', error.message, MessageType.error)
@@ -191,18 +190,18 @@ const startInsertBookCitation = () => {
   range?.insertNode(sup) // افزودن <sup> به محتوای div
   footNotes.push({ title: '', id: uuid.toString(), editing: true, order: footNotes.length + 1, isReference: true })
   refreshfootnote()
-  dialogSupervisionHistory.value = true
+  dialogAddCitationVisible.value = true
 }
 
-const finishInsertBookCitation = (citation: IReference | null) => {
-  dialogSupervisionHistory.value = false
+const finishInsertBookCitation = (citation: IReference | null, footnoteid: string) => {
+  dialogAddCitationVisible.value = false
 
-  const footnoteindex = footNotes.findIndex(item => item.title === '' && item.isReference)
-  if (!citation)
-    deletefootnote(footNotes[footnoteindex].id)
-
-  else
-    footNotes[footnoteindex] = { id: footNotes[footnoteindex].id, editing: false, isReference: true, order: footNotes[footnoteindex].order, title: generateFootnoteRefrence(citation), reference: citation }
+  const footnoteindex = footNotes.findIndex(item => (item.title === '' && item.isReference) || item.id === footnoteid)
+  if (!citation) {
+    if (footnoteindex > 0)
+      deletefootnote(footNotes[footnoteindex].id)
+  }
+  else { footNotes[footnoteindex] = { id: footNotes[footnoteindex].id, editing: false, isReference: true, order: footNotes[footnoteindex].order, title: generateFootnoteRefrence(citation), reference: citation } }
 
   refreshfootnote()
 }
@@ -240,8 +239,16 @@ function checkForRemovedFootnotes() {
   }
 }
 function editfootnote(isediting: boolean, footnote: IFootNote) {
-  if (isediting && footnote.isReference)
-    dialogCitation.value.editCitation(footnote.reference)
+  if (isediting) {
+    if (footnote.isReference) {
+      dialogAddCitationVisible.value = true
+
+      nextTick(() => {
+        dialogCitation.value.editCitation(footnote.reference, footnote.id)
+      })
+    }
+    else { footnote.editing = true }
+  }
 }
 
 // defineExpose({ updateGate })
@@ -267,8 +274,8 @@ function editfootnote(isediting: boolean, footnote: IFootNote) {
         />
         <div class="d-flex pb-2 flex-column">
           <MCDataBoxEditableFootnote
-            v-for="(footnote, i) in footnoteSort" :id="footnote.id" :key="footnote.id" v-model:editing="footnote.editing"
-            v-model:text="footnote.title"
+            v-for="(footnote, i) in footnoteSort" :id="footnote.id" :key="footnote.id" v-model:editing="footnote.editing" v-model:text="footnote.title"
+            :isrefrence="footnote.isReference"
             :index="i + 1" :order="i + 1" @deletefootnote="deletefootnote" @update:editing="(editing) => editfootnote(editing, footnote)"
           />
         </div>
@@ -302,8 +309,8 @@ function editfootnote(isediting: boolean, footnote: IFootNote) {
       </VCardText>
     </VCard>
     <MCDialogAddCitation
-      v-if="dialogSupervisionHistory"
-      ref="dialogCitation" v-model:is-dialog-visible="dialogSupervisionHistory"
+      v-if="dialogAddCitationVisible"
+      ref="dialogCitation" v-model:is-dialog-visible="dialogAddCitationVisible"
       @error-has-occured="emits('handlemessage', $event, MessageType.error)" @citationcreated="finishInsertBookCitation"
     />
     <!-- </PerfectScrollbar> -->

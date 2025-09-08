@@ -34,7 +34,7 @@ export const can = (action: Actions | undefined, subject: Subjects | undefined) 
 export const canViewNavMenuGroup = (item: NavGroup) => {
   const hasAnyVisibleChild = item.children.some(i => can(i.action, i.subject) || (isUndefined(i.action) && isUndefined(i.subject)))
 
-  console.log('menuability', hasAnyVisibleChild, can(item.action, item.subject), item)
+  //   console.log('menuability', hasAnyVisibleChild, can(item.action, item.subject), item)
 
   // If subject and action is defined in item => Return based on children visibility (Hide group if no child is visible)
   // Else check for ability using provided subject and action along with checking if has any visible child

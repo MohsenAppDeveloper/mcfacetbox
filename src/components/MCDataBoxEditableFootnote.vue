@@ -7,6 +7,7 @@ interface Props {
   index: number
   id: string
   order: number
+  isrefrence: boolean
 }
 interface Emit {
   (e: 'update:text', text: string): void
@@ -17,7 +18,7 @@ interface Emit {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
-const iseditMode = ref(true)
+const iseditMode = ref(false)
 const footnoteeditor = ref()
 const footnoteText = ref('')
 
@@ -33,6 +34,10 @@ watch(iseditMode, () => {
 // watch(() => props.editing, () => {
 //   console.log('editing', props)
 // })
+onMounted(() => {
+  footnoteText.value = props.text
+})
+
 const deletefootnote = () => {
   emit('deletefootnote', props.id)
 }
@@ -62,20 +67,8 @@ const editfootnote = () => {
       >
       </VChip>
     -->
-    <div v-if="!(props.editing ?? false)" class="d-flex align-center w-100">
-      <div class="px-1">
-        <span class="footenote-index">{{ props.order }} -</span>
-        <span class="no-select foot-note" @dblclick="editfootnote">{{ props.text }}</span>
-      </div>
-      <VBtn icon size="small" variant="text" @click.left="editfootnote">
-        <VIcon icon="tabler-edit" size="16" />
-      </VBtn>
-      <VBtn icon size="small" variant="text" @click.left="deletefootnote">
-        <VIcon icon="tabler-trash" color="error" size="16" />
-      </VBtn>
-    </div>
     <VTextarea
-      v-else
+      v-if="props.editing && !props.isrefrence"
       :ref="footnoteeditor" v-model="footnoteText" auto-grow
       :rows="1"
       autofocus
@@ -87,5 +80,17 @@ const editfootnote = () => {
       @blur="iseditMode = false
       "
     />
+    <div v-else class="d-flex align-center w-100">
+      <div class="px-1">
+        <span class="footenote-index">{{ props.order }} -</span>
+        <span class="no-select foot-note" @dblclick="editfootnote">{{ props.text }}</span>
+      </div>
+      <VBtn icon size="small" variant="text" @click.left="editfootnote">
+        <VIcon icon="tabler-edit" size="16" />
+      </VBtn>
+      <VBtn icon size="small" variant="text" @click.left="deletefootnote">
+        <VIcon icon="tabler-trash" color="error" size="16" />
+      </VBtn>
+    </div>
   </div>
 </template>
