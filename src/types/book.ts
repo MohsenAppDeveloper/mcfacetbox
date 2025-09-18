@@ -67,8 +67,8 @@ export class SelectableBookInfo implements ISelectable, IBookInfo {
 
 export class BookSearchRequestModel implements Record<string, any> {
   [x: string]: any;
-  specialId: string = '399'
-  specialIndex: number = 18
+  'sp.display_type': string = 'tiles'
+  'sp.special_ids': number = 399
   language: string = 'fa'
   page_size: number = 10
   page_number: number = 1

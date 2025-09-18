@@ -39,13 +39,13 @@ const resetBookSearchModel = () => {
   bookSearchModel.sort = 'title-asc'
   bookSearchModel.origin = 'noorlib.web.app'
   bookSearchModel.query = ''
-  bookSearchModel.specialId = '399'
-  bookSearchModel.specialIndex = 18
+  bookSearchModel['sp.special_ids'] = 399
+  bookSearchModel['sp.display_type'] = 'tiles'
 
   // Clear dynamic properties
   for (const key in bookSearchModel) {
     // Check if it's a property added to the instance
-    if (!['language', 'page_size', 'page_number', 'sort', 'origin', 'query', 'specialId', 'specialIndex'].includes(key))
+    if (!['language', 'page_size', 'page_number', 'sort', 'origin', 'query', 'sp.special_ids', 'sp.display_type'].includes(key))
       delete bookSearchModel[key]
   }
 }
