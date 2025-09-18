@@ -43,6 +43,7 @@ const deletefootnote = () => {
 }
 
 const acceptfootnote = (event: KeyboardEvent) => {
+  iseditMode.value = true
   iseditMode.value = false
   event.preventDefault()
 }
