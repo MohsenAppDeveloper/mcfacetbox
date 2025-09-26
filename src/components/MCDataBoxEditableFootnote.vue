@@ -18,7 +18,7 @@ interface Emit {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
-const iseditMode = ref(false)
+const iseditMode = ref(props.editing)
 const footnoteeditor = ref()
 const footnoteText = ref('')
 
@@ -43,9 +43,16 @@ const deletefootnote = () => {
 }
 
 const acceptfootnote = (event: KeyboardEvent) => {
-  iseditMode.value = true
   iseditMode.value = false
   event.preventDefault()
+}
+
+const cancelAction = () => {
+  if (footnoteText.value.length > 0 && props.text.length > 0) {
+    iseditMode.value = false
+    footnoteText.value = props.text
+  }
+  else { deletefootnote() }
 }
 
 const editfootnote = () => {
@@ -77,7 +84,7 @@ const editfootnote = () => {
       width="100%"
       @keydown.enter="
         acceptfootnote($event)"
-      @keydown.esc="footnoteText.length > 0 ? iseditMode = false : deletefootnote()"
+      @keydown.esc="cancelAction"
       @blur="iseditMode = false
       "
     />
