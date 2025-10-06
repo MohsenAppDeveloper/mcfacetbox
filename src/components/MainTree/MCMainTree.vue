@@ -71,17 +71,24 @@ const { lastShortcutTriggered } = useShortcutManager()
 const { rules, can } = useAbility()
 
 // نمایش Tooltip هنگام کلیک
-const showNodeTooltip = (event: MouseEvent, item: ISimpleNestedNodeActionable) => {
-  activeTooltipPath.value = getNodePath(item, '')
-  setTimeout(() => {
-    if (!activatedNode.value.includes(item.id))
-      activatedNode.value = [item.id]
-    dialogDescriptionVisible.value = true
-  }, 500)
+const showNodeTooltip = (item: number[]) => {
+  console.log('activatednode:', item[0])
+
+  const tempItem = treeIndex[activatedNode.value[0]]
+
+  nextTick(() => {
+    activeTooltipPath.value = getNodePath(tempItem, '')
+    if (activatedNode.value.includes(tempItem.id))
+      dialogDescriptionVisible.value = true
+  })
 }
 
 const { height: searchBoxHeight } = useElementSize(searchbox)
 
+// watch(activatedNode, () => {
+//   dialogDescriptionVisible.value = false
+//   showNodeTooltip(activatedNode.value)
+// })
 watch(treeNodeIdMustBeSelect, newval => {
   if (newval > 0) {
     selectTreeNode({ id: newval, parentId: 0, priority: 0, title: '' })
@@ -819,7 +826,7 @@ const treeViewStyle = computed(() => ({
                 <!-- <span>{{ item.title }}</span> -->
               </VCol>
               <VCol cols="1" class="tree-node">
-                <div style="width: 100%;cursor: pointer;" v-bind="props" @click="showNodeTooltip($event, item)">
+                <div style="width: 100%;" v-bind="props">
                   {{ item.children?.length ?? 0 }}
                 </div>
               </VCol>
@@ -843,7 +850,7 @@ const treeViewStyle = computed(() => ({
     </VBtn>
     <MCDialogDescription
       v-if="dialogDescriptionVisible" v-model:is-dialog-visible="dialogDescriptionVisible" :description="activeTooltipPath"
-      :loc-x="cursorX" :loc-y="cursorY"
+      :loc-x="cursorX" :loc-y="cursorY + 50"
     />
     <MCDialogTreeNodeStats v-if="dialogTreeNodeStats" v-model:is-dialog-visible="dialogTreeNodeStats" :serviceurl="`app/node?TreeId=${currentTreeId}`" />
   </div>

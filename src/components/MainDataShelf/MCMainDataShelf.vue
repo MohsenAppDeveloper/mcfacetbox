@@ -570,7 +570,7 @@ function unlinkdatabox(unlinkdata: UnlinkDataModel) {
                   :next-item-order="i + 1"
                   :prev-item-priority="i > 0 ? resultdataItemsSort[i - 1].priority : -1"
                   :next-item-priority="i < resultdataItemsSort.length - 1 ? resultdataItemsSort[i + 1].priority : -1"
-                  :next-item-has-link="i < resultdataItemsSort.length - 1 ? (resultdataItemsSort[i + 1].linkId) : false"
+                  :next-item-has-link="i < resultdataItemsSort.length - 1 ? (resultdataItemsSort[i + 1].linkId ? true : false) : false"
                   @selectedchanged="checkSelectAllState" @orderchanged="databoxOrderChanged" @handlemessage="handleDataBoxMessages" @refreshdatashelf="refreshDataShelf(true)"
                   @showrelateddata="showrelatedData" @linkdatabox="linkdatabox" @unlinkdatabox="unlinkdatabox"
                 />
