@@ -154,10 +154,12 @@ function checkTreeRoute(deselectAll: boolean) {
     return
   }
   if (currentTreeId.value === routerTreeId.value) {
-    if (selectedNode.id !== 0)
+    if (selectedNode.id !== 0 && treeIndex[selectedNode.id])
       treeIndex[selectedNode.id].selected = false
     else if (deselectAll)
       deselectAllTreeNodes()
+    console.log('routernodeid', routerNodeId.value)
+
     if (routerNodeId.value === 0) {
       selectNode(treeIndex[-currentTreeId.value])
       gotoNode(useToNumber(-currentTreeId.value).value)
