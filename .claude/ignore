@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.yarn/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+.vite/
+.output/
+
+# Cache and temporary files
+.cache/
+.temp/
+.tmp/
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# Environment files with secrets
+.env.local
+.env.*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc
+.git/

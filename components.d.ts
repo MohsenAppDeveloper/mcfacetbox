@@ -384,6 +384,7 @@ declare module 'vue' {
     MCMainDataCollection: typeof import('./src/components/MainDataCollection/MCMainDataCollection.vue')['default']
     MCMainDataShelf: typeof import('./src/components/MainDataShelf/MCMainDataShelf.vue')['default']
     MCMainTree: typeof import('./src/components/MainTree/MCMainTree.vue')['default']
+    MCMainTreeV2: typeof import('./src/components/MainTree/MCMainTreeV2.vue')['default']
     MCNotify: typeof import('./src/components/notify/MCNotify.vue')['default']
     MCPreviewTreeNode: typeof import('./src/components/MCPreviewTreeNode.vue')['default']
     MCSearchApiAutoComplete: typeof import('./src/components/MCSearchApiAutoComplete.vue')['default']
@@ -406,6 +407,5 @@ declare module 'vue' {
     TimelineOutlined: typeof import('./src/views/demos/components/timeline/TimelineOutlined.vue')['default']
     TimelineWithIcons: typeof import('./src/views/demos/components/timeline/TimelineWithIcons.vue')['default']
     TiptapEditor: typeof import('./src/@core/components/TiptapEditor.vue')['default']
-    VueApexCharts: typeof import('vue3-apexcharts')['default']
   }
 }

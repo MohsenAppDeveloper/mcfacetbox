@@ -1,0 +1,24 @@
+{
+  "$schema": "https://claude.com/schemas/config.json",
+  "project": {
+    "name": "Encyclopedia Frontend",
+    "type": "vue",
+    "description": "Vue 3 + Vuetify Encyclopedia Application"
+  },
+  "preferences": {
+    "autoCommit": false,
+    "verbose": false,
+    "language": "typescript"
+  },
+  "build": {
+    "command": "pnpm build",
+    "devCommand": "pnpm dev",
+    "testCommand": "pnpm typecheck"
+  },
+  "paths": {
+    "src": "src",
+    "components": "src/components",
+    "views": "src/views",
+    "utils": "src/utils"
+  }
+}

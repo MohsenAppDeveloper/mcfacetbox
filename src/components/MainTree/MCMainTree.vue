@@ -85,6 +85,49 @@ const showNodeTooltip = (item: number[]) => {
 
 const { height: searchBoxHeight } = useElementSize(searchbox)
 
+// حداکثر تعداد نودهای باز مجاز (برای بهینه‌سازی عملکرد)
+const MAX_OPEN_NODES = 100
+
+// تابع بارگذاری فرزندان از treeIndex
+const loadChildren = (item: any): Promise<void> => {
+  return new Promise<void>((resolve) => {
+    const nodeInIndex = treeIndex[item.id]
+
+    if (nodeInIndex?.children?.length > 0) {
+      // فرزندان را از treeIndex برمی‌گردانیم و برای هر کدام یک کپی ایجاد می‌کنیم
+      const children = nodeInIndex.children.map((child: ISimpleNestedNodeActionable) => {
+        const childCopy = useCloned(treeIndex[child.id]).cloned.value
+        const hasGrandchildren = childCopy.children?.length > 0
+        childCopy.children = hasGrandchildren ? [] : undefined
+        return childCopy
+      })
+
+      item.children = children
+
+      // محدود کردن تعداد نودهای باز برای جلوگیری از کندی
+      if (openedNode.value.length > MAX_OPEN_NODES) {
+        // حذف قدیمی‌ترین نودهای باز (به جز والدین نود فعلی)
+        const currentNodeParents = new Set<number>()
+        let tempNode = treeIndex[item.id]
+        while (tempNode?.parentId) {
+          currentNodeParents.add(tempNode.parentId)
+          tempNode = treeIndex[tempNode.parentId]
+        }
+
+        // نگه داشتن فقط MAX_OPEN_NODES نود جدید و والدین نود فعلی
+        const nodesToKeep = openedNode.value.filter(id =>
+          currentNodeParents.has(id) || openedNode.value.indexOf(id) >= openedNode.value.length - MAX_OPEN_NODES
+        )
+        openedNode.value = nodesToKeep
+      }
+    } else {
+      item.children = []
+    }
+
+    resolve()
+  })
+}
+
 // watch(activatedNode, () => {
 //   dialogDescriptionVisible.value = false
 //   showNodeTooltip(activatedNode.value)
@@ -287,15 +330,35 @@ function handleEditableNodeKeydown(event: KeyboardEvent, item: ISimpleNestedNode
       break;
   }
 }
-function gotoNode(nodeId: number, mustSelectNode: boolean = true) {
-  if (nodeId > 0) {
+async function gotoNode(nodeId: number, mustSelectNode: boolean = true) {
+  if (nodeId > 0 && treeIndex[nodeId]) {
     treeIndex[nodeId].selected = mustSelectNode
-    openParents(treeData, nodeId)
-    nextTick(() => {
-      const activeNode = document.querySelector('.tree-view-scroll .v-list .v-list-item--active')
-      if (activeNode)
-        activeNode.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    })
+
+    // برای lazy loading، ابتدا باید تمام والدین را از treeIndex پیدا کنیم
+    const parentIds: number[] = []
+    let currentNode = treeIndex[nodeId]
+    while (currentNode && currentNode.parentId && currentNode.parentId > 0 && treeIndex[currentNode.parentId]) {
+      parentIds.unshift(currentNode.parentId)
+      currentNode = treeIndex[currentNode.parentId]
+    }
+
+    // والدین را به ترتیب باز می‌کنیم تا فرزندان بارگذاری شوند
+    for (const parentId of parentIds) {
+      if (!openedNode.value.includes(parentId)) {
+        openedNode.value.push(parentId)
+        // کمی صبر می‌کنیم تا loadChildren اجرا شود
+        await nextTick()
+      }
+    }
+
+    // حالا نود را فعال می‌کنیم
+    activatedNode.value = [nodeId]
+
+    // و اسکرول می‌کنیم
+    await nextTick()
+    const activeNode = document.querySelector('.tree-view-scroll .v-list .v-list-item--active')
+    if (activeNode)
+      activeNode.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 }
 
@@ -492,10 +555,21 @@ const refreshTree = async () => {
     if (!data.value.nodes || data.value.nodes <= 0)
       return
 
-    treeData.push(...data.value.nodes)
-    updateTreeIndex(treeData)
+    // ابتدا treeIndex را با تمام نودها پر می‌کنیم
+    updateTreeIndex(data.value.nodes)
 
-    // console.log('loadtree')
+    // سپس فقط نودهای ریشه را به treeData اضافه می‌کنیم
+    // از useCloned استفاده می‌کنیم تا رفرنس جدید ایجاد شود و treeIndex تغییر نکند
+    data.value.nodes.forEach((node: ISimpleNestedNodeActionable) => {
+      const nodeFromIndex = useCloned(treeIndex[node.id]).cloned.value
+      if (nodeFromIndex) {
+        // اگر فرزند دارد، یک آرایه خالی قرار می‌دهیم تا آیکون expand نمایش داده شود
+        const hasChildren = nodeFromIndex.children && nodeFromIndex.children.length > 0
+        nodeFromIndex.children = hasChildren ? [] : undefined
+        treeData.push(nodeFromIndex)
+      }
+    })
+
     checkTreeRoute(false)
   }
   catch (error) {
@@ -760,7 +834,7 @@ const treeViewStyle = computed(() => ({
       <VTreeview
         ref="treeview" v-model:activated="activatedNode" v-model:opened="openedNode"
         activatable :items="treeData" expand-icon="mdi-menu-left" item-value="id"
-        item-title="title" density="compact" :lines="false" @keydown="handleTreeViewKeydown"
+        item-title="title" density="compact" :lines="false" :load-children="loadChildren" @keydown="handleTreeViewKeydown"
       >
         <template #title="{ item }">
           <div
