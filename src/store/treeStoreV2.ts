@@ -1,38 +1,38 @@
 import { computed, markRaw, shallowReactive } from 'vue'
 import { defineStore } from 'pinia'
-import type { ISimpleNestedNodeActionable, ITree } from '@/types/tree'
+import type { ISimpleFlatNodeActionable, ISimpleNestedNodeActionable, ITree } from '@/types/tree'
 import { NodeType } from '@/types/tree'
 
 // Flat node structure - no nested children
-interface FlatNode {
-  id: number
-  parentId: number | null
-  title: string
-  priority: number
-  hasDescription: boolean
-  relationCount: number
-  referenceCount: number
-  selected?: boolean
-  editing?: boolean
-  loading?: boolean
-  failed?: boolean
-  tempData?: string
-}
+// interface FlatNode {
+//   id: number
+//   parentId: number | null
+//   title: string
+//   priority: number
+//   hasDescription: boolean
+//   relationCount: number
+//   referenceCount: number
+//   selected?: boolean
+//   editing?: boolean
+//   loading?: boolean
+//   failed?: boolean
+//   tempData?: string
+// }
 
 // Display node structure for VTreeview
-interface DisplayNode {
-  id: number
-  title: string
-  hasDescription: boolean
-  relationCount: number
-  referenceCount: number
-  selected?: boolean
-  editing?: boolean
-  loading?: boolean
-  failed?: boolean
-  tempData?: string
-  children?: DisplayNode[] | undefined
-}
+// interface DisplayNode {
+//   id: number
+//   title: string
+//   hasDescription: boolean
+//   relationCount: number
+//   referenceCount: number
+//   selected?: boolean
+//   editing?: boolean
+//   loading?: boolean
+//   failed?: boolean
+//   tempData?: string
+//   children?: DisplayNode[] | undefined
+// }
 
 export const useTreeStoreV2 = defineStore('treeV2', () => {
   // ============================================
@@ -40,7 +40,7 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
   // ============================================
 
   // Flat storage: Map for O(1) access
-  const nodes = shallowReactive<Map<number, FlatNode>>(new Map())
+  const nodes = shallowReactive<Map<number, ISimpleFlatNodeActionable>>(new Map())
 
   // Track expanded nodes for lazy loading
   const expandedNodes = shallowReactive<Set<number>>(new Set())
@@ -59,8 +59,8 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
   /**
    * Get children of a specific parent node
    */
-  const getChildren = (parentId: number | null): FlatNode[] => {
-    const children: FlatNode[] = []
+  const getChildren = (parentId: number | null): ISimpleFlatNodeActionable[] => {
+    const children: ISimpleFlatNodeActionable[] = []
 
     nodes.forEach(node => {
       if (node.parentId === parentId)
@@ -91,7 +91,7 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
   /**
    * Get a single node by ID
    */
-  const getNode = (nodeId: number): FlatNode | undefined => {
+  const getNode = (nodeId: number): ISimpleFlatNodeActionable | undefined => {
     return nodes.get(nodeId)
   }
 
@@ -143,14 +143,16 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
   /**
    * Build display tree for VTreeview (with lazy loading support)
    */
-  const buildDisplayNode = (nodeId: number): DisplayNode | null => {
+  const buildDisplayNode = (nodeId: number): ISimpleNestedNodeActionable | null => {
     const node = nodes.get(nodeId)
     if (!node)
       return null
 
     return {
       id: node.id,
+      parentId: node.parentId,
       title: node.title,
+      priority: node.priority,
       hasDescription: node.hasDescription,
       relationCount: node.relationCount,
       referenceCount: node.referenceCount,
@@ -168,16 +170,16 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
   /**
    * Build tree structure for display (only root level initially)
    */
-  const treeData = computed<DisplayNode[]>(() => {
+  const treeData = computed<ISimpleNestedNodeActionable[]>(() => {
     return rootNodes.value
       .map(node => buildDisplayNode(node.id))
-      .filter((node): node is DisplayNode => node !== null)
+      .filter((node): node is ISimpleNestedNodeActionable => node !== null)
   })
 
   /**
    * Get currently selected node
    */
-  const selectedNode = computed<FlatNode | null>(() => {
+  const selectedNode = computed<ISimpleFlatNodeActionable | null>(() => {
     if (selectedNodeId.value <= 0)
       return null
 
@@ -208,7 +210,7 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
     ) => {
       nodeArray.forEach(node => {
         // Create flat node (immutable)
-        const flatNode: FlatNode = markRaw({
+        const flatNode: ISimpleFlatNodeActionable = markRaw({
           id: node.id,
           parentId,
           title: node.title,
@@ -228,19 +230,23 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
 
     if (data.nodes && data.nodes.length > 0)
       flattenTree(data.nodes)
+
+    console.log('Loaded tree with', nodes.size, 'nodes')
+    console.log('nodes', nodes)
   }
 
   /**
    * Load children for lazy loading
    */
-  const loadChildrenForDisplay = (nodeId: number): DisplayNode[] => {
+  const loadChildrenForDisplay = (nodeId: number): ISimpleNestedNodeActionable[] => {
     const children = getChildren(nodeId)
 
+    console.log('children', children)
     expandedNodes.add(nodeId)
 
     return children
       .map(node => buildDisplayNode(node.id))
-      .filter((node): node is DisplayNode => node !== null)
+      .filter((node): node is ISimpleNestedNodeActionable => node !== null)
   }
 
   /**
@@ -261,8 +267,8 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
   /**
    * Create a new node
    */
-  const createNode = (nodeData: Partial<FlatNode> & { id: number; parentId: number | null; title: string }) => {
-    const newNode: FlatNode = markRaw({
+  const createNode = (nodeData: Partial<ISimpleFlatNodeActionable> & { id: number; parentId: number | null; title: string }) => {
+    const newNode: ISimpleFlatNodeActionable = markRaw({
       id: nodeData.id,
       parentId: nodeData.parentId,
       title: nodeData.title,
@@ -280,7 +286,7 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
   /**
    * Update node properties (immutable pattern for reactivity)
    */
-  const updateNode = (nodeId: number, updates: Partial<FlatNode>) => {
+  const updateNode = (nodeId: number, updates: Partial<ISimpleFlatNodeActionable>) => {
     const existingNode = nodes.get(nodeId)
     if (!existingNode)
       return false

@@ -118,7 +118,17 @@ export interface ISimpleNestedNodeActionable extends baseItemAction, baseItemSta
   id: number
   title: string
   children?: ISimpleNestedNodeActionable[] | null
-  parentId: number
+  parentId: number | null
+  priority: number
+  hasDescription?: boolean
+  relationCount?: number
+  referenceCount?: number
+}
+
+export interface ISimpleFlatNodeActionable extends baseItemAction, baseItemState {
+  id: number
+  title: string
+  parentId: number | null
   priority: number
   hasDescription?: boolean
   relationCount?: number
