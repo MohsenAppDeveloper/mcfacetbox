@@ -38,7 +38,11 @@ src/plugins/iconify/icons.css
 public/mockServiceWorker.js
 
 # Env files
+<<<<<<< HEAD
 #.env*
+=======
+# .env*
+>>>>>>> 8eb3276e237ceb7db5d7e4525d7db7edf7a31985
 !.env.example
 distrs.rar
 distum.rar

@@ -155,7 +155,7 @@ export class SimpleTreeModel implements ISimpleTree {
 export class QueryRequestModel implements Record<string, any> {
   [x: string]: any;
   PageSize: number = PageDefaultSize
-  PageNumber: number = 1
+  PageNumber: number = FirstPageDefaultNumber
   Sorting: string = ''
   Filter: string = ''
   TreeId: number = 0

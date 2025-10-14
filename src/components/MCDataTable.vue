@@ -3,6 +3,7 @@ import { useToast } from 'vue-toastification'
 import { VDataTableServer } from 'vuetify/lib/components/index.mjs'
 import { boolean } from 'zod'
 import type { GridResult, IRootServiceError, baseDataTableModel } from '@/types/baseModels'
+import { QueryRequestModel } from '@/types/baseModels'
 
 // const currentdate = ref('');
 
@@ -37,37 +38,18 @@ const searchQueryFinal = ref('')
 const selectedItem = ref<Array<number>>([])
 const highlightedItemIndex = ref(0)
 const datatableItems = ref<Array<baseDataTableModel>>([])
-
+const querymodel = reactive<QueryRequestModel>(new QueryRequestModel())
 const pageSize = ref(10)
 const pageNumber = ref(1)
-const sorting = ref()
+
+// const sorting = ref()
 const sortby = ref()
 
-const serverURL = computed(() => {
-  return createUrl(() => props.apiUrl, {
-    query: {
-      Filter: searchQueryFinal,
-      pageSize,
-      pageNumber,
-      sorting,
-      GateId: props.gateid,
-    },
-  })
+const serverURL = createUrl(() => props.apiUrl, {
+  query: querymodel,
 })
 
-// watch(pageSize, () => {
-//   console.log('pageSize', pageSize.value)
-// })
-// watch(pageNumber, () => {
-//   console.log('pageNumber', pageNumber.value)
-// })
-watch(sortby, () => {
-  if (sortby.value[0])
-    sorting.value = `${sortby.value[0].key} ${sortby.value[0].order}`
-  else sorting.value = ''
-})
-
-const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi(serverURL.value, { immediate: false, refetch: false })
+const { data: resultData, execute: fetchData, isFetching: loadingdata, onFetchResponse, onFetchError } = useApi(serverURL, { immediate: false, refetch: false })
 
 setTimeout(async () => {
   if (props.autostart)
@@ -76,11 +58,33 @@ setTimeout(async () => {
 
 const datatable = ref(VDataTableServer)
 
+watch(querymodel, async newval => {
+  await fetchData()
+})
+watch(pageSize, async () => {
+  if (pageSize.value !== querymodel.PageSize)
+    querymodel.PageSize = pageSize.value
+
+  // await fetchData()
+})
+watch(pageNumber, async () => {
+  if (pageNumber.value !== querymodel.PageNumber)
+    querymodel.PageNumber = pageNumber.value
+
+  // await fetchData()
+})
+watch(sortby, async () => {
+  if (sortby.value[0])
+    querymodel.Sorting = `${sortby.value[0].key} ${sortby.value[0].order}`
+  else querymodel.Sorting = ''
+
+//   await fetchData()
+})
 watch(searchQuery, () => {
-  if (searchQuery.value.length > 2 || searchQuery.value.length === 0) {
+  if ((searchQuery.value.length > 2 || searchQuery.value.length === 0) && (querymodel.Filter !== searchQuery.value)) {
     setTimeout(() => {
-      searchQueryFinal.value = searchQuery.value
-    }, 2000)
+      querymodel.Filter = searchQuery.value
+    }, 1000)
   }
 })
 onFetchResponse(() => {
@@ -127,10 +131,11 @@ const searchLabelDefault = computed(() => {
 })
 
 const refreshData = async () => {
-  if (pageSize.value !== props.defaultPageSize)
+  if (pageSize.value !== props.defaultPageSize) {
+    querymodel.PageSize = props.defaultPageSize
     pageSize.value = props.defaultPageSize
-  else
-    await fetchData(false)
+  }
+  else { await fetchData(false) }
 }
 
 const updateAction = (dataModel: Record<string, any>) => {

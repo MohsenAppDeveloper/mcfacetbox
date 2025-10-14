@@ -5,7 +5,6 @@ import ContextMenu from '@imengyu/vue3-context-menu'
 import { VDialog } from 'vuetify/lib/components/index.mjs'
 import MCLoading from '../MCLoading.vue'
 import MCDialogTransferNode from '../dialogs/MCDialogTransferNode.vue'
-import MCDialogTreePreview from '../dialogs/MCDialogTreePreview.vue'
 import MCDialogNodeRelationList from '../dialogs/MCDialogNodeRelationList.vue'
 import { type IRootServiceError, type ISimpleTree, MessageType, SizeType } from '@/types/baseModels'
 import { NodeRelationType, NodeType, SimpleNestedNodeAcionableModel, createTreeIndex, getNodeTypeNameSpace } from '@/types/tree'
@@ -31,9 +30,9 @@ const treeview = ref()
 const { t } = useI18n({ useScope: 'global' })
 const toast = useToast()
 
-const activatedNode = ref<number[]>([])
-const openedNode = ref<number[]>([])
-const isLoading = ref(false)
+const activatedNode = shallowRef<number[]>([])
+const openedNode = shallowRef<number[]>([])
+const isLoading = shallowRef(false)
 const searchbox = ref()
 const selectedTreeStore = useSelectedTree()
 const { treeData, treeIndex, selectNode, selectedNode, getNodePath, clearTreeData, deselectAllTreeNodes, deleteNode, transferNode, isLastNode } = useTree()
@@ -271,6 +270,7 @@ function nodeEditStart() {
     nodeTempTitleForEdit.value = treeIndex[activatedNode.value[0]].title
     treeIndex[activatedNode.value[0]].editing = true
     treeIndex[activatedNode.value[0]].tempData = useCloned(treeIndex[activatedNode.value[0]].title).cloned.value
+    console.log('nodediting', treeIndex[activatedNode.value[0]])
   }
 }
 function handleTreeViewKeydown(event: KeyboardEvent) {
@@ -346,6 +346,7 @@ async function gotoNode(nodeId: number, mustSelectNode: boolean = true) {
     for (const parentId of parentIds) {
       if (!openedNode.value.includes(parentId)) {
         openedNode.value.push(parentId)
+
         // کمی صبر می‌کنیم تا loadChildren اجرا شود
         await nextTick()
       }
@@ -356,6 +357,7 @@ async function gotoNode(nodeId: number, mustSelectNode: boolean = true) {
 
     // و اسکرول می‌کنیم
     await nextTick()
+
     const activeNode = document.querySelector('.tree-view-scroll .v-list .v-list-item--active')
     if (activeNode)
       activeNode.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -558,18 +560,38 @@ const refreshTree = async () => {
     // ابتدا treeIndex را با تمام نودها پر می‌کنیم
     updateTreeIndex(data.value.nodes)
 
+    console.log('treeIndex populated with', Object.keys(treeIndex).length, 'nodes')
+
     // سپس فقط نودهای ریشه را به treeData اضافه می‌کنیم
-    // از useCloned استفاده می‌کنیم تا رفرنس جدید ایجاد شود و treeIndex تغییر نکند
+    // باید از treeIndex استفاده کنیم تا رفرنس یکسان باشد
     data.value.nodes.forEach((node: ISimpleNestedNodeActionable) => {
       const nodeFromIndex = useCloned(treeIndex[node.id]).cloned.value
+
       if (nodeFromIndex) {
         // اگر فرزند دارد، یک آرایه خالی قرار می‌دهیم تا آیکون expand نمایش داده شود
         const hasChildren = nodeFromIndex.children && nodeFromIndex.children.length > 0
+
         nodeFromIndex.children = hasChildren ? [] : undefined
+
         treeData.push(nodeFromIndex)
+        console.log('Added root node:', nodeFromIndex.id, nodeFromIndex.title, 'hasChildren:', hasChildren)
       }
     })
 
+    console.log('treeData has', treeData.length, 'root nodes')
+
+    // updateTreeIndex(data.value.nodes)
+    // data.value.nodes.forEach(element => {
+    //   const result = useCloned(element as ISimpleNestedNodeActionable).cloned.value
+    //   if (result.children)
+    //     result.children = []
+
+    //   else
+    //     result.children = null
+    //   treeData.push(result)
+    // })
+
+    // console.log('loadtree')
     checkTreeRoute(false)
   }
   catch (error) {
@@ -580,6 +602,57 @@ const refreshTree = async () => {
   }
 
 //   await fetchData()
+}
+
+// حداکثر تعداد نودهای باز مجاز (برای بهینه‌سازی عملکرد)
+const MAX_OPEN_NODES = 5
+
+// تابع بارگذاری فرزندان از treeIndex
+const loadChildren = (item: any): Promise<void> => {
+  return new Promise<void>(resolve => {
+    const nodeInIndex = treeIndex[item.id]
+
+    if ((nodeInIndex?.children?.length ?? 0) > 0) {
+      // فرزندان را از treeIndex برمی‌گردانیم و برای هر کدام یک کپی ایجاد می‌کنیم
+      const children = nodeInIndex.children?.map((child: ISimpleNestedNodeActionable) => {
+        const childCopy = useCloned(treeIndex[child.id]).cloned.value
+        const hasGrandchildren = (childCopy.children?.length ?? 0) > 0
+
+        childCopy.children = hasGrandchildren ? [] : undefined
+
+        return childCopy
+      })
+
+      item.children = children
+
+      console.log('openednode', openedNode.value)
+
+      // محدود کردن تعداد نودهای باز برای جلوگیری از کندی
+      if (openedNode.value.length > MAX_OPEN_NODES) {
+        // حذف قدیمی‌ترین نودهای باز (به جز والدین نود فعلی)
+        const currentNodeParents = new Set<number>()
+        let tempNode = treeIndex[item.id]
+        while (tempNode?.parentId) {
+          currentNodeParents.add(tempNode.parentId)
+          tempNode = treeIndex[tempNode.parentId]
+        }
+
+        // نگه داشتن فقط MAX_OPEN_NODES نود جدید و والدین نود فعلی
+        const nodesToKeep = openedNode.value.filter(id =>
+          currentNodeParents.has(id) || openedNode.value.indexOf(id) >= openedNode.value.length - MAX_OPEN_NODES,
+        )
+
+        console.log('nodesToKeep', nodesToKeep)
+
+        openedNode.value = nodesToKeep
+      }
+    }
+    else {
+      item.children = []
+    }
+
+    resolve()
+  })
 }
 
 const addcomment = async (nodeItem: ISimpleNestedNodeActionable) => {
@@ -832,47 +905,48 @@ const treeViewStyle = computed(() => ({
 
     <div class="tree-view-scroll" :style="treeViewStyle">
       <VTreeview
-        ref="treeview" v-model:activated="activatedNode" v-model:opened="openedNode"
+        ref="treeview"
+        v-model:activated="activatedNode" v-model:opened="openedNode" :load-children="loadChildren"
         activatable :items="treeData" expand-icon="mdi-menu-left" item-value="id"
         item-title="title" density="compact" :lines="false" :load-children="loadChildren" @keydown="handleTreeViewKeydown"
       >
         <template #title="{ item }">
           <div
-            :class="`no-select ${item.selected ? 'selected' : ''}`"
-            :style="`${item.selected ? 'color:red' : ''};cursor:${hasDraggableState ? 'move' : 'default'}`"
-            @dblclick="selectTreeNode(item)" @contextmenu="onContextMenu($event, item)"
+            :class="`no-select ${treeIndex[item.id].selected ? 'selected' : ''}`"
+            :style="`${treeIndex[item.id].selected ? 'color:red' : ''};cursor:${hasDraggableState ? 'move' : 'default'}`"
+            @dblclick="selectTreeNode(treeIndex[item.id])" @contextmenu="onContextMenu($event, treeIndex[item.id])"
           >
             <!--
-              <VTooltip :text="item.title">
+              <VTooltip :text="treeIndex[item.id].title">
               <template #activator="{ props }">
             -->
             <VRow dense class="mx-0">
               <VCol cols="11" class="tree-title d-flex flex-column">
                 <div
                   v-if="(activeDraggableItem && activeDraggableItem.id === item.id)"
-                  class="d-flex align-center" style="height: 10px;" @mouseup="treeDividerMouseUp($event, item, NodeType.SiblingBefore)" @mouseenter="treeDividerMouseEnter(NodeType.SiblingBefore)"
+                  class="d-flex align-center" style="height: 10px;" @mouseup="treeDividerMouseUp($event, treeIndex[item.id], NodeType.SiblingBefore)" @mouseenter="treeDividerMouseEnter(NodeType.SiblingBefore)"
                   @mouseleave="treeDividerMouseLeave($event, NodeType.SiblingBefore)"
                 >
                   <div :class="`w-100 ${hasDividerDraggableBefore ? 'draggablebox' : ''}`" style="height: 5px;" />
                 </div>
                 <div
-                  :class="`d-flex justify-space-between ${(activeDraggableItem && activeDraggableItem.id === item.id && (!hasDividerDraggableBefore && !hasDividerDraggableAfter)) ? 'draggablebox' : ''}`" @mouseleave="treeItemMouseLeave($event, item)"
-                  @mouseenter="treeItemMouseEnter($event, item)" @mouseup="treeItemMouseUp($event, item)" @mousedown="treeItemMouseDown($event, item)"
+                  :class="`d-flex justify-space-between ${(activeDraggableItem && activeDraggableItem.id === item.id && (!hasDividerDraggableBefore && !hasDividerDraggableAfter)) ? 'draggablebox' : ''}`" @mouseleave="treeItemMouseLeave($event, treeIndex[item.id])"
+                  @mouseenter="treeItemMouseEnter($event, treeIndex[item.id])" @mouseup="treeItemMouseUp($event, treeIndex[item.id])" @mousedown="treeItemMouseDown($event, treeIndex[item.id])"
                 >
                   <div style="width: 90%;">
-                    <span v-if="!(item.editing ?? false)">{{ item.title }}</span>
+                    <span v-if="!(treeIndex[item.id].editing ?? false)">{{ treeIndex[item.id].title }}</span>
                     <VTextField
-                      v-else ref="editableNode" v-model:model-value="nodeTempTitleForEdit" :color="item.failed ? 'error' : 'primary'" autofocus :placeholder="item.title"
-                      :loading="item.loading"
-                      :focused="!(item.loading ?? false)" :readonly="item.loading ?? false"
-                      @blur="nodeEditCancel(item)" @keydown="handleEditableNodeKeydown($event, item)"
+                      v-else ref="editableNode" v-model:model-value="nodeTempTitleForEdit" :color="treeIndex[item.id].failed ? 'error' : 'primary'" autofocus :placeholder="treeIndex[item.id].title"
+                      :loading="treeIndex[item.id].loading"
+                      :focused="!(treeIndex[item.id].loading ?? false)" :readonly="treeIndex[item.id].loading ?? false"
+                      @blur="nodeEditCancel(treeIndex[item.id])" @keydown="handleEditableNodeKeydown($event, treeIndex[item.id])"
                     />
                   </div>
                   <div>
-                    <VBtn v-if="item.hasDescription" size="xsmall" variant="plain" @click="addcomment(item)">
+                    <VBtn v-if="treeIndex[item.id].hasDescription" size="xsmall" variant="plain" @click="addcomment(treeIndex[item.id])">
                       <VIcon size="16" icon="tabler-message" />
                     </VBtn>
-                    <VBtn v-if="(item.relationCount ?? 0) > 0" size="xsmall" variant="plain" @click="showNodeRelationList(item.id, NodeRelationType.relation)">
+                    <VBtn v-if="(treeIndex[item.id].relationCount ?? 0) > 0" size="xsmall" variant="plain" @click="showNodeRelationList(treeIndex[item.id].id, NodeRelationType.relation)">
                       <VTooltip
                         activator="parent"
                         location="top center"
@@ -881,7 +955,7 @@ const treeViewStyle = computed(() => ({
                       </VTooltip>
                       <VIcon size="16" icon="tabler-bounce-left-filled" />
                     </VBtn>
-                    <VBtn v-if="(item.referenceCount ?? 0) > 0" size="xsmall" variant="plain" @click="showNodeRelationList(item.id, NodeRelationType.reference)">
+                    <VBtn v-if="(treeIndex[item.id].referenceCount ?? 0) > 0" size="xsmall" variant="plain" @click="showNodeRelationList(treeIndex[item.id].id, NodeRelationType.reference)">
                       <VTooltip
                         activator="parent"
                         location="top center"
@@ -893,17 +967,17 @@ const treeViewStyle = computed(() => ({
                   </div>
                 </div>
                 <div
-                  v-if="(activeDraggableItem && activeDraggableItem.id === item.id && isLastNode(item))"
-                  class="d-flex align-center" style="height: 10px;" @mouseup="treeDividerMouseUp($event, item, NodeType.SiblingAfter)" @mouseenter="treeDividerMouseEnter(NodeType.SiblingAfter)"
+                  v-if="(activeDraggableItem && activeDraggableItem.id === item.id && isLastNode(treeIndex[item.id]))"
+                  class="d-flex align-center" style="height: 10px;" @mouseup="treeDividerMouseUp($event, treeIndex[item.id], NodeType.SiblingAfter)" @mouseenter="treeDividerMouseEnter(NodeType.SiblingAfter)"
                   @mouseleave="treeDividerMouseLeave($event, NodeType.SiblingAfter)"
                 >
                   <div :class="`w-100 ${hasDividerDraggableAfter ? 'draggablebox' : ''}`" style="height: 5px;" />
                 </div>
-                <!-- <span>{{ item.title }}</span> -->
+                <!-- <span>{{ treeIndex[item.id].title }}</span> -->
               </VCol>
               <VCol cols="1" class="tree-node">
                 <div style="width: 100%;" v-bind="props">
-                  {{ item.children?.length ?? 0 }}
+                  {{ treeIndex[item.id].children?.length ?? 0 }}
                 </div>
               </VCol>
             </VRow>
