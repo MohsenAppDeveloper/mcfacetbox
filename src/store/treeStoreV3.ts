@@ -635,6 +635,7 @@ export const useTreeStoreV3 = defineStore('treeV3', () => {
     loadedNodes,
     selectedNodeId,
     currentTreeId,
+    highlightedNodeId,
     currentTreeTitle,
     selecteNodeScrollPosition,
 

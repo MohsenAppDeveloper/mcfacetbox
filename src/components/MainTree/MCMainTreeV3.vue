@@ -50,7 +50,7 @@ const editableNode = ref()
 const activatedNode = ref<number[]>([])
 const openedNode = ref<number[]>([])
 const isLoading = ref(false)
-const treeElement = ref(null)
+const treeElement = ref()
 
 const nodeTempTitleForEdit = ref('')
 const searchResultSelectedNodes = ref<number[]>([])
@@ -147,7 +147,7 @@ const refreshTree = async () => {
     // Load tree into new optimized store
     await treeStore.loadTree(data.value)
 
-    checkTreeRoute(false)
+    checkTreeRoute()
   }
   catch (error) {
     toast.error(t('alert.probleminGetInformation'))
@@ -192,28 +192,19 @@ async function gotoNode(nodeId: number, mustSelectNode: boolean = true) {
   if (!node)
     return
 
-  console.log('treeElement', treeElement.value)
-
   if (mustSelectNode)
     treeStore.selectNode(nodeId, treeElement.value?.$el.scrollTop ?? 0)
 
-  // Get all ancestor IDs
   const parentIds = treeStore.getAncestorIds(nodeId)
 
   // Expand all parents sequentially
   for (const parentId of parentIds)
     treeStore.expandNode(parentId)
 
-  console.log('scrollpos', treeStore.selecteNodeScrollPosition)
-
   // Scroll into view
   if (treeStore.selecteNodeScrollPosition > 0)
-
     treeElement.value.$el.scrollTop = treeStore.selecteNodeScrollPosition
 
-  //   const activeNodeEl = document.querySelector('.tree-node--selected tree-node')
-  //   if (activeNodeEl)
-  //     activeNodeEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
   await nextTick()
 }
 
@@ -228,13 +219,8 @@ function nodeEditStart() {
   if (!isValidActivateNode())
     return
 
-  const nodeId = activatedNode.value[0]
-  const node = treeStore.getNode(nodeId)
-  if (!node)
-    return
-
-  nodeTempTitleForEdit.value = node.title
-  treeStore.startEditing(nodeId)
+  //   nodeTempTitleForEdit.value = node.title
+  treeStore.startEditing(treeStore.highlightedNodeId)
 }
 
 /**
@@ -242,7 +228,7 @@ function nodeEditStart() {
  */
 function nodeEditCancel(nodeitem: any) {
   treeStore.cancelEditing(nodeitem.id)
-  treeview.value.$el.focus()
+  treeElement.value.$el.focus()
 }
 
 /**
@@ -279,14 +265,14 @@ async function nodeEditProgress(nodeitem: any, nodetitle: string) {
 /**
  * Handle keyboard events during editing
  */
-function handleEditableNodeKeydown(event: KeyboardEvent, item: any) {
+function handleEditableNodeKeydown(event: KeyboardEvent, item: ISimpleFlatNodeActionable) {
   switch (event.key) {
     case ' ':
       event.stopPropagation()
       break
     case 'Enter':
       event.stopPropagation()
-      nodeEditProgress(item, nodeTempTitleForEdit.value)
+      nodeEditProgress(item, item.tempData)
       break
     case 'Escape':
       if (item.loading)
@@ -647,13 +633,16 @@ function selectSearchTree() {
 }
 
 function handleKeydown(event: KeyboardEvent) {
-  if (event.key === 'F2' && activatedNode.value.length > 0)
-    nodeEditStart()
   if (event.key === 'Escape')
     resetMouseDraggable()
 }
 
-function handleTreeViewKeydown(event: KeyboardEvent) {
+function handleTreeNodeKeydown(event: KeyboardEvent) {
+  console.log('hifg', treeStore.highlightedNodeId)
+
+  if (event.key === 'F2' && treeStore.highlightedNodeId > 0)
+    nodeEditStart()
+
   // Reserved for future use
 }
 
@@ -755,7 +744,7 @@ watch(searchResultSelectedNodes, () => {
 })
 
 watch(route, () => {
-  checkTreeRoute(true)
+  checkTreeRoute()
 }, { immediate: true })
 
 // ============================================
@@ -771,7 +760,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="mc-main-tree d-flex flex-column justify-space-between" @keydown="handleKeydown">
+  <div class="mc-main-tree d-flex flex-column justify-space-between" @keydown="handleKeydown" @keypress="handleTreeNodeKeydown">
     <MCLoading :showloading="isLoading" :loadingsize="SizeType.XL" />
 
     <!-- Dialogs -->
@@ -887,7 +876,7 @@ onMounted(async () => {
               'tree-node--highlighted': item.highlighted, 'tree-node--selected': item.selected,
             }" class="tree-node" :style="{ paddingRight: `${item.depth * 15}px`, cursor: 'default' }"
           >
-            <div class="tree-node__icon" :style="{ width: '16px', cursor: item.hasChildren ? 'pointer' : 'default' }" @click="toggleNodeExpansion(item)">
+            <div class="tree-node__icon" :style="{ width: '16px', cursor: item.hasChildren ? 'pointer' : 'default' }" @contextmenu="onContextMenu($event, item)" @click="toggleNodeExpansion(item)">
               <!--
                 <VProgressCircular
                 v-if="loading.has(item.id)"
@@ -902,7 +891,20 @@ onMounted(async () => {
             </div>
             <div class="w-100" @click="treeStore.highlightNode(item.id)" @dblclick="selectTreeNode(item)">
               <div>
-                <span class="tree-node__title no-select">{{ item.title }}</span>
+                <span v-if="!item.editing" class="tree-node__title no-select">{{ item.title }}</span>
+                <VTextField
+                  v-else
+                  ref="editableNode"
+                  v-model:model-value="item.tempData"
+                  :color="item.failed ? 'error' : 'primary'"
+                  autofocus
+                  :placeholder="item.title"
+                  :loading="item.loading"
+                  :focused="!(item.loading ?? false)"
+                  :readonly="item.loading ?? false"
+                  @blur="nodeEditCancel(item)"
+                  @keydown="handleEditableNodeKeydown($event, item)"
+                />
               </div>
             </div>
           </div>
