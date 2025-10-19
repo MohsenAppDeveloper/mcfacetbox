@@ -98,27 +98,27 @@
             }
         }
 
-        .tree-title {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+        // .tree-title {
+        //     overflow: hidden;
+        //     text-overflow: ellipsis;
+        //     white-space: nowrap;
+        // }
 
         .v-list-item-title {
             overflow: unset;
         }
 
-        .tree-node {
-            color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
-            font-size: 0.9em;
-            width: 34.89px;
-            text-align: center;
-            position: sticky;
-            left: 0;
-            top: 0;
-            background-color: white;
-            // border-right: 1px solid #c7c7c7 !important;
-        }
+        // .tree-node {
+        //     color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+        //     font-size: 0.9em;
+        //     width: 34.89px;
+        //     text-align: center;
+        //     position: sticky;
+        //     left: 0;
+        //     top: 0;
+        //     background-color: white;
+        //     // border-right: 1px solid #c7c7c7 !important;
+        // }
 
         .selected {
             .tree-node {

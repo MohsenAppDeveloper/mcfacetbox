@@ -89,7 +89,7 @@ const MAX_OPEN_NODES = 100
 
 // تابع بارگذاری فرزندان از treeIndex
 const loadChildren = (item: any): Promise<void> => {
-  return new Promise<void>((resolve) => {
+  return new Promise<void>(resolve => {
     const nodeInIndex = treeIndex[item.id]
 
     if (nodeInIndex?.children?.length > 0) {
@@ -97,7 +97,9 @@ const loadChildren = (item: any): Promise<void> => {
       const children = nodeInIndex.children.map((child: ISimpleNestedNodeActionable) => {
         const childCopy = useCloned(treeIndex[child.id]).cloned.value
         const hasGrandchildren = childCopy.children?.length > 0
+
         childCopy.children = hasGrandchildren ? [] : undefined
+
         return childCopy
       })
 
@@ -115,11 +117,13 @@ const loadChildren = (item: any): Promise<void> => {
 
         // نگه داشتن فقط MAX_OPEN_NODES نود جدید و والدین نود فعلی
         const nodesToKeep = openedNode.value.filter(id =>
-          currentNodeParents.has(id) || openedNode.value.indexOf(id) >= openedNode.value.length - MAX_OPEN_NODES
+          currentNodeParents.has(id) || openedNode.value.indexOf(id) >= openedNode.value.length - MAX_OPEN_NODES,
         )
+
         openedNode.value = nodesToKeep
       }
-    } else {
+    }
+    else {
       item.children = []
     }
 

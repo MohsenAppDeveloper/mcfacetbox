@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { VTreeview } from 'vuetify/labs/VTreeview'
 import { useToast } from 'vue-toastification'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { VDialog } from 'vuetify/lib/components/index.mjs'
@@ -7,9 +6,9 @@ import MCLoading from '../MCLoading.vue'
 import MCDialogTransferNode from '../dialogs/MCDialogTransferNode.vue'
 import MCDialogNodeRelationList from '../dialogs/MCDialogNodeRelationList.vue'
 import { type IRootServiceError, MessageType, SelectionType, SizeType } from '@/types/baseModels'
-import { NodeRelationType, NodeType, SimpleNestedNodeAcionableModel, getNodeTypeNameSpace } from '@/types/tree'
-import type { ISimpleNestedNodeActionable, ISingleNodeView, ITree } from '@/types/tree'
-import { useTreeStoreV2 } from '@/store/treeStoreV2'
+import { NodeType, SimpleNestedNodeAcionableModel, getNodeTypeNameSpace } from '@/types/tree'
+import type { ISimpleFlatNodeActionable, ISimpleNestedNodeActionable, ISingleNodeView, ITree, NodeRelationType } from '@/types/tree'
+import { useTreeStoreV3 } from '@/store/treeStoreV3'
 import { useSelectedTree } from '@/store/treeStore'
 import useRouterForGlobalVariables from '@/composables/useRouterVariables'
 import { useShortcutManager } from '@/composables/useShortcutManager'
@@ -39,14 +38,7 @@ const ability = useAbility()
 const { rules, can } = useAbility()
 
 // New optimized tree store
-const treeStore = useTreeStoreV2()
-
-// Legacy store for tree selection (keeping for compatibility)
-const selectedTreeStore = useSelectedTree()
-
-const { routerTreeId, routerNodeId, clearUnNeededQueryItems, addTreeIdToQuery, addNodeIdToQuery } = useRouterForGlobalVariables()
-const { lastShortcutTriggered } = useShortcutManager()
-const { x: cursorX, y: cursorY } = usePointer()
+const treeStore = useTreeStoreV3()
 
 // ============================================
 // STATE
@@ -58,6 +50,7 @@ const editableNode = ref()
 const activatedNode = ref<number[]>([])
 const openedNode = ref<number[]>([])
 const isLoading = ref(false)
+const treeElement = ref(null)
 
 const nodeTempTitleForEdit = ref('')
 const searchResultSelectedNodes = ref<number[]>([])
@@ -80,17 +73,24 @@ const dialogTreeNodeStats = shallowRef(false)
 const dialogNodeRelationListVisible = shallowRef(false)
 const dialognoderelationlist = ref(VDialog)
 
-const treeBlockSize = ref(230)
+const treeBlockSize = ref(500)
 const activeTooltipPath = shallowRef('')
 
 const { height: searchBoxHeight } = useElementSize(searchbox)
+
+// Legacy store for tree selection (keeping for compatibility)
+const selectedTreeStore = useSelectedTree()
+
+const { routerTreeId, routerNodeId, clearUnNeededQueryItems, addTreeIdToQuery, addNodeIdToQuery } = useRouterForGlobalVariables()
+const { lastShortcutTriggered } = useShortcutManager()
+const { x: cursorX, y: cursorY } = usePointer()
 
 // ============================================
 // COMPUTED
 // ============================================
 
 // Tree data from store (reactive and optimized)
-const treeData = computed(() => treeStore.treeData)
+// const treeData = computed(() => treeStore.treeData)
 
 // Currently selected node
 const selectedNode = computed(() => treeStore.selectedNode)
@@ -107,13 +107,8 @@ const treeViewStyle = computed(() => ({
 /**
  * Load children when node is expanded
  */
-const loadChildren = async (item: any): Promise<void> => {
-  const children = treeStore.loadChildrenForDisplay(item.id)
-
-  // Assign children to the reactive item
-  item.children = children
-
-  // Wait for Vue to process the reactive update
+const toggleNodeExpansion = async (item: ISimpleFlatNodeActionable): Promise<void> => {
+  treeStore.toggleNodeExpansion(item.id)
   await nextTick()
 }
 
@@ -165,7 +160,7 @@ const refreshTree = async () => {
 /**
  * Check and handle route-based navigation
  */
-function checkTreeRoute(deselectAll: boolean) {
+function checkTreeRoute() {
   if (routerTreeId.value === 0) {
     emit('showSelectTree')
     toast.warning(t('alert.nothaveselecttree'))
@@ -174,17 +169,14 @@ function checkTreeRoute(deselectAll: boolean) {
   }
 
   if (treeStore.currentTreeId === routerTreeId.value) {
-    if (deselectAll)
-      treeStore.deselectAll()
+    // if (deselectAll)
+    //   treeStore.deselectAll()
 
-    if (routerNodeId.value === 0) {
-      treeStore.selectNode(-treeStore.currentTreeId)
+    if (routerNodeId.value === 0)
       gotoNode(-treeStore.currentTreeId)
-    }
-    else {
-      treeStore.selectNode(routerNodeId.value)
+
+    else
       gotoNode(routerNodeId.value)
-    }
   }
 
   // Set current tree ID in store
@@ -200,29 +192,29 @@ async function gotoNode(nodeId: number, mustSelectNode: boolean = true) {
   if (!node)
     return
 
+  console.log('treeElement', treeElement.value)
+
   if (mustSelectNode)
-    treeStore.selectNode(nodeId)
+    treeStore.selectNode(nodeId, treeElement.value?.$el.scrollTop ?? 0)
 
   // Get all ancestor IDs
   const parentIds = treeStore.getAncestorIds(nodeId)
 
   // Expand all parents sequentially
-  for (const parentId of parentIds) {
-    if (!openedNode.value.includes(parentId)) {
-      openedNode.value.push(parentId)
-      await nextTick()
-    }
-  }
+  for (const parentId of parentIds)
+    treeStore.expandNode(parentId)
 
-  // Activate node
-  activatedNode.value = [nodeId]
+  console.log('scrollpos', treeStore.selecteNodeScrollPosition)
 
   // Scroll into view
-  await nextTick()
+  if (treeStore.selecteNodeScrollPosition > 0)
 
-  const activeNodeEl = document.querySelector('.tree-view-scroll .v-list .v-list-item--active')
-  if (activeNodeEl)
-    activeNodeEl.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    treeElement.value.$el.scrollTop = treeStore.selecteNodeScrollPosition
+
+  //   const activeNodeEl = document.querySelector('.tree-node--selected tree-node')
+  //   if (activeNodeEl)
+  //     activeNodeEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  await nextTick()
 }
 
 // ============================================
@@ -553,7 +545,7 @@ function resetMouseDraggable() {
 // CONTEXT MENU
 // ============================================
 
-const onContextMenu = (e: MouseEvent, nodeItem: any) => {
+const onContextMenu = (e: MouseEvent, nodeItem: ISimpleFlatNodeActionable) => {
   resetMouseDraggable()
   e.preventDefault()
   activatedNode.value = [nodeItem.id]
@@ -640,7 +632,7 @@ function clearActivateNode() {
   activatedNode.value.splice(0)
 }
 
-const selectTreeNode = (item: any) => {
+const selectTreeNode = (item: ISimpleFlatNodeActionable) => {
   const newQuery = { ...route.query }
 
   clearUnNeededQueryItems(newQuery)
@@ -685,10 +677,8 @@ const parentNodeTitle = (nodeid: number | null): string => {
 }
 
 const nodeMerged = (sourceNodeId: number, destinationNodeID: number) => {
-  if (treeStore.getNode(destinationNodeID)) {
-    treeStore.selectNode(destinationNodeID)
+  if (treeStore.getNode(destinationNodeID))
     gotoNode(destinationNodeID)
-  }
 }
 
 const nodeTransfered = (sourceNodeId: number, destinationNodeID: number) => {
@@ -741,9 +731,9 @@ const setPermissions = async (): Promise<boolean> => {
 
 watch(() => searchBoxHeight.value, () => {
   if (activeSearch.value)
-    treeBlockSize.value = 230 + searchBoxHeight.value
+    treeBlockSize.value = 500 + searchBoxHeight.value
   else
-    treeBlockSize.value = 230
+    treeBlockSize.value = 500
 })
 
 watch(lastShortcutTriggered, newval => {
@@ -889,109 +879,35 @@ onMounted(async () => {
     </div>
 
     <!-- Tree View -->
-    <div class="tree-view-scroll" :style="treeViewStyle">
-      <VTreeview
-        ref="treeview"
-        v-model:activated="activatedNode"
-        v-model:opened="openedNode"
-        activatable
-        :items="treeData"
-        expand-icon="mdi-menu-left"
-        item-value="id"
-        item-title="title"
-        density="compact"
-        :lines="false"
-        :load-children="loadChildren"
-        @keydown="handleTreeViewKeydown"
-      >
-        <template #title="{ item }">
+    <div>
+      <VVirtualScroll ref="treeElement" :items="treeStore.flatVisibleNodes" :height="treeBlockSize" item-height="36">
+        <template #default="{ item }">
           <div
-            :class="`no-select ${item.selected ? 'selected' : ''}`"
-            :style="`${item.selected ? 'color:red' : ''};cursor:${hasDraggableState ? 'move' : 'default'}`"
-            @dblclick="selectTreeNode(item)"
-            @contextmenu="onContextMenu($event, item)"
+            :class="{
+              'tree-node--highlighted': item.highlighted, 'tree-node--selected': item.selected,
+            }" class="tree-node" :style="{ paddingRight: `${item.depth * 15}px`, cursor: 'default' }"
           >
-            <VRow dense class="mx-0">
-              <VCol cols="11" class="tree-title d-flex flex-column">
-                <!-- Divider Before -->
-                <div
-                  v-if="(activeDraggableItem && activeDraggableItem.id === item.id)"
-                  class="d-flex align-center"
-                  style="height: 10px;"
-                  @mouseup="treeDividerMouseUp($event, item, NodeType.SiblingBefore)"
-                  @mouseenter="treeDividerMouseEnter(NodeType.SiblingBefore)"
-                  @mouseleave="treeDividerMouseLeave($event, NodeType.SiblingBefore)"
-                >
-                  <div :class="`w-100 ${hasDividerDraggableBefore ? 'draggablebox' : ''}`" style="height: 5px;" />
-                </div>
-
-                <!-- Node Content -->
-                <div
-                  :class="`d-flex justify-space-between ${(activeDraggableItem && activeDraggableItem.id === item.id && (!hasDividerDraggableBefore && !hasDividerDraggableAfter)) ? 'draggablebox' : ''}`"
-                  @mouseleave="treeItemMouseLeave($event, item)"
-                  @mouseenter="treeItemMouseEnter($event, item)"
-                  @mouseup="treeItemMouseUp($event, item)"
-                  @mousedown="treeItemMouseDown($event, item)"
-                >
-                  <div style="width: 90%;">
-                    <span v-if="!(item.editing ?? false)">{{ item.title }}</span>
-                    <VTextField
-                      v-else
-                      ref="editableNode"
-                      v-model:model-value="nodeTempTitleForEdit"
-                      :color="item.failed ? 'error' : 'primary'"
-                      autofocus
-                      :placeholder="item.title"
-                      :loading="item.loading"
-                      :focused="!(item.loading ?? false)"
-                      :readonly="item.loading ?? false"
-                      @blur="nodeEditCancel(item)"
-                      @keydown="handleEditableNodeKeydown($event, item)"
-                    />
-                  </div>
-
-                  <div>
-                    <VBtn v-if="item.hasDescription" size="xsmall" variant="plain" @click="addcomment(item)">
-                      <VIcon size="16" icon="tabler-message" />
-                    </VBtn>
-                    <VBtn v-if="(item.relationCount ?? 0) > 0" size="xsmall" variant="plain" @click="showNodeRelationList(item.id, NodeRelationType.relation)">
-                      <VTooltip activator="parent" location="top center">
-                        {{ $t('relations') }}
-                      </VTooltip>
-                      <VIcon size="16" icon="tabler-bounce-left-filled" />
-                    </VBtn>
-                    <VBtn v-if="(item.referenceCount ?? 0) > 0" size="xsmall" variant="plain" @click="showNodeRelationList(item.id, NodeRelationType.reference)">
-                      <VTooltip activator="parent" location="top center">
-                        {{ $t('references') }}
-                      </VTooltip>
-                      <VIcon size="16" icon="tabler-bounce-left" />
-                    </VBtn>
-                  </div>
-                </div>
-
-                <!-- Divider After -->
-                <div
-                  v-if="(activeDraggableItem && activeDraggableItem.id === item.id && treeStore.isLastSibling(item.id))"
-                  class="d-flex align-center"
-                  style="height: 10px;"
-                  @mouseup="treeDividerMouseUp($event, item, NodeType.SiblingAfter)"
-                  @mouseenter="treeDividerMouseEnter(NodeType.SiblingAfter)"
-                  @mouseleave="treeDividerMouseLeave($event, NodeType.SiblingAfter)"
-                >
-                  <div :class="`w-100 ${hasDividerDraggableAfter ? 'draggablebox' : ''}`" style="height: 5px;" />
-                </div>
-              </VCol>
-
-              <!-- Children Count -->
-              <VCol cols="1" class="tree-node">
-                <div style="width: 100%;">
-                  {{ treeStore.hasChildren(item.id) ? treeStore.getChildren(item.id).length : 0 }}
-                </div>
-              </VCol>
-            </VRow>
+            <div class="tree-node__icon" :style="{ width: '16px', cursor: item.hasChildren ? 'pointer' : 'default' }" @click="toggleNodeExpansion(item)">
+              <!--
+                <VProgressCircular
+                v-if="loading.has(item.id)"
+                indeterminate
+                size="14"
+                width="2"
+                />
+              -->
+              <VIcon size="16">
+                {{ item.isExpanded ? 'tabler-chevron-down' : (item.hasChildren ? 'tabler-chevron-left' : '') }}
+              </VIcon>
+            </div>
+            <div class="w-100" @click="treeStore.highlightNode(item.id)" @dblclick="selectTreeNode(item)">
+              <div>
+                <span class="tree-node__title no-select">{{ item.title }}</span>
+              </div>
+            </div>
           </div>
         </template>
-      </VTreeview>
+      </VVirtualScroll>
     </div>
 
     <!-- Selected Node Info -->
@@ -999,7 +915,7 @@ onMounted(async () => {
       v-if="selectedNode && selectedNode.id > 0"
       class="selected-node pr-1 pl-1 text-body-2"
       variant="text"
-      @click="gotoNode(selectedNode.id)"
+      @click="gotoNode(selectedNode.id, false)"
     >
       <p>
         {{ $t('tree.selectednode') }}: <span>{{ selectedNode.title }}</span>

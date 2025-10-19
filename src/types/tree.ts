@@ -133,6 +133,11 @@ export interface ISimpleFlatNodeActionable extends baseItemAction, baseItemState
   hasDescription?: boolean
   relationCount?: number
   referenceCount?: number
+  hasChildren: boolean
+  depth: number
+  isExpanded: boolean
+  isLoaded: boolean
+  highlighted?: boolean
 }
 
 /**

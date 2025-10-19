@@ -7,13 +7,11 @@ import { NodeType } from '@/types/tree'
  * Flat visible node for virtual scrolling
  * Extends flat node with depth and expansion info
  */
-export interface FlatVisibleNode extends ISimpleFlatNodeActionable {
-  depth: number
-  isExpanded: boolean
-  isLoaded: boolean
-}
+// export interface FlatVisibleNode extends ISimpleFlatNodeActionable {
 
-export const useTreeStoreV2 = defineStore('treeV2', () => {
+// }
+
+export const useTreeStoreV3 = defineStore('treeV3', () => {
   // ============================================
   // STATE: Single source of truth (Flat Store)
   // ============================================
@@ -29,6 +27,10 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
 
   // Currently selected node
   const selectedNodeId = ref<number>(-1)
+
+  const selecteNodeScrollPosition = ref<number>(0)
+
+  const highlightedNodeId = ref<number>(-1)
 
   // Tree metadata
   const currentTreeId = ref<number>(0)
@@ -174,8 +176,8 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
    * Flatten tree to only visible nodes for virtual scrolling
    * Returns a flat array with depth information for indentation
    */
-  const flatVisibleNodes = computed<FlatVisibleNode[]>(() => {
-    const result: FlatVisibleNode[] = []
+  const flatVisibleNodes = computed<ISimpleFlatNodeActionable[]>(() => {
+    const result: ISimpleFlatNodeActionable[] = []
 
     const traverse = (nodeId: number, depth: number = 0) => {
       const node = nodes.get(nodeId)
@@ -185,18 +187,20 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
       const isExpanded = expandedNodes.has(nodeId)
       const isLoaded = loadedNodes.has(nodeId)
 
+      node.depth = depth + 1
+      node.isExpanded = isExpanded
+      node.isLoaded = isLoaded
       result.push({
         ...node,
-        depth,
-        isExpanded,
-        isLoaded,
       })
+
+      //   console.log('addchildren', node, depth)
 
       // Only add children if node is expanded
       if (isExpanded) {
         const children = getChildren(nodeId)
 
-        children.forEach(child => traverse(child.id, depth + 1))
+        children.forEach(child => traverse(child.id, node.depth))
       }
     }
 
@@ -238,6 +242,10 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
           hasDescription: node.hasDescription || false,
           relationCount: node.relationCount || 0,
           referenceCount: node.referenceCount || 0,
+          hasChildren: (node.children?.length ?? 0) > 0,
+          depth: 0,
+          isExpanded: false,
+          isLoaded: false,
         })
 
         nodes.set(node.id, flatNode)
@@ -257,11 +265,12 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
 
   /**
    * Load children for lazy loading
+   *
+   * Since we used expandedNodes to determine which nodes must be shown, we don't need to use this function for now.
    */
   const loadChildrenForDisplay = (nodeId: number): ISimpleNestedNodeActionable[] => {
     const children = getChildren(nodeId)
 
-    console.log('children', children)
     expandedNodes.add(nodeId)
     loadedNodes.add(nodeId)
 
@@ -331,6 +340,10 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
       hasDescription: nodeData.hasDescription || false,
       relationCount: nodeData.relationCount || 0,
       referenceCount: nodeData.referenceCount || 0,
+      hasChildren: false,
+      depth: 0,
+      isExpanded: false,
+      isLoaded: false,
     })
 
     nodes.set(newNode.id, newNode)
@@ -511,9 +524,27 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
   // ============================================
 
   /**
+   * Highlight a node
+   */
+  const highlightNode = (nodeId: number) => {
+    // Deselect previous
+    if (highlightedNodeId.value > 0)
+      updateNode(highlightedNodeId.value, { highlighted: false })
+
+    // Select new
+    if (nodeId > 0 && nodes.has(nodeId)) {
+      updateNode(nodeId, { highlighted: true })
+      highlightedNodeId.value = nodeId
+    }
+    else {
+      highlightedNodeId.value = -1
+    }
+  }
+
+  /**
    * Select a node
    */
-  const selectNode = (nodeId: number) => {
+  const selectNode = (nodeId: number, scrollPosition: number = 0) => {
     // Deselect previous
     if (selectedNodeId.value > 0)
       updateNode(selectedNodeId.value, { selected: false })
@@ -522,9 +553,11 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
     if (nodeId > 0 && nodes.has(nodeId)) {
       updateNode(nodeId, { selected: true })
       selectedNodeId.value = nodeId
+      selecteNodeScrollPosition.value = scrollPosition
     }
     else {
       selectedNodeId.value = -1
+      selecteNodeScrollPosition.value = 0
     }
   }
 
@@ -603,6 +636,7 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
     selectedNodeId,
     currentTreeId,
     currentTreeTitle,
+    selecteNodeScrollPosition,
 
     // Computed
     treeData,
@@ -637,6 +671,7 @@ export const useTreeStoreV2 = defineStore('treeV2', () => {
     mergeNode,
 
     // Actions: UI State
+    highlightNode,
     selectNode,
     deselectAll,
     startEditing,

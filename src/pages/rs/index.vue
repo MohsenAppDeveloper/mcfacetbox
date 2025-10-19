@@ -82,7 +82,7 @@ function changeWindowTitle(status: boolean) {
     <Splitpanes style="block-size: calc(100vh - 70px);" rtl class="default-theme">
       <Pane v-if="showtree" size="30">
         <MCWindow :title="selectedTreeItem.title" @close="menu = true">
-          <MCMainTreeV2 @show-select-tree="dialogSelectTreeVisible = true" />
+          <MCMainTreeV3 @show-select-tree="dialogSelectTreeVisible = true" />
           <template #actions>
             <VTooltip location="right center">
               <template #activator="{ props }">
