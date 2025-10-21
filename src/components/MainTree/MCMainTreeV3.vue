@@ -207,13 +207,38 @@ async function gotoNode(nodeId: number, selectionType: NodeSelectionType, mustSe
   // Expand all parents sequentially
   for (const parentId of parentIds)
     treeStore.expandNode(parentId)
-  scrolltoNode(selectionType)
+
+  const isVisible = await isNodeVisibleWithObserver(nodeId)
+  if (!isVisible)
+    scrolltoNode(selectionType)
 
   // Scroll into view
 
   await nextTick()
 }
 
+function isNodeVisibleWithObserver(nodeId: number): Promise<boolean> {
+  return new Promise(resolve => {
+    const nodeElement = document.getElementById(`tree-node-${nodeId}`)
+    if (!nodeElement) {
+      resolve(false)
+
+      return
+    }
+
+    const { stop } = useIntersectionObserver(
+      nodeElement,
+      ([{ isIntersecting }]) => {
+        resolve(isIntersecting)
+        stop()
+      },
+      {
+        root: treeElement.value,
+        threshold: 0.1, // 10% از المنت دیده شود
+      },
+    )
+  })
+}
 function scrolltoNode(nodeselectionType: NodeSelectionType) {
   if (nodeselectionType === NodeSelectionType.highlighted) {
     const nodeIndex = treeStore.flatVisibleNodes.findIndex(item => item.highlighted)
@@ -550,7 +575,7 @@ function resetMouseDraggable() {
 const onContextMenu = (e: MouseEvent, nodeItem: ISimpleFlatNodeActionable) => {
   resetMouseDraggable()
   e.preventDefault()
-  activatedNode.value = [nodeItem.id]
+  treeStore.highlightNode(nodeItem.id)
 
   ContextMenu.showContextMenu({
     x: e.x,
@@ -561,7 +586,7 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleFlatNodeActionable) => {
         label: t('tree.newnode'),
         icon: 'tabler-plus',
         onClick: () => {
-          selectTreeNode(nodeItem)
+        //   selectTreeNode(nodeItem)
           dialogAddNewNodeVisible.value = true
         },
       },
@@ -595,7 +620,7 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleFlatNodeActionable) => {
         label: t('tree.merge'),
         icon: 'tabler-arrow-merge',
         onClick: () => {
-          selectTreeNode(nodeItem)
+        //   selectTreeNode(nodeItem)
           dialogMergeNodeVisible.value = true
         },
       },
@@ -604,7 +629,7 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleFlatNodeActionable) => {
         label: t('tree.transfernode'),
         icon: 'tabler-arrow-merge-alt-left',
         onClick: () => {
-          selectTreeNode(nodeItem)
+        //   selectTreeNode(nodeItem)
           dialogTransferNodeVisible.value = true
         },
       },
@@ -613,7 +638,7 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleFlatNodeActionable) => {
         label: t('tree.relation'),
         icon: 'tabler-affiliate',
         onClick: () => {
-          selectTreeNode(nodeItem)
+        //   selectTreeNode(nodeItem)
           dialogNodeRelationVisible.value = true
         },
       },
@@ -895,18 +920,20 @@ onMounted(async () => {
 
     <!-- Tree View -->
     <div>
-      <VVirtualScroll ref="treeElement" :items="treeStore.flatVisibleNodes" :height="treeBlockSize" item-height="36">
+      <VVirtualScroll ref="treeElement" :items="treeStore.flatVisibleNodes" :height="treeBlockSize" item-height="30">
         <template #default="{ item }">
           <div
+            :id="`tree-node-${item.id}`"
             :class="{
               'tree-node--highlighted': item.highlighted,
               'tree-node--selected': item.selected,
               'tree-node--inactive': !rootFocused,
             }"
             class="tree-node"
-            :style="{ paddingRight: `${item.depth * 15}px`, cursor: 'default' }" @keydown="handleTreeNodeKeydown"
+            :style="{ paddingRight: `${item.depth * 15}px`, cursor: 'default' }"
+            @keydown="handleTreeNodeKeydown" @contextmenu="onContextMenu($event, item)"
           >
-            <div class="tree-node__icon" :style="{ width: '16px', cursor: item.hasChildren ? 'pointer' : 'default' }" @contextmenu="onContextMenu($event, item)" @click="toggleNodeExpansion(item)">
+            <div class="tree-node__icon" :style="{ width: '16px', cursor: item.hasChildren ? 'pointer' : 'default' }" @click="toggleNodeExpansion(item)">
               <!--
                 <VProgressCircular
                 v-if="loading.has(item.id)"
