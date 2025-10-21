@@ -77,6 +77,7 @@ const treeBlockSize = ref(500)
 const activeTooltipPath = shallowRef('')
 
 const { height: searchBoxHeight } = useElementSize(searchbox)
+const { height: rootElementHeight } = useElementSize(rootElement)
 
 // Legacy store for tree selection (keeping for compatibility)
 const selectedTreeStore = useSelectedTree()
@@ -650,6 +651,14 @@ const onContextMenu = (e: MouseEvent, nodeItem: ISimpleFlatNodeActionable) => {
 // HELPER FUNCTIONS
 // ============================================
 
+const treeSizeHeight = computed(() => {
+  const toolbarHeight = 38
+  const treeStatusBar = 36
+  const treeColumnHeader = 25
+
+  return rootElementHeight.value - (toolbarHeight + treeStatusBar + searchBoxHeight.value + treeColumnHeader)
+})
+
 function focusToRootElemet() {
   rootElement.value.focus()
 }
@@ -811,7 +820,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div ref="rootElement" class="mc-main-tree d-flex flex-column justify-space-between no-outline" tabindex="0" @keydown="handleTreeKeydown">
+  <div ref="rootElement" class="mc-main-tree d-flex flex-column justify-start no-outline h-100" tabindex="0" @keydown="handleTreeKeydown">
     <MCLoading :showloading="isLoading" :loadingsize="SizeType.XL" />
 
     <!-- Dialogs -->
@@ -920,7 +929,7 @@ onMounted(async () => {
 
     <!-- Tree View -->
     <div>
-      <VVirtualScroll ref="treeElement" :items="treeStore.flatVisibleNodes" :height="treeBlockSize" item-height="30">
+      <VVirtualScroll ref="treeElement" :items="treeStore.flatVisibleNodes" :height="treeSizeHeight" item-height="30">
         <template #default="{ item }">
           <div
             :id="`tree-node-${item.id}`"
@@ -968,19 +977,19 @@ onMounted(async () => {
         </template>
       </VVirtualScroll>
     </div>
-
     <!-- Selected Node Info -->
-    <VBtn
-      v-if="selectedNode && selectedNode.id > 0"
-      class="selected-node pr-1 pl-1 text-body-2"
-      variant="text"
-      @click="gotoNode(selectedNode.id, NodeSelectionType.selected, false)"
-    >
-      <p>
-        {{ $t('tree.selectednode') }}: <span>{{ selectedNode.title }}</span>
-      </p>
-    </VBtn>
-
+    <div>
+      <VBtn
+        v-if="selectedNode && selectedNode.id > 0"
+        class="selected-node pr-1 pl-1 text-body-2"
+        variant="text"
+        @click="gotoNode(selectedNode.id, NodeSelectionType.selected, false)"
+      >
+        <p>
+          {{ $t('tree.selectednode') }}: <span>{{ selectedNode.title }}</span>
+        </p>
+      </VBtn>
+    </div>
     <!-- Dialogs (continued) -->
     <MCDialogDescription
       v-if="dialogDescriptionVisible"
