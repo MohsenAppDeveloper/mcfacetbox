@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 // !SECTION این دیالوگ برای جستجو لیست های تک سطحی و انتخاب یک یا چند مورد میباشد
 
-import { useTree } from '@/store/treeStore'
+import { useTreeStoreV3 } from '@/store/treeStoreV3'
 import type { GridResult, ISimpleSelectableDTO } from '@/types/baseModels'
 import { SelectionType } from '@/types/baseModels'
-import type { ISimpleNestedNodeActionable } from '@/types/tree'
+import type { ISimpleFlatNodeActionable } from '@/types/tree'
 import { replaceTag } from '@/utils/htmlUtils'
 
 interface Prop {
@@ -14,7 +14,7 @@ interface Prop {
   maxHeight?: number
   fillSearchPhraseWithSelected?: boolean
   showParentTitle?: boolean
-  onUpdateNodeTitle: (node: ISimpleNestedNodeActionable, nodenewtitle: string) => Promise<any>
+  onUpdateNodeTitle: (node: ISimpleFlatNodeActionable, nodenewtitle: string) => Promise<any>
 }
 
 const props = defineProps<Prop>()
@@ -28,7 +28,7 @@ interface Emit {
 
 }
 const { t } = useI18n({ useScope: 'global' })
-const { treeIndex } = useTree()
+const treeStore = useTreeStoreV3()
 const selectedItemsLocal = ref<number[]>([])
 const searchResult = reactive<ISimpleSelectableDTO<number>[]>([])
 const searchPhrase = ref('')
@@ -114,8 +114,10 @@ async function replaceNodeTitle() {
 
   const selectedItem = searchResult.findLast(item => item.id === selectedItemsLocal.value[0])
   if (selectedItem) {
-    await props.onUpdateNodeTitle(treeIndex[selectedItemsLocal.value[0]], replaceTag(selectedItem.title, 'em', replacePhrase.value))
-    selectedItem.title = replaceTag(selectedItem.title, 'em', replacePhrase.value)
+    await props.onUpdateNodeTitle(treeStore.getNode(selectedItem.id), replacePhrase.value)
+
+    // replaceTag(selectedItem.title, 'em', replacePhrase.value)
+    selectedItem.title = replacePhrase.value
   }
   replaceloading.value = false
 }

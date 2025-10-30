@@ -262,7 +262,7 @@ function nodeEditCancel(nodeitem: any) {
 /**
  * Save node title edit
  */
-async function nodeEditProgress(nodeitem: any, nodetitle: string) {
+async function nodeEditProgress(nodeitem: ISimpleFlatNodeActionable, nodetitle: string) {
   treeStore.setNodeLoading(nodeitem.id, true)
 
   try {
@@ -274,9 +274,7 @@ async function nodeEditProgress(nodeitem: any, nodetitle: string) {
 
     treeStore.completeEditing(nodeitem.id, nodetitle)
 
-    setTimeout(() => {
-      rootElement.value.$el.focus()
-    }, 1000)
+    focusToRootElemet()
   }
   catch (error) {
     treeStore.setNodeLoading(nodeitem.id, false)
