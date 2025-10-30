@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useSelectTreeNode } from '@/store/treeStore'
+import { useSelectTreeNode } from '@/store/treeStoreV3'
 import { SizeType } from '@/types/baseModels'
 
 interface Prop {
