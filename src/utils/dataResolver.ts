@@ -27,7 +27,7 @@ export const resolveSupervisionStatus = (statusid: SupervisionStatus, resolverta
         return true
     break;
     case SupervisionStatus.ready:
-      if (statusid === SupervisionStatus.primary)
+      if (statusid === SupervisionStatus.primary || statusid === SupervisionStatus.review)
         return true
     break;
 

@@ -346,7 +346,6 @@ declare module 'vue' {
     DropZone: typeof import('./src/@core/components/DropZone.vue')['default']
     ErrorHeader: typeof import('./src/components/ErrorHeader.vue')['default']
     I18n: typeof import('./src/@core/components/I18n.vue')['default']
-    MCAutoFontSize: typeof import('./src/components/MCAutoFontSize.vue')['default']
     MCAyahViewBox: typeof import('./src/components/MainDataCollection/MCAyahViewBox.vue')['default']
     MCDataBoxEditableFootnote: typeof import('./src/components/MCDataBoxEditableFootnote.vue')['default']
     MCDataShelfBox: typeof import('./src/components/MainDataShelf/MCDataShelfBox.vue')['default']
@@ -385,7 +384,6 @@ declare module 'vue' {
     MCMainDataCollection: typeof import('./src/components/MainDataCollection/MCMainDataCollection.vue')['default']
     MCMainDataShelf: typeof import('./src/components/MainDataShelf/MCMainDataShelf.vue')['default']
     MCMainTree: typeof import('./src/components/MainTree/MCMainTree.vue')['default']
-    MCMainTreeV2: typeof import('./src/components/MainTree/MCMainTreeV2.vue')['default']
     MCMainTreeV3: typeof import('./src/components/MainTree/MCMainTreeV3.vue')['default']
     MCNotify: typeof import('./src/components/notify/MCNotify.vue')['default']
     MCPreviewTreeNode: typeof import('./src/components/MCPreviewTreeNode.vue')['default']
@@ -409,5 +407,6 @@ declare module 'vue' {
     TimelineOutlined: typeof import('./src/views/demos/components/timeline/TimelineOutlined.vue')['default']
     TimelineWithIcons: typeof import('./src/views/demos/components/timeline/TimelineWithIcons.vue')['default']
     TiptapEditor: typeof import('./src/@core/components/TiptapEditor.vue')['default']
+    VueApexCharts: typeof import('vue3-apexcharts')['default']
   }
 }
