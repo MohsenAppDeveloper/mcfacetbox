@@ -1,353 +1,379 @@
-e="The disabled devices cannot work properly or install/update the drivers. If you want to find the driver or solution, please click &quot;Enable device&quot;!"/>
-
-	<!--diskspace wnd-->
-	<String name="diskspace_wnd_text1" value="Attention!:"/>
-	<String name="diskspace_wnd_text2" value="Insufficient Disk Space!"/>
-	<String name="diskspace_wnd_text3" value="{f 0}{c #666666}Insufficient Disk Space!({c #f95c30}%s Free space:%s{/c}), unable to continue downloading. Please clean up the disk space. {/c}{/f}"/>
-	
-	<!--dual graphics wnd-->
-	<String name="dual_graphics_wnd_text1" value="Please install Intel integrated graphics driver first before installing independent driver" />
-	<String name="dual_graphics_wnd_text2" value="Please install Intel integrated graphics driver first or it may fail to install the current graphics driver!" />
-	<String name="dual_graphics_wnd_text3" value="Cancel" />
-	<String name="dual_graphics_wnd_text4" value="Install" />
-	
-	<!--special install wnd-->
-	<String name="special_install_wnd_text1" value="Please uninstall the old version before installing the current driver!" />
-	<String name="special_install_wnd_text2" value="To prevent driver conflicts, please follow the instructions to uninstall the old version, if you find &quot;New Device Wizard&quot; after rebooting, please click cancel!" />
-	<String name="special_install_wnd_text3" value="Uninstall the old version!" />
-	<String name="special_install_wnd_text4" value="Uninstalling!" />
-	<String name="special_install_wnd_text5" value="{u}{c #32548c}Backup{/c}{/u}" />
-	
-	<!--repair wmi wnd-->
-	<String name="repair_wmi_wnd_text1" value="The system core service is tampered, fix it now!"/>
-	<String name="repair_wmi_wnd_text2" value="• WMI service issue, may cause hardware, driver, system failure!"/>
-	<String name="repair_wmi_wnd_text3" value="Fix Now!"/>
-	<String name="repair_wmi_wnd_text4" value="The WMI service is fixed and will be effective after rebooting!"/>
-	<String name="repair_wmi_wnd_text5" value="• After rebooting, you can use the driver and hardware detection normally!"/>
-	<String name="repair_wmi_wnd_text6" value="{u}Reboot later!{/u}"/>
-	<String name="repair_wmi_wnd_text7" value="Reboot!"/>
-	
-	<!--printer service wnd-->
-	<String name="printer_service_wnd_text1" value="Attention!"/>
-	<String name="printer_service_wnd_text2" value="Run system printer service!"/>
-	<String name="printer_service_wnd_text3" value="The printer service is closed, which will make the driver fail to be installed, click &quot;OK&quot; to open it!"/>
-	<String name="printer_service_wnd_text4" value="Printer service issue is fixed and will be effective after rebooting!"/>
-	<String name="printer_service_wnd_text5" value="The system service is fixed, please continue to install the printer driver after rebooting."/>
-	<String name="printer_service_wnd_text6" value="Reboot!"/>
-	
-	<!--helper repair wnd-->
-	<String name="helper_repair_wnd_text1" value="Unable to print!"/>
-	<String name="helper_repair_wnd_text2" value="Main performance:"/>
-	<String name="helper_repair_wnd_text3" value="Unable to remove the print service issue, it will cause the printer unable to print or to be found."/>
-	<String name="helper_repair_wnd_text4" value="Possible causes:"/>
-	<String name="helper_repair_wnd_text5" value="1. The print service did not start properly! "/>
-	<String name="helper_repair_wnd_text6" value="2. Some files in the PRINTERS folder error!"/>
-	<String name="helper_repair_wnd_text7" value="AMD driver installation failure!"/>
-	<String name="helper_repair_wnd_text8" value="Error occurred during installating AMD graphics driver!"/>
-	<String name="helper_repair_wnd_text9" value="1. AMD driver installation, but can not find INF file!"/>
-	<String name="helper_repair_wnd_text10" value="2. The Microsoft Visual C ++ runtime is missing from the system!"/>
-	<String name="helper_repair_wnd_text11" value="Driver installation failed!"/>
-	<String name="helper_repair_wnd_text12" value="Failed to install some version of the driver!"/>
-	<String name="helper_repair_wnd_text13" value="1. System environment or driver error! Please install a specific version of the driver!"/>
-	<String name="helper_repair_wnd_text14" value="Fix!"/>
-	
-	<!--helper repair printer action-->
-	<String name="helper_repair_action_text1" value="Fixing the issue of failing to remove the print task! "/>
-	<String name="helper_repair_action_text2" value="Downloading Printer Pool file... "/>
-	<String name="helper_repair_action_text3" value="Installing Printer Pool file..."/>
-	<String name="helper_repair_action_text4" value="Downloading printer service files."/>
-	<String name="helper_repair_action_text5" value="Installing printer service files."/>
-	<String name="helper_repair_action_text6" value="Checking printer service running status."/>
-	<String name="helper_repair_action_text7" value="Checking whether you need to install.Net Framework."/>
-	<String name="helper_repair_action_text8" value="Installing .Net Framework"/>
-	<String name="helper_repair_action_text9" value="Starting printer service."/>
-	<String name="helper_repair_action_text10" value="Downloading .Net Framework..."/>
-	<String name="helper_repair_action_text11" value="Installing .Net Framework"/>
-	<String name="helper_repair_action_text12" value="Download .Net Framework error!"/>
-	<String name="helper_repair_action_text13" value="Download.Net Framework terminated!"/>
-	<String name="helper_repair_action_text14" value="Installing .Net Framework"/>
-	<String name="helper_repair_action_text15" value="The printer unable to print issue fixed!"/>
-	
-	<!--repair amd action-->
-	<String name="repair_amd_action_text1" value="Testing the VC2005 runtime library!"/>
-	<String name="repair_amd_action_text2" value="Downloading VC2005 runtime library!"/>
-	<String name="repair_amd_action_text3" value="Installing VC2005 runtime library!"/>
-	<String name="repair_amd_action_text4" value="VC2005runtime library download error!"/>
-	<String name="repair_amd_action_text5" value="VC2005 Runtime Library download terminated!"/>
-	<String name="repair_amd_action_text6" value="Installing VC2005 runtime library!"/>
-	<String name="repair_amd_action_text7" value="AMD driver installation issue fixed!"/>
-	
-	<!--repair driver install failed-->
-	<String name="repair_driver_install_failed_text1" value="Fix Audio"/>
-	<String name="repair_driver_install_failed_text2" value="Downloading driver."/>
-	<String name="repair_driver_install_failed_text3" value="Installing driver."/>
-	<String name="repair_driver_install_failed_text4" value="Driver download error!"/>
-	<String name="repair_driver_install_failed_text5" value="Driver download terminate!"/>
-	<String name="repair_driver_install_failed_text6" value="Driver fixing!"/>
-	<String name="repair_driver_install_failed_text7" value="Driver fixed!"/>
-	<String name="repair_driver_install_failed_text8" value="Driver installation failure fixed!"/>
-	
-	<!--setting wnd-->
-	<String name="setting_wnd_text1" value="General"/>
-	<String name="setting_wnd_text2" value="Storage"/>
-	<String name="setting_wnd_text3" value="Proxy"/>
-	<String name="setting_wnd_text4" value="Driver version settings"/>
-	<String name="setting_wnd_text5" value="Stable version priority"/>
-	<String name="setting_wnd_text6" value="Latest version priority"/>
-	<String name="setting_wnd_text7" value="Fix message settings"/>
-	<String name="setting_wnd_text8" value="Turn on system environment fix prompts"/>
-	<String name="setting_wnd_text9" value="Turn on system software fix prompts"/>
-	<String name="setting_wnd_text10" value="Extra settings"/>
-	<String name="setting_wnd_text11" value="Update/upgrade driver will automatically create restore point"/>
-	<String name="setting_wnd_text12" value="Driver path"/>
-	<String name="setting_wnd_text13" value="File path"/>
-	<String name="setting_wnd_text14" value="Default"/>
-	<String name="setting_wnd_text15" value="Change"/>
-	<String name="setting_wnd_text16" value="Open"/>
-	<String name="setting_wnd_text17" value="Backup settings"/>
-	<String name="setting_wnd_text18" value="Backup driver to the folder"/>
-	<String name="setting_wnd_text19" value="Backup driver to the ZIP file"/>
-	<String name="setting_wnd_text20" value="Proxy settings"/>
-	<String name="setting_wnd_text21" value="Do not use the Internet proxy"/>
-	<String name="setting_wnd_text22" value="Automatically use IE browser proxy settings"/>
-	<String name="setting_wnd_text23" value="Custom proxy settings"/>
-	<String name="setting_wnd_text24" value="Server addresses"/>
-	<String name="setting_wnd_text25" value="Port"/>
-	<String name="setting_wnd_text26" value="Authentication"/>
-	<String name="setting_wnd_text27" value="No authentication required"/>
-	<String name="setting_wnd_text28" value="Authentication required!"/>
-	<String name="setting_wnd_text29" value="Username"/>
-	<String name="setting_wnd_text30" value="Password"/>
-	<String name="setting_wnd_text31" value="Remind me driver updates are available"/>
-	
-	<!--about wnd-->
-	<String name="aboutwnd_title" value="About"/>
-	<String name="aboutwnd_appname" value="Wise Driver Care"/>
-	<String name="aboutwnd_version" value="Current Version: %s"/>
-	<String name="aboutwnd_support" value="{f 1}{c #000000}Support Email: {/c}{c #2730cf}{a mailto:support@wisecleaner.com}support@wisecleaner.com{/a}{/c}{/f}" />
-	<String name="aboutwnd_homepage" value="{f 1}{c #000000}Homepage: {/c}{c #2730cf}{a http://www.wisecleaner.com}www.wisecleaner.com{/a}{/c}{/f}"/>
-	<String name="aboutwnd_thanks" value="Thanks to the following people for their contributions:"/>
-
-	<String name="aboutwnd_thanks_list" value=" "/>
-	<String name="aboutwnd_copyright" value="Copyright© 2006-2017 WiseCleaner. All rights reserved."/>
-	
-	<!--system restore wnd-->
-	<String name="system_restore_wnd_text1" value="Please enable restore point feature first!"/>
-	<String name="system_restore_wnd_text2" value="Creating system restore points, please wait!"/>
-	<String name="system_restore_wnd_text3" value="System restore is complete. Please reboot your system!"/>
-	
-	<!--net error-->
-	<String name="net_error_wnd_text1" value="No network connection" />
-	<String name="net_error_wnd_text2" value="Check Again" />
-	<String name="net_error_wnd_text3" value="If your network adapter driver is secure, you can" />
-	<String name="net_error_wnd_text4" value="Use the System Assistant to fix the network connection." />
-	<String name="net_error_wnd_text5" value="Network Repair Tool" />
-	<String name="net_error_wnd_text6" value="Check whether the network is connected and whether the router is set up correctly" />
-	<String name="net_error_wnd_text7" value="Check the dial-up connection, or contact the network operator" />
-	<String name="net_error_wnd_text8" value="Did not install adapter driver yet" />
-	<String name="net_error_wnd_text9" value="Can not connect to the server" />
-	<String name="net_error_wnd_text10" value="Detecting network status" />
-	
-	<!--Renew Module-->
-	<String name="Frmrenew.lbltotal" value="Up to now, Wise Driver Care has updated %d drivers for you."/>
-	<String name="Frmrenew.lbldesc" value="One click to update all device outdated drivers."/>
-	<String name="Frmrenew.lblfeature" value="One click to update all device outdated drivers."/>
-	<String name="Frmrenew.lblfeature1" value="The latest driver updates reminder."/>
-	<String name="Frmrenew.lblfeature2" value="One click to clean installed drivers leftovers."/>
-	<String name="Frmrenew.btnrenew" value="Renew Now"/>
-	<String name="Frmrenew.ButtonClose" value="Fermer"/>
-	<String name="Frmrenew..title" value="Wise Driver Care PRO will expire in %d days!"/>
-	<String name="Frmrenew.title2" value="Your license key has expired. Please renew it in time."/>
-	<String name="Frmrenew.Regtitle" value="The days for trial have %d days left."/>
-	<String name="Frmrenew.Regtitle2" value="Your 30 days for trial has expired. Please register in time."/>
-	<String name="Frmrenew.price" value="To remain Pro and keep your drivers updates! only %s !"/>
-
-	<!--Register Module-->
-	<String name="Frmbuy.lblfull" value="Activate Wise Driver Care Pro for More Advanced features."/>
-	<String name="Frmbuy.lblfull1" value="Get the performance boost for your PC and keep your drivers always up-to-date with Wise Driver Care Pro!"/>
-	<String name="Frmbuy.lblinfo0" value="One click to update all device."/>
-	<String name="Frmrenew.lbltotal" value="Up to now, Wise Driver Care has updated %d drivers for you."/>
-	<String name="Frmrenew.lbldesc" value="One-click updating all outdated drivers."/>
-	<String name="Frmrenew.lblfeature" value=" One-click updating all outdated drivers."/>
-	<String name="Frmrenew.lblfeature1" value="The latest driver updates reminder."/>
-	<String name="Frmrenew.lblfeature2" value="One-click cleaning installed driver leftovers."/>
-	<String name="Frmrenew.btnrenew" value="Renew Now"/>
-	<String name="Frmrenew.ButtonClose" value="Fermer"/>
-	<String name="Frmrenew..title" value="Wise Driver Care Pro will expire in %d days!"/>
-	<String name="Frmrenew.title2" value="Your License Key has expired. Please renew it in time."/>
-	<String name="Frmrenew.Regtitle" value="The days for trial is %d days left."/>
-	<String name="Frmrenew.Regtitle2" value="Your 30-day trial has expired. Please register in time."/>
-	<String name="Frmrenew.price" value="To keep Pro version and keep your drivers up to date! only %s !"/>
-	
-	<!--Register Module-->
-	<String name="Frmbuy.lblfull" value="Activate Wise Driver Care Pro for more Advanced features."/>
-	<String name="Frmbuy.lblfull1" value="Boost your PC performance and keep your drivers always up-to-date with Wise Driver Care Pro!"/>
-	<String name="Frmbuy.lblinfo0" value=" One-click updating all outdated drivers."/>	
-	<String name="Frmbuy.lblinfo1" value="The latest driver updates reminder."/>
-	<String name="Frmbuy.lblinfo2" value=" One-click cleaning installed driver leftovers."/>
-	<String name="Frmbuy.btnbuy" value="Buy Now"/>
-	<String name="Frmbuy.lblkey" value="Already have a license key?"/>
-	<String name="Frmbuy.btnactive" value=" Activate it with your key"/>
-	<String name="FrmLicense.btnregister" value="Register"/>
-	<String name="FrmLicense.lblnokey" value="Have not a license key yet?"/>
-	<String name="FrmLicense.btnbuy" value="Buy Now"/>
-	<String name="FrmLicense.lblemail" value="Email:"/>
-	<String name="FrmLicense.lblhelp" value="Have trouble inputting license key?"/>
-	<String name="FrmLicense.lblinfo" value="Thank you for choosing Wise Driver Care"/>
-	<String name="FrmLicense.lblinput" value="Please input your license key to activate the Pro version."/>
-	<String name="FrmLicense.lblkey" value="License key"/>
-	<String name="FrmLicense.lblname" value="User Name:"/>
-    <String name="FrmLicense.lblsupport" value="Contact Us"/>
-    <String name="FrmLicense.EmptyEmail" value="Please enter your email address."/>
-    <String name="FrmLicense.EmptyName" value="Please enter your name."/>
-    <String name="FrmLicense.InvalidEmail" value="Please enter a correct email address."/>
-    <String name="FrmLicense.EmpytKey" value="License key is empty."/>
-    <String name="FrmLicense.InvalidKey" value="Invalid license key."/>
-    <String name="FrmLicense.pmCut" value="Cut"/>
-    <String name="FrmLicense.pmCopy" value="Copy"/>
-    <String name="FrmLicense.pmPaste" value="Paste"/>
-    <String name="FrmLicense.pmDelete" value="Delete"/>
-    <String name="FrmLicense.pmSelectAll" value="Select all"/>
-    <String name="FrmLicense.ActivateOnline" value="Now checking your registration information, the process will take a few seconds."/>
-    <String name="FrmLicense.ThanksRegister" value="Thank you for registering this product!"/>
-    <String name="FrmLicense.Activated" value="The full version has been activated."/>
-    <String name="FrmLicense.OverMaxTimes" value="Authentication failure, perhaps you have installed the program more than 10 times, please contact us to extend your license."/>
-    <String name="FrmLicense.NoRegInfo" value="Cannot find your registration information."/>
-
-	<!--Fix Network Issue-->	
-	<String name="net_helper_text1" value="Wise Driver Care -Network Repair" />
-	<String name="net_helper_text2" value="Detecting network connection configuration ..." />
-	<String name="net_helper_text3" value="Network connection is abnormal, it is recommended to fix it." />
-	<String name="net_helper_text4" value="Repairing network configuration ..." />
-	<String name="net_helper_text5" value="NIC driver needs to be installed." />
-	<String name="net_helper_text6" value="Fix network configuration issues." />
-	<String name="net_helper_text7" value="Installing network adapter driver now." />
-	<String name="net_helper_text8" value="NIC driver installation is complete." />
-	<String name="net_helper_text9" value="{f 3}Network configuration is complete, {c #e8541f}Reboot your computer{/c} to get it work.{/f}" />
-	<String name="net_helper_text10" value="Reinstall the network adapter driver." />
-	<String name="net_helper_text11" value="{f 5}Detection is complete, your network connection is active.{/f}" />
-	<String name="net_helper_text12" value="Fix network configuration issues." />
-	<String name="net_helper_text13" value="Installing %s" />
-	<String name="net_helper_text14" value="Network connection is active." />
-	<String name="net_helper_text15" value="Network connection is abnormal." />
-	<String name="net_helper_text16" value="Reinstall the network network adapter driver driver to fix this issue." />
-	<String name="net_helper_text17" value="There might be a problem with network adapter driver. You can download it via smartphone." />
-	<String name="net_helper_text18" value="There might be a problem with network adapter driver. You can click to fix it." />
-	<String name="net_helper_text19" value="There might be a problem with network adapter driver. It is recommended to fix it." />
-	<String name="net_helper_text20" value="Fixing network configuration now." />
-	<String name="net_helper_text21" value="Feedback Problem" />
-	<String name="net_helper_text22" value="Repair Now" />
-	<String name="net_helper_text23" value="Solved" />
-	<String name="net_helper_text24" value="Download via Phone" />
-	<String name="net_helper_text25" value="Check network" />
-
-	<String name="net_helper_text26" value="Network Repair" />
-	
-	<String name="net_helper_repair_text1" value="Repair is finished." />
-	<String name="net_helper_repair_text2" value="Start to fix the network environment." />
-	<String name="net_helper_repair_text3" value="Re-detecting network." />
-	<String name="net_helper_repair_text4" value="Setting up HomeGroup." />
-	<String name="net_helper_repair_text5" value="Setting up network security properties." />
-	<String name="net_helper_repair_text6" value="Fixing network connection." />
-	<String name="net_helper_repair_text7" value="Start to fix network adapter settings." />
-	<String name="net_helper_repair_text8" value="Restarting abnormal network adapters..." />
-	<String name="net_helper_repair_text9" value="Fixing DHCP Client service..." />
-	<String name="net_helper_repair_text10" value="Fixing Network Setup Service..." />
-	<String name="net_helper_repair_text11" value="Fixing the network adapter..." />
-	
-	<String name="net_helper_driver_text1" value="Wired Network Adapters:%s" />
-	<String name="net_helper_driver_text2" value="Wireless Network Adapters:%s" />
-	<String name="net_helper_driver_text3" value="Network Adapters:%s" />
-	<String name="net_helper_driver_text4" value="Driver version:%s" />
-	
-	<!--Fix No Sound Error-->
-	<String name="soundtool_title" value="Sound Repair" />
-	<String name="soundtool_checking_config" value="Detecting sound configuration..." />
-	<String name="soundtool_repair_text" value="Repair sound configuration." />
-	<String name="soundtool_repairing" value="Repairing..." />
-	<String name="soundtool_repaired" value="Repair is complete." />
-	
-	<String name="soundtool_download_driver" value="Downloading sound card driver..." />
-	<String name="soundtool_download_error" value="Download failed." />
-	<String name="soundtool_installing_driver" value="Installing sound card driver..." />	
-	<String name="soundtool_install_error" value="Installation failed." />	
-	<String name="soundtool_install_finish" value="Installation is finished. It will work after restarting the computer. " />		
-	
-	<String name="soundtool_fix_error" value="Sound card driver installation failed, click here to repair it." />
-	<String name="soundtool_retry_netwrok_tip" value="Please check your network connection." />
-	<String name="soundtool_retry_button_text" value="Retry" />
-	
-	<String name="soundtool_sound_label" value="Volume:" />
-	<String name="soundtool_sound_test_label" value="Click to verify" />
-	
-	<String name="soundtool_sound_reinstall_driver_label" value="Reinstall the sound card driver to fix the sound problem." />	
-	
-	<String name="soundtool_sound_hardware_err_title" value="Sound card is abnormal, please check it." />
-	<String name="soundtool_sound_hardware_err_content" value="{f 1}{c #555658}Try open {a app:devmgmt}device manager{/a}, after refreshing the device list {a app:retry}retry{/a} or restart the computer to repair it again.{/c}{/f}" />
-
-	<String name="soundtool_pop_title" value="The sound tool reminds you:" />
-	<String name="soundtool_pop_tip" value="Installing the driver now." />
-	<String name="soundtool_pop_show" value="Display" />
-	<String name="soundtool_pop_exit" value="Exit" />
-	
-	<String name="soundtool_repair_btn_text" value="Repair" />	
-	<String name="soundtool_prob_btn_text" value="Unsolved" />
-	<String name="soundtool_finish_btn_text" value="Solved" />
-	<String name="soundtool_test_btn_text" value="Test" />	
-	<String name="soundtool_reinstall_now_btn_text" value="Reinstall" />
-	<String name="soundtool_reboot_now_btn_text" value="Reboot!" />
-	<String name="soundtool_reboot_later_btn_text" value="Reboot later!" />	
-
-    <!-- update form -->
-    <String name="update_form_title" value="Software update" />    
-    <String name="update_tip_text_error_info_21" value="Internet connection timeout" />
-    <String name="update_tip_text_error_info_22" value="Updating file ....." />
-    <String name="update_tip_text_check" value="Check updates ......" />
-    <String name="update_tip_text_error_info_15" value="" />
-    <String name="update_tip_text_error_info_16" value="" />
-    <String name="update_tip_text_error_info_17" value="" />
-    <String name="update_tip_text_error_info_18" value="" />
-    <String name="update_tip_text_error_info_19" value="" />
-    <String name="update_tip_text_error_info_20" value="" />
-    <String name="update_tip_text_error_info_1" value="You are using the latest version." />
-    <String name="update_tip_text_error_info_2" value="Failed to download files, please try again later." />
-    <String name="update_tip_text_error_info_3" value="Failed to update files, please upgrade it again." />
-    <String name="update_tip_text_error_info_4" value="Failed to download upgrade files." />
-    <String name="update_tip_text_error_info_5" value="Failed to initialize the program." />
-    <String name="update_tip_text_error_info_6" value="Upgrade is complete, please reboot Wise Driver Care." />
-    <String name="update_tip_text_error_info_7" value="Upgrade is complete, please reboot the computer." />
-    <String name="update_tip_text_error_info_8" value="Congratulations, Wise Driver Care has been upgraded to the latest version!" />
-    <String name="update_tip_text_error_info_9" value="" />
-    <String name="update_tip_text_error_info_10" value="" />
-    <String name="update_tip_text_error_info_11" value="" />
-    <String name="update_tip_text_error_info_12" value="" />
-    <String name="update_tip_text_error_info_13" value="" />
-    <String name="update_tip_text_error_info_14" value="" />
-    <String name="update_btn_text_update" value="Update now" />
-    <String name="update_btn_text_close" value="Fermer" />
-    <String name="update_btn_text_reboot" value="Reboot" />
-    <String name="update_btn_text_reboot_main_program" value="Reboot Wise Driver Care" />
-    <String name="update_btn_text_cancel" value="Cancel" />
-    <String name="update_btn_text_success" value="OK" />
-    <String name="update_tip_text_network_timeout" value="Internet connection timeout" />
-    <String name="update_current_file_info" value="Current File: %s" />
-    <String name="update_download_percent" value="%.f %%" />
-
-	<!--xp dual graphics message-->
-	<String name="xp_dual_graphics_wnd_text1" value="Windows XP does not support dual graphics card, it is recommended to upgrade to Win7 or later!"/>
-	<String name="xp_dual_graphics_wnd_text2" value="%s is invalid in Windows XP which has dual graphics, and may cause system crash. The driver has been blocked."/>
-	
-	<!--register message-->
-	<String name="register_success" value="Register Successful"/>
-	<String name="register_fail" value="Register Failed"/>
-	
-	<!--msgbox -->
-	<String name="msgbox_text1" value="The program will be restarted to apply new changes!" />
-	<String name="msgbox_text2" value="Please wait until current task is complete, and then try again." />
-</Strings>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 re')['useWindowFocus']
+/* eslint-disable */
+/* prettier-ignore */
+// @ts-nocheck
+// noinspection JSUnusedGlobalSymbols
+// Generated by unplugin-auto-import
+export {}
+declare global {
+  const $api: typeof import('./src/utils/api')['$api']
+  const $apiFake: typeof import('./src/utils/api')['$apiFake']
+  const BookReferenceModel: typeof import('./src/utils/refrenceUtils')['BookReferenceModel']
+  const COOKIE_MAX_AGE_1_YEAR: typeof import('./src/utils/constants')['COOKIE_MAX_AGE_1_YEAR']
+  const CustomFetchError: typeof import('./src/utils/api')['CustomFetchError']
+  const DialogSizeMD: typeof import('./src/utils/constants')['DialogSizeMD']
+  const DialogSizeSM: typeof import('./src/utils/constants')['DialogSizeSM']
+  const DialogSizeXS: typeof import('./src/utils/constants')['DialogSizeXS']
+  const EffectScope: typeof import('vue')['EffectScope']
+  const FirstPageDefaultNumber: typeof import('./src/utils/constants')['FirstPageDefaultNumber']
+  const HttpStatusCodesWasHandled: typeof import('./src/utils/constants')['HttpStatusCodesWasHandled']
+  const NewUUID: typeof import('./src/utils/general')['NewUUID']
+  const QueryParamAlias: typeof import('./src/composables/useRouterVariables')['QueryParamAlias']
+  const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
+  const alphaDashValidator: typeof import('./src/@core/utils/validators')['alphaDashValidator']
+  const alphaValidator: typeof import('./src/@core/utils/validators')['alphaValidator']
+  const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
+  const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
+  const avatarText: typeof import('./src/@core/utils/formatters')['avatarText']
+  const betweenValidator: typeof import('./src/@core/utils/validators')['betweenValidator']
+  const computed: typeof import('vue')['computed']
+  const computedAsync: typeof import('@vueuse/core')['computedAsync']
+  const computedEager: typeof import('@vueuse/core')['computedEager']
+  const computedInject: typeof import('@vueuse/core')['computedInject']
+  const computedWithControl: typeof import('@vueuse/core')['computedWithControl']
+  const confirmSwal: typeof import('./src/utils/alert')['confirmSwal']
+  const confirmedValidator: typeof import('./src/@core/utils/validators')['confirmedValidator']
+  const controlledComputed: typeof import('@vueuse/core')['controlledComputed']
+  const controlledRef: typeof import('@vueuse/core')['controlledRef']
+  const convertSimpleTreeToSimpleDtoArray: typeof import('./src/composables/objectUtils')['convertSimpleTreeToSimpleDtoArray']
+  const convertToEnglishNumbers: typeof import('./src/utils/stringUtils')['convertToEnglishNumbers']
+  const createApp: typeof import('vue')['createApp']
+  const createAyahUrl: typeof import('./src/utils/dataResolver')['createAyahUrl']
+  const createEventHook: typeof import('@vueuse/core')['createEventHook']
+  const createFootnoteTag: typeof import('./src/utils/htmlUtils')['createFootnoteTag']
+  const createGenericProjection: typeof import('@vueuse/math')['createGenericProjection']
+  const createGlobalState: typeof import('@vueuse/core')['createGlobalState']
+  const createHadithURL: typeof import('./src/utils/dataResolver')['createHadithURL']
+  const createInjectionState: typeof import('@vueuse/core')['createInjectionState']
+  const createPinia: typeof import('pinia')['createPinia']
+  const createProjection: typeof import('@vueuse/math')['createProjection']
+  const createReactiveFn: typeof import('@vueuse/core')['createReactiveFn']
+  const createReusableTemplate: typeof import('@vueuse/core')['createReusableTemplate']
+  const createSharedComposable: typeof import('@vueuse/core')['createSharedComposable']
+  const createTemplatePromise: typeof import('@vueuse/core')['createTemplatePromise']
+  const createUnrefFn: typeof import('@vueuse/core')['createUnrefFn']
+  const createUrl: typeof import('./src/@core/composable/createUrl')['createUrl']
+  const customRef: typeof import('vue')['customRef']
+  const debouncedRef: typeof import('@vueuse/core')['debouncedRef']
+  const debouncedWatch: typeof import('@vueuse/core')['debouncedWatch']
+  const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
+  const defineComponent: typeof import('vue')['defineComponent']
+  const defineLoader: typeof import('vue-router/auto')['defineLoader']
+  const definePage: typeof import('unplugin-vue-router/runtime')['_definePage']
+  const defineStore: typeof import('pinia')['defineStore']
+  const directives: typeof import('./src/utils/directives')['default']
+  const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
+  const effectScope: typeof import('vue')['effectScope']
+  const emailValidator: typeof import('./src/@core/utils/validators')['emailValidator']
+  const extendRef: typeof import('@vueuse/core')['extendRef']
+  const formatDate: typeof import('./src/@core/utils/formatters')['formatDate']
+  const formatDateToMonthShort: typeof import('./src/@core/utils/formatters')['formatDateToMonthShort']
+  const formatString: typeof import('./src/composables/objectUtils')['formatString']
+  const generateAyahFootnoteRefrence: typeof import('./src/utils/refrenceUtils')['generateAyahFootnoteRefrence']
+  const generateFootnoteRefrence: typeof import('./src/utils/refrenceUtils')['generateFootnoteRefrence']
+  const getActivePinia: typeof import('pinia')['getActivePinia']
+  const getCurrentInstance: typeof import('vue')['getCurrentInstance']
+  const getCurrentScope: typeof import('vue')['getCurrentScope']
+  const getSelectedTextWithinElement: typeof import('./src/utils/htmlUtils')['getSelectedTextWithinElement']
+  const h: typeof import('vue')['h']
+  const handleFetchError: typeof import('./src/utils/api')['handleFetchError']
+  const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
+  const inject: typeof import('vue')['inject']
+  const injectLocal: typeof import('@vueuse/core')['injectLocal']
+  const integerValidator: typeof import('./src/@core/utils/validators')['integerValidator']
+  const isDefined: typeof import('@vueuse/core')['isDefined']
+  const isEmpty: typeof import('./src/@core/utils/helpers')['isEmpty']
+  const isEmptyArray: typeof import('./src/@core/utils/helpers')['isEmptyArray']
+  const isNullOrUndefined: typeof import('./src/@core/utils/helpers')['isNullOrUndefined']
+  const isObject: typeof import('./src/@core/utils/helpers')['isObject']
+  const isProxy: typeof import('vue')['isProxy']
+  const isReactive: typeof import('vue')['isReactive']
+  const isReadonly: typeof import('vue')['isReadonly']
+  const isRef: typeof import('vue')['isRef']
+  const isToday: typeof import('./src/@core/utils/helpers')['isToday']
+  const joinWithDots: typeof import('./src/utils/stringUtils')['joinWithDots']
+  const kFormatter: typeof import('./src/@core/utils/formatters')['kFormatter']
+  const lengthValidator: typeof import('./src/@core/utils/validators')['lengthValidator']
+  const logicAnd: typeof import('@vueuse/math')['logicAnd']
+  const logicNot: typeof import('@vueuse/math')['logicNot']
+  const logicOr: typeof import('@vueuse/math')['logicOr']
+  const makeDestructurable: typeof import('@vueuse/core')['makeDestructurable']
+  const mapActions: typeof import('pinia')['mapActions']
+  const mapGetters: typeof import('pinia')['mapGetters']
+  const mapState: typeof import('pinia')['mapState']
+  const mapStores: typeof import('pinia')['mapStores']
+  const mapWritableState: typeof import('pinia')['mapWritableState']
+  const markRaw: typeof import('vue')['markRaw']
+  const nextTick: typeof import('vue')['nextTick']
+  const normalizeText: typeof import('./src/composables/objectUtils')['normalizeText']
+  const objectMap: typeof import('./src/composables/objectUtils')['objectMap']
+  const onActivated: typeof import('vue')['onActivated']
+  const onBeforeMount: typeof import('vue')['onBeforeMount']
+  const onBeforeRouteLeave: typeof import('vue-router/auto')['onBeforeRouteLeave']
+  const onBeforeRouteUpdate: typeof import('vue-router/auto')['onBeforeRouteUpdate']
+  const onBeforeUnmount: typeof import('vue')['onBeforeUnmount']
+  const onBeforeUpdate: typeof import('vue')['onBeforeUpdate']
+  const onClickOutside: typeof import('@vueuse/core')['onClickOutside']
+  const onDeactivated: typeof import('vue')['onDeactivated']
+  const onErrorCaptured: typeof import('vue')['onErrorCaptured']
+  const onKeyStroke: typeof import('@vueuse/core')['onKeyStroke']
+  const onLongPress: typeof import('@vueuse/core')['onLongPress']
+  const onMounted: typeof import('vue')['onMounted']
+  const onRenderTracked: typeof import('vue')['onRenderTracked']
+  const onRenderTriggered: typeof import('vue')['onRenderTriggered']
+  const onScopeDispose: typeof import('vue')['onScopeDispose']
+  const onServerPrefetch: typeof import('vue')['onServerPrefetch']
+  const onStartTyping: typeof import('@vueuse/core')['onStartTyping']
+  const onUnmounted: typeof import('vue')['onUnmounted']
+  const onUpdated: typeof import('vue')['onUpdated']
+  const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
+  const paginationMeta: typeof import('./src/utils/paginationMeta')['paginationMeta']
+  const passwordValidator: typeof import('./src/@core/utils/validators')['passwordValidator']
+  const pausableWatch: typeof import('@vueuse/core')['pausableWatch']
+  const prefixWithPlus: typeof import('./src/@core/utils/formatters')['prefixWithPlus']
+  const provide: typeof import('vue')['provide']
+  const provideLocal: typeof import('@vueuse/core')['provideLocal']
+  const reactify: typeof import('@vueuse/core')['reactify']
+  const reactifyObject: typeof import('@vueuse/core')['reactifyObject']
+  const reactive: typeof import('vue')['reactive']
+  const reactiveComputed: typeof import('@vueuse/core')['reactiveComputed']
+  const reactiveOmit: typeof import('@vueuse/core')['reactiveOmit']
+  const reactivePick: typeof import('@vueuse/core')['reactivePick']
+  const readonly: typeof import('vue')['readonly']
+  const ref: typeof import('vue')['ref']
+  const refAutoReset: typeof import('@vueuse/core')['refAutoReset']
+  const refDebounced: typeof import('@vueuse/core')['refDebounced']
+  const refDefault: typeof import('@vueuse/core')['refDefault']
+  const refThrottled: typeof import('@vueuse/core')['refThrottled']
+  const refWithControl: typeof import('@vueuse/core')['refWithControl']
+  const regexValidator: typeof import('./src/@core/utils/validators')['regexValidator']
+  const registerPlugins: typeof import('./src/@core/utils/plugins')['registerPlugins']
+  const removeHtmlTags: typeof import('./src/utils/htmlUtils')['removeHtmlTags']
+  const replaceTag: typeof import('./src/utils/htmlUtils')['replaceTag']
+  const requiredValidator: typeof import('./src/@core/utils/validators')['requiredValidator']
+  const resolveActiveColor: typeof import('./src/utils/dataResolver')['resolveActiveColor']
+  const resolveActiveTitle: typeof import('./src/utils/dataResolver')['resolveActiveTitle']
+  const resolveComponent: typeof import('vue')['resolveComponent']
+  const resolveRef: typeof import('@vueuse/core')['resolveRef']
+  const resolveSupervisionStatus: typeof import('./src/utils/dataResolver')['resolveSupervisionStatus']
+  const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
+  const resolveVuetifyTheme: typeof import('./src/@core/utils/vuetify')['resolveVuetifyTheme']
+  const searchItems: typeof import('./src/composables/objectUtils')['searchItems']
+  const setActivePinia: typeof import('pinia')['setActivePinia']
+  const setMapStoreSuffix: typeof import('pinia')['setMapStoreSuffix']
+  const shallowReactive: typeof import('vue')['shallowReactive']
+  const shallowReadonly: typeof import('vue')['shallowReadonly']
+  const shallowRef: typeof import('vue')['shallowRef']
+  const showLoadingSwal: typeof import('./src/utils/alert')['showLoadingSwal']
+  const showSwal: typeof import('./src/utils/alert')['showSwal']
+  const storeToRefs: typeof import('pinia')['storeToRefs']
+  const syncRef: typeof import('@vueuse/core')['syncRef']
+  const syncRefs: typeof import('@vueuse/core')['syncRefs']
+  const templateRef: typeof import('@vueuse/core')['templateRef']
+  const throttledRef: typeof import('@vueuse/core')['throttledRef']
+  const throttledWatch: typeof import('@vueuse/core')['throttledWatch']
+  const toRaw: typeof import('vue')['toRaw']
+  const toReactive: typeof import('@vueuse/core')['toReactive']
+  const toRef: typeof import('vue')['toRef']
+  const toRefs: typeof import('vue')['toRefs']
+  const toValue: typeof import('vue')['toValue']
+  const treeNodeDeselectAll: typeof import('./src/composables/treeUtils')['treeNodeDeselectAll']
+  const triggerRef: typeof import('vue')['triggerRef']
+  const tryOnBeforeMount: typeof import('@vueuse/core')['tryOnBeforeMount']
+  const tryOnBeforeUnmount: typeof import('@vueuse/core')['tryOnBeforeUnmount']
+  const tryOnMounted: typeof import('@vueuse/core')['tryOnMounted']
+  const tryOnScopeDispose: typeof import('@vueuse/core')['tryOnScopeDispose']
+  const tryOnUnmounted: typeof import('@vueuse/core')['tryOnUnmounted']
+  const unref: typeof import('vue')['unref']
+  const unrefElement: typeof import('@vueuse/core')['unrefElement']
+  const until: typeof import('@vueuse/core')['until']
+  const urlValidator: typeof import('./src/@core/utils/validators')['urlValidator']
+  const useAbility: typeof import('./src/plugins/casl/composables/useAbility')['useAbility']
+  const useAbs: typeof import('@vueuse/math')['useAbs']
+  const useActiveElement: typeof import('@vueuse/core')['useActiveElement']
+  const useAnimate: typeof import('@vueuse/core')['useAnimate']
+  const useApi: typeof import('./src/composables/useApi')['useApi']
+  const useApiFake: typeof import('./src/composables/useApi')['useApiFake']
+  const useArrayDifference: typeof import('@vueuse/core')['useArrayDifference']
+  const useArrayEvery: typeof import('@vueuse/core')['useArrayEvery']
+  const useArrayFilter: typeof import('@vueuse/core')['useArrayFilter']
+  const useArrayFind: typeof import('@vueuse/core')['useArrayFind']
+  const useArrayFindIndex: typeof import('@vueuse/core')['useArrayFindIndex']
+  const useArrayFindLast: typeof import('@vueuse/core')['useArrayFindLast']
+  const useArrayIncludes: typeof import('@vueuse/core')['useArrayIncludes']
+  const useArrayJoin: typeof import('@vueuse/core')['useArrayJoin']
+  const useArrayMap: typeof import('@vueuse/core')['useArrayMap']
+  const useArrayReduce: typeof import('@vueuse/core')['useArrayReduce']
+  const useArraySome: typeof import('@vueuse/core')['useArraySome']
+  const useArrayUnique: typeof import('@vueuse/core')['useArrayUnique']
+  const useAsyncQueue: typeof import('@vueuse/core')['useAsyncQueue']
+  const useAsyncState: typeof import('@vueuse/core')['useAsyncState']
+  const useAttrs: typeof import('vue')['useAttrs']
+  const useAverage: typeof import('@vueuse/math')['useAverage']
+  const useBase64: typeof import('@vueuse/core')['useBase64']
+  const useBattery: typeof import('@vueuse/core')['useBattery']
+  const useBluetooth: typeof import('@vueuse/core')['useBluetooth']
+  const useBreakpoints: typeof import('@vueuse/core')['useBreakpoints']
+  const useBroadcastChannel: typeof import('@vueuse/core')['useBroadcastChannel']
+  const useBrowserLocation: typeof import('@vueuse/core')['useBrowserLocation']
+  const useCached: typeof import('@vueuse/core')['useCached']
+  const useCeil: typeof import('@vueuse/math')['useCeil']
+  const useClamp: typeof import('@vueuse/math')['useClamp']
+  const useClipboard: typeof import('@vueuse/core')['useClipboard']
+  const useClipboardItems: typeof import('@vueuse/core')['useClipboardItems']
+  const useCloned: typeof import('@vueuse/core')['useCloned']
+  const useColorMode: typeof import('@vueuse/core')['useColorMode']
+  const useConfirmDialog: typeof import('@vueuse/core')['useConfirmDialog']
+  const useCookie: typeof import('./src/@core/composable/useCookie')['useCookie']
+  const useCounter: typeof import('@vueuse/core')['useCounter']
+  const useCssModule: typeof import('vue')['useCssModule']
+  const useCssVar: typeof import('@vueuse/core')['useCssVar']
+  const useCssVars: typeof import('vue')['useCssVars']
+  const useCurrentElement: typeof import('@vueuse/core')['useCurrentElement']
+  const useCycleList: typeof import('@vueuse/core')['useCycleList']
+  const useDark: typeof import('@vueuse/core')['useDark']
+  const useDateFormat: typeof import('@vueuse/core')['useDateFormat']
+  const useDebounce: typeof import('@vueuse/core')['useDebounce']
+  const useDebounceFn: typeof import('@vueuse/core')['useDebounceFn']
+  const useDebouncedRefHistory: typeof import('@vueuse/core')['useDebouncedRefHistory']
+  const useDeviceMotion: typeof import('@vueuse/core')['useDeviceMotion']
+  const useDeviceOrientation: typeof import('@vueuse/core')['useDeviceOrientation']
+  const useDevicePixelRatio: typeof import('@vueuse/core')['useDevicePixelRatio']
+  const useDevicesList: typeof import('@vueuse/core')['useDevicesList']
+  const useDisplayMedia: typeof import('@vueuse/core')['useDisplayMedia']
+  const useDocumentVisibility: typeof import('@vueuse/core')['useDocumentVisibility']
+  const useDraggable: typeof import('@vueuse/core')['useDraggable']
+  const useDropZone: typeof import('@vueuse/core')['useDropZone']
+  const useElementBounding: typeof import('@vueuse/core')['useElementBounding']
+  const useElementByPoint: typeof import('@vueuse/core')['useElementByPoint']
+  const useElementHover: typeof import('@vueuse/core')['useElementHover']
+  const useElementSize: typeof import('@vueuse/core')['useElementSize']
+  const useElementVisibility: typeof import('@vueuse/core')['useElementVisibility']
+  const useEventBus: typeof import('@vueuse/core')['useEventBus']
+  const useEventListener: typeof import('@vueuse/core')['useEventListener']
+  const useEventSource: typeof import('@vueuse/core')['useEventSource']
+  const useEyeDropper: typeof import('@vueuse/core')['useEyeDropper']
+  const useFavicon: typeof import('@vueuse/core')['useFavicon']
+  const useFetch: typeof import('@vueuse/core')['useFetch']
+  const useFileDialog: typeof import('@vueuse/core')['useFileDialog']
+  const useFileSystemAccess: typeof import('@vueuse/core')['useFileSystemAccess']
+  const useFloor: typeof import('@vueuse/math')['useFloor']
+  const useFocus: typeof import('@vueuse/core')['useFocus']
+  const useFocusWithin: typeof import('@vueuse/core')['useFocusWithin']
+  const useFps: typeof import('@vueuse/core')['useFps']
+  const useFullscreen: typeof import('@vueuse/core')['useFullscreen']
+  const useGamepad: typeof import('@vueuse/core')['useGamepad']
+  const useGenerateImageVariant: typeof import('./src/@core/composable/useGenerateImageVariant')['useGenerateImageVariant']
+  const useGeolocation: typeof import('@vueuse/core')['useGeolocation']
+  const useI18n: typeof import('vue-i18n')['useI18n']
+  const useId: typeof import('vue')['useId']
+  const useIdle: typeof import('@vueuse/core')['useIdle']
+  const useImage: typeof import('@vueuse/core')['useImage']
+  const useInfiniteScroll: typeof import('@vueuse/core')['useInfiniteScroll']
+  const useIntersectionObserver: typeof import('@vueuse/core')['useIntersectionObserver']
+  const useInterval: typeof import('@vueuse/core')['useInterval']
+  const useIntervalFn: typeof import('@vueuse/core')['useIntervalFn']
+  const useKeyModifier: typeof import('@vueuse/core')['useKeyModifier']
+  const useLastChanged: typeof import('@vueuse/core')['useLastChanged']
+  const useLocalStorage: typeof import('@vueuse/core')['useLocalStorage']
+  const useMagicKeys: typeof import('@vueuse/core')['useMagicKeys']
+  const useManualRefHistory: typeof import('@vueuse/core')['useManualRefHistory']
+  const useMath: typeof import('@vueuse/math')['useMath']
+  const useMax: typeof import('@vueuse/math')['useMax']
+  const useMediaControls: typeof import('@vueuse/core')['useMediaControls']
+  const useMediaQuery: typeof import('@vueuse/core')['useMediaQuery']
+  const useMemoize: typeof import('@vueuse/core')['useMemoize']
+  const useMemory: typeof import('@vueuse/core')['useMemory']
+  const useMin: typeof import('@vueuse/math')['useMin']
+  const useModel: typeof import('vue')['useModel']
+  const useMounted: typeof import('@vueuse/core')['useMounted']
+  const useMouse: typeof import('@vueuse/core')['useMouse']
+  const useMouseInElement: typeof import('@vueuse/core')['useMouseInElement']
+  const useMousePressed: typeof import('@vueuse/core')['useMousePressed']
+  const useMutationObserver: typeof import('@vueuse/core')['useMutationObserver']
+  const useNavigatorLanguage: typeof import('@vueuse/core')['useNavigatorLanguage']
+  const useNetwork: typeof import('@vueuse/core')['useNetwork']
+  const useNow: typeof import('@vueuse/core')['useNow']
+  const useObjectUrl: typeof import('@vueuse/core')['useObjectUrl']
+  const useOffsetPagination: typeof import('@vueuse/core')['useOffsetPagination']
+  const useOnline: typeof import('@vueuse/core')['useOnline']
+  const usePageLeave: typeof import('@vueuse/core')['usePageLeave']
+  const useParallax: typeof import('@vueuse/core')['useParallax']
+  const useParentElement: typeof import('@vueuse/core')['useParentElement']
+  const usePerformanceObserver: typeof import('@vueuse/core')['usePerformanceObserver']
+  const usePermission: typeof import('@vueuse/core')['usePermission']
+  const usePersianDate: typeof import('./src/composables/dateUtils')['usePersianDate']
+  const usePointer: typeof import('@vueuse/core')['usePointer']
+  const usePointerLock: typeof import('@vueuse/core')['usePointerLock']
+  const usePointerSwipe: typeof import('@vueuse/core')['usePointerSwipe']
+  const usePrecision: typeof import('@vueuse/math')['usePrecision']
+  const usePreferredColorScheme: typeof import('@vueuse/core')['usePreferredColorScheme']
+  const usePreferredContrast: typeof import('@vueuse/core')['usePreferredContrast']
+  const usePreferredDark: typeof import('@vueuse/core')['usePreferredDark']
+  const usePreferredLanguages: typeof import('@vueuse/core')['usePreferredLanguages']
+  const usePreferredReducedMotion: typeof import('@vueuse/core')['usePreferredReducedMotion']
+  const usePrevious: typeof import('@vueuse/core')['usePrevious']
+  const useProjection: typeof import('@vueuse/math')['useProjection']
+  const useRafFn: typeof import('@vueuse/core')['useRafFn']
+  const useRefHistory: typeof import('@vueuse/core')['useRefHistory']
+  const useResizeObserver: typeof import('@vueuse/core')['useResizeObserver']
+  const useResponsiveLeftSidebar: typeof import('./src/@core/composable/useResponsiveSidebar')['useResponsiveLeftSidebar']
+  const useRound: typeof import('@vueuse/math')['useRound']
+  const useRoute: typeof import('vue-router/auto')['useRoute']
+  const useRouter: typeof import('vue-router/auto')['useRouter']
+  const useRouterVariables: typeof import('./src/composables/useRouterVariables')['default']
+  const useScreenOrientation: typeof import('@vueuse/core')['useScreenOrientation']
+  const useScreenSafeArea: typeof import('@vueuse/core')['useScreenSafeArea']
+  const useScriptTag: typeof import('@vueuse/core')['useScriptTag']
+  const useScroll: typeof import('@vueuse/core')['useScroll']
+  const useScrollLock: typeof import('@vueuse/core')['useScrollLock']
+  const useSessionStorage: typeof import('@vueuse/core')['useSessionStorage']
+  const useShare: typeof import('@vueuse/core')['useShare']
+  const useShortcutManager: typeof import('./src/composables/useShortcutManager')['useShortcutManager']
+  const useShortcutState: typeof import('./src/composables/useShortcutManager')['useShortcutState']
+  const useSkins: typeof import('./src/@core/composable/useSkins')['useSkins']
+  const useSlots: typeof import('vue')['useSlots']
+  const useSorted: typeof import('@vueuse/core')['useSorted']
+  const useSpeechRecognition: typeof import('@vueuse/core')['useSpeechRecognition']
+  const useSpeechSynthesis: typeof import('@vueuse/core')['useSpeechSynthesis']
+  const useStepper: typeof import('@vueuse/core')['useStepper']
+  const useStorageAsync: typeof import('@vueuse/core')['useStorageAsync']
+  const useStyleTag: typeof import('@vueuse/core')['useStyleTag']
+  const useSum: typeof import('@vueuse/math')['useSum']
+  const useSupported: typeof import('@vueuse/core')['useSupported']
+  const useSwipe: typeof import('@vueuse/core')['useSwipe']
+  const useTemplateRef: typeof import('vue')['useTemplateRef']
+  const useTemplateRefsList: typeof import('@vueuse/core')['useTemplateRefsList']
+  const useTextDirection: typeof import('@vueuse/core')['useTextDirection']
+  const useTextSelection: typeof import('@vueuse/core')['useTextSelection']
+  const useTextareaAutosize: typeof import('@vueuse/core')['useTextareaAutosize']
+  const useThrottle: typeof import('@vueuse/core')['useThrottle']
+  const useThrottleFn: typeof import('@vueuse/core')['useThrottleFn']
+  const useThrottledRefHistory: typeof import('@vueuse/core')['useThrottledRefHistory']
+  const useTimeAgo: typeof import('@vueuse/core')['useTimeAgo']
+  const useTimeout: typeof import('@vueuse/core')['useTimeout']
+  const useTimeoutFn: typeof import('@vueuse/core')['useTimeoutFn']
+  const useTimeoutPoll: typeof import('@vueuse/core')['useTimeoutPoll']
+  const useTimestamp: typeof import('@vueuse/core')['useTimestamp']
+  const useTitle: typeof import('@vueuse/core')['useTitle']
+  const useToNumber: typeof import('@vueuse/core')['useToNumber']
+  const useToString: typeof import('@vueuse/core')['useToString']
+  const useToggle: typeof import('@vueuse/core')['useToggle']
+  const useTransition: typeof import('@vueuse/core')['useTransition']
+  const useTrunc: typeof import('@vueuse/math')['useTrunc']
+  const useUrlSearchParams: typeof import('@vueuse/core')['useUrlSearchParams']
+  const useUserMedia: typeof import('@vueuse/core')['useUserMedia']
+  const useVModel: typeof import('@vueuse/core')['useVModel']
+  const useVModels: typeof import('@vueuse/core')['useVModels']
+  const useVibrate: typeof import('@vueuse/core')['useVibrate']
+  const useVirtualList: typeof import('@vueuse/core')['useVirtualList']
+  const useWakeLock: typeof import('@vueuse/core')['useWakeLock']
+  const useWebNotification: typeof import('@vueuse/core')['useWebNotification']
+  const useWebSocket: typeof import('@vueuse/core')['useWebSocket']
+  const useWebWorker: typeof import('@vueuse/core')['useWebWorker']
+  const useWebWorkerFn: typeof import('@vueuse/core')['useWebWorkerFn']
+  const useWindowFocus: typeof import('@vueuse/core')['useWindowFocus']
   const useWindowScroll: typeof import('@vueuse/core')['useWindowScroll']
   const useWindowSize: typeof import('@vueuse/core')['useWindowSize']
-  const usecreateUrl: typeof import('./src/@core/composable/usecreateUrl')['usecreateUrl']
   const watch: typeof import('vue')['watch']
   const watchArray: typeof import('@vueuse/core')['watchArray']
   const watchAtMost: typeof import('@vueuse/core')['watchAtMost']
