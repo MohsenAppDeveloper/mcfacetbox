@@ -275,6 +275,12 @@ export interface ITree {
   nodes: ISimpleNestedNodeActionable[]
 }
 
+export interface ITreeFlat {
+  id: number
+  title: string
+  nodes: ISimpleFlatNodeActionable[]
+}
+
 /**
  * اینترفیس یک درخت به همراه نودها و فیش های نود
  */
