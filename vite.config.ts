@@ -68,6 +68,8 @@ export default defineConfig({
 
     // Docs: https://github.com/antfu/unplugin-auto-import#unplugin-auto-import
     AutoImport({
+      // صراحتاً مسیر تولید فایل تایپ‌های خودکار
+      dts: 'auto-imports.d.ts',
       imports: ['vue', VueRouterAutoImports, '@vueuse/core', '@vueuse/math', 'vue-i18n', 'pinia'],
       dirs: [
         './src/@core/utils',
@@ -77,7 +79,6 @@ export default defineConfig({
         './src/plugins/*/composables/*',
       ],
       vueTemplate: true,
-
       // ℹ️ Disabled to avoid confusion & accidental usage
       ignore: ['useCookies', 'useStorage'],
     }),
