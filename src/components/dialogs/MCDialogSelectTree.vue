@@ -62,6 +62,10 @@ const loadGates = async () => {
     selectedGate.value = 0
     gateList.value.splice(0)
     gateList.value.push(...gateDataResult.items)
+
+    if (gateList.value.length > 0)
+      selectedGate.value = gateList.value[0].id
+
     isloading.value = false
   }
   catch (error) {
@@ -81,6 +85,9 @@ const loadTrees = async () => {
     selectedTree.value.id = 0
     treeList.value.splice(0)
     treeList.value.push(...treeDataResult.items)
+
+    if (treeList.value.length > 0)
+      selectedTree.value = treeList.value[0]
     isloading.value = false
   }
   catch (error) {
