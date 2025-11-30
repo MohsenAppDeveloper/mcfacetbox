@@ -359,9 +359,11 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
         <VTab :value="DataBoxType.quran" variant="elevated" rounded="sm">
           {{ $t('ayah') }} <span v-if="resultDataOnState[DataBoxType.quran].totalItems > 0" class="pr-1">({{ resultDataOnState[DataBoxType.quran].totalItems.toString() }})</span>
         </VTab>
-        <VTab :value="DataBoxType.vocabulary" variant="elevated" rounded="sm">
+        <!--
+          <VTab :value="DataBoxType.vocabulary" variant="elevated" rounded="sm">
           {{ $t('word') }}
-        </VTab>
+          </VTab>
+        -->
       </VTabs>
       <VTextField
         v-model.lazy="apiQueryParamData[dataTabValue].Filter" :placeholder="$t('search')" class="pr-5 pb-1 pl-2" single-line clearable
@@ -412,7 +414,7 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
         <VTabsWindowItem :value="DataBoxType.hadith" :transition="false" class="h-100">
           <VFadeTransition>
             <div v-if="dataTabValue === DataBoxType.hadith && resultDataOnState[DataBoxType.hadith].results.length > 0 && !resultDataOnState[DataBoxType.hadith].loading" class="d-flex flex-row overflow-hidden h-100">
-              <div v-if="resultDataOnState[DataBoxType.hadith].facets.length > 0" style="width:25%" class="mc-data-scrolly">
+              <div v-if="resultDataOnState[DataBoxType.hadith].facets.length > 0" style="width:25%" class="mc-data-scrolly pa-1">
                 <MCFacetBox
                   v-for="item in resultDataOnState[DataBoxType.hadith].facets"
                   :key="item.key" v-model:selected-items="resultDataOnState[DataBoxType.hadith].selectedFacets[item.key]" :istree="item.isTree"
@@ -444,7 +446,7 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
               <div v-if="resultDataOnState[DataBoxType.quran].facets.length > 0">
             -->
             <div v-if="dataTabValue === DataBoxType.quran && resultDataOnState[DataBoxType.quran].results.length > 0 && !resultDataOnState[DataBoxType.quran].loading" class="d-flex flex-row overflow-hidden h-100">
-              <div v-if="resultDataOnState[DataBoxType.quran].facets.length > 0" style="width:25%" class="mc-data-scrolly">
+              <div v-if="resultDataOnState[DataBoxType.quran].facets.length > 0" style="width:25%" class="mc-data-scrolly px-1">
                 <MCFacetBox
                   v-for="item in resultDataOnState[DataBoxType.quran].facets"
                   :key="item.key" v-model:selected-items="resultDataOnState[DataBoxType.quran].selectedFacets[item.key]" :istree="item.isTree"
@@ -467,7 +469,7 @@ const maximizeSearchTabBox = (tabBoxItem: ISearchResultItem) => {
             </div>
           </VFadeTransition>
         </VTabsWindowItem>
-        <VTabsWindowItem :value="DataBoxType.vocabulary" :transition="false" />
+        <!-- <VTabsWindowItem :value="DataBoxType.vocabulary" :transition="false" /> -->
       </VTabsWindow>
     </VRow>
     <!--

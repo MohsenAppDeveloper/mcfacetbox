@@ -8,6 +8,7 @@ import App from '@/App.vue'
 
 // Styles
 import '@/assets/fonts/Vazir/vazirfont.css'
+import '@/assets/fonts/traditional/traditional.css'
 import '@core/scss/template/index.scss'
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import '@styles/styles.scss'
