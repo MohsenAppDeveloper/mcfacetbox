@@ -1,148 +1,189 @@
 
-    # MCFacetBox
+# MCFacetBox
 
-    A Vue 3 + Vuetify facet box component supporting flat list, tree view, and switch facets.
+A Vue 3 + Vuetify facet box component supporting flat list, tree view, and switch facets.
 
-    ## Installation
+## Installation (from GitHub)
 
-    ```sh
-    # Using pnpm
-    pnpm add mcfacetbox
+```sh
+# Using pnpm
+pnpm add mcfacetbox
 
-    # Or if published under a scope (GitHub Packages)
-    pnpm add @<org>/mcfacetbox
-    ```
+# Or if published under a scope (GitHub Packages)
 
-    ```ts
-    // If using GitHub Packages, configure your .npmrc
-    // @<org>:registry=https://npm.pkg.github.com/
-    // //npm.pkg.github.com/:_authToken=<YOUR_GITHUB_TOKEN>
-    ```
+```
 
-    ## Usage
+```ts
+// If using GitHub Packages, configure your .npmrc
+// @<org>:registry=https://npm.pkg.github.com/
+// //npm.pkg.github.com/:_authToken=<YOUR_GITHUB_TOKEN>
+```
 
-    Install as a plugin:
+This package is not yet published to npm. Install directly from GitHub:
 
-    ```ts
-    // main.ts
-    import { createApp } from 'vue'
-    import App from './App.vue'
-    import MCFacetBoxPlugin from 'mcfacetbox'
-    import 'mcfacetbox/style.css'
+- Option A — add as a Git dependency (recommended with tags):
 
-    const app = createApp(App)
-    app.use(MCFacetBoxPlugin)
-    app.mount('#app')
-    ```
+```sh
+# Use a tagged version for reproducibility (e.g., mcfacetbox-v0.1.0)
+pnpm add git+https://github.com/MohsenAppDeveloper/mcfacetbox.git#mcfacetbox-v0.1.0
+```
 
-    Or import the component directly:
+- Option B — install from a Release artifact (tarball):
 
-    ```vue
-    <script setup lang="ts">
-    import { MCFacetBox } from 'mcfacetbox'
-    import 'mcfacetbox/style.css'
-    </script>
+```sh
+# Download the release asset (mcfacetbox-<tag>.tar.gz) from GitHub Releases
+# Then install locally
+pnpm add file:./mcfacetbox-<tag>.tar.gz
+```
 
-    <template>
-      <MCFacetBox />
-    </template>
-    ```
+- Option C — local clone and link:
 
-    ## Props
+```sh
+# Clone the repo and build
+git clone https://github.com/MohsenAppDeveloper/mcfacetbox.git; cd mcfacetbox
+pnpm install; pnpm build
 
-    - `dataitems: IFacetItem[]`: Facet items array. Each item includes `key`, `title`, `count`. For tree mode, provide `parentKey`.
-    - `searchable: boolean`: Shows a search input for filtering.
-    - `facettitle: string`: Title of the facet box (flat and tree modes).
-    - `istree?: boolean`: Enables tree view when `true`; otherwise flat list.
-    - `scrollItemCount?: number`: Max visible rows in flat list before scrolling.
-    - `selectedItems?: string[]`: Initial selection. For switch mode, one value `'true' | 'false'`. For flat/tree, an array of keys.
-    - `facettype?: FacetType`: Facet mode: `flat`, `tree`, or `switch`. Defaults to flat unless `istree` is true.
+# In your app project
+pnpm add ../mcfacetbox  # or "file:../mcfacetbox"
+```
+```
 
-    Type signature:
+## Usage
 
-    ```ts
-    interface IFacetItem {
-      key: string
-      title: string
-      count: number
-      parentKey?: string // for tree mode
-    }
-    ```
+Install as a plugin:
 
-    ## Emits
+```ts
+// main.ts
+import { createApp } from 'vue'
+import App from './App.vue'
+import MCFacetBoxPlugin from 'mcfacetbox'
+import 'mcfacetbox/style.css'
 
-    - `update:selectedItems: string[]` — Emitted whenever selection changes.
-      - Flat: selected item keys
-      - Tree: activated node keys
-      - Switch: `['true']` or `['false']`
+const app = createApp(App)
+app.use(MCFacetBoxPlugin)
+app.mount('#app')
+```
 
-    ## Examples
+Or import the component directly:
 
-    Flat list:
+```vue
+<script setup lang="ts">
+import { MCFacetBox } from 'mcfacetbox'
+import 'mcfacetbox/style.css'
+</script>
 
-    ```vue
-    <script setup lang="ts">
-    import { ref } from 'vue'
-    import { MCFacetBox } from 'mcfacetbox'
-    import type { IFacetItem } from 'mcfacetbox'
+<template>
+  <MCFacetBox />
+</template>
+```
 
-    const selected = ref<string[]>([])
-    const items: IFacetItem[] = [
-      { key: 'history', title: 'History', count: 42 },
-      { key: 'science', title: 'Science', count: 17 },
-    ]
-    </script>
+## Props
 
-    <template>
-      <MCFacetBox
-        :dataitems="items"
-        :searchable="true"
-        facettitle="Categories"
-        facettype="flat"
-        :selectedItems="selected"
-        @update:selectedItems="selected = $event"
-      />
-      <div>Selected: {{ selected }}</div>
-    </template>
-    ```
+- `dataitems: IFacetItem[]`: Facet items array. Each item includes `key`, `title`, `count`. For tree mode, provide `parentKey`.
+- `searchable: boolean`: Shows a search input for filtering.
+- `facettitle: string`: Title of the facet box (flat and tree modes).
+- `istree?: boolean`: Enables tree view when `true`; otherwise flat list.
+- `scrollItemCount?: number`: Max visible rows in flat list before scrolling.
+- `selectedItems?: string[]`: Initial selection. For switch mode, one value `'true' | 'false'`. For flat/tree, an array of keys.
+- `facettype?: FacetType`: Facet mode: `flat`, `tree`, or `switch`. Defaults to flat unless `istree` is true.
+- `direction?: 'ltr' | 'rtl'`: Optional layout direction override. If omitted, auto-detects from the page `dir` (defaults to `ltr`).
 
-    Tree view:
+Type signature:
 
-    ```vue
-    <MCFacetBox
-      :dataitems="[
-        { key: 'root', title: 'All', count: 59 },
-        { key: 'root/history', title: 'History', parentKey: 'root', count: 42 },
-        { key: 'root/science', title: 'Science', parentKey: 'root', count: 17 },
-      ]"
-      facettitle="Subjects"
-      :istree="true"
-      facettype="tree"
-      :selectedItems="selected"
-      @update:selectedItems="selected = $event"
-    />
-    ```
+```ts
+interface IFacetItem {
+  key: string
+  title: string
+  count: number
+  parentKey?: string // for tree mode
+}
+```
 
-    Switch facet:
+## Emits
 
-    ```vue
-    <MCFacetBox
-      :dataitems="[{ key: 'false', title: 'Only Available', count: 23 }]"
-      facettype="switch"
-      :selectedItems="selected"
-      @update:selectedItems="selected = $event"
-    />
-    ```
+- `update:selectedItems: string[]` — Emitted whenever selection changes.
+  - Flat: selected item keys
+  - Tree: activated node keys
+  - Switch: `['true']` or `['false']`
 
-    ## Development
+## Examples
 
-    ```sh
-    pnpm install
-    pnpm -C packages/mcfacetbox typecheck
-    pnpm -C packages/mcfacetbox build
-    ```
+Flat list:
 
-    ## License
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { MCFacetBox } from 'mcfacetbox'
+import type { IFacetItem } from 'mcfacetbox'
 
-    MIT
+const selected = ref<string[]>([])
+const items: IFacetItem[] = [
+  { key: 'history', title: 'History', count: 42 },
+  { key: 'science', title: 'Science', count: 17 },
+]
+</script>
+
+<template>
+  <MCFacetBox
+    :dataitems="items"
+    :searchable="true"
+    facettitle="Categories"
+    facettype="flat"
+    :selectedItems="selected"
+    @update:selectedItems="selected = $event"
+  />
+  <div>Selected: {{ selected }}</div>
+</template>
+```
+
+Tree view:
+
+```vue
+<MCFacetBox
+  :dataitems="[
+    { key: 'root', title: 'All', count: 59 },
+    { key: 'root/history', title: 'History', parentKey: 'root', count: 42 },
+    { key: 'root/science', title: 'Science', parentKey: 'root', count: 17 },
+  ]"
+  facettitle="Subjects"
+  :istree="true"
+  facettype="tree"
+  :selectedItems="selected"
+  @update:selectedItems="selected = $event"
+/>
+```
+
+Switch facet:
+
+```vue
+<MCFacetBox
+  :dataitems="[{ key: 'false', title: 'Only Available', count: 23 }]"
+  facettype="switch"
+  :selectedItems="selected"
+  @update:selectedItems="selected = $event"
+/>
+```
+
+Direction override:
+
+```vue
+<MCFacetBox
+  :dataitems="items"
+  facettitle="Tags"
+  facettype="flat"
+  direction="rtl"
+/>
+```
+
+## Development
+
+```sh
+pnpm install
+pnpm -C packages/mcfacetbox typecheck
+pnpm -C packages/mcfacetbox build
+```
+
+## License
+
+MIT
 

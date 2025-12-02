@@ -17,6 +17,8 @@ interface Props {
   scrollItemCount?: number
   selectedItems?: string[]
   facettype?: FacetType
+  direction?: 'ltr' | 'rtl'
+  searchDirection?: 'ltr' | 'rtl'
 }
 interface Emit {
   (e: 'update:selectedItems', selectdItems: string[]): void
@@ -26,6 +28,17 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 
 const treeItems = computed(() => convertFacetItemToFacetTree(props.dataitems))
+
+const effectiveDir = computed<'ltr' | 'rtl'>(() => {
+  if (props.direction === 'ltr' || props.direction === 'rtl')
+    return props.direction
+  const docDir = (typeof document !== 'undefined'
+    ? (document.documentElement.getAttribute('dir') || document.body.getAttribute('dir'))
+    : '')
+  return (docDir === 'rtl' || docDir === 'ltr') ? (docDir as 'ltr' | 'rtl') : 'ltr'
+})
+
+const expandIcon = computed(() => effectiveDir.value === 'rtl' ? 'mdi-menu-left' : 'mdi-menu-right')
 
 const selectedTreeFacetItems = ref<string[]>([])
 const selectedFacetItems = ref<string[]>([])
@@ -103,14 +116,20 @@ function searchinfacet(e: any) {
 </script>
 
 <template>
-  <VCard class="mc-facet-box px-1" variant="flat">
+  <VCard class="mc-facet-box px-1" variant="flat" :dir="effectiveDir">
     <VCardTitle v-if="props.facettype !== FacetType.switch">
       {{ props.facettitle }}
     </VCardTitle>
     <div class="search-container pt-2">
       <VTextField
-        v-show="props.searchable" placeholder="Search" append-inner-icon="tabler-search" clearable
-        density="compact" @update:model-value="searchinfacet"
+        v-show="props.searchable"
+        placeholder="Search"
+        :append-inner-icon="effectiveDir === 'ltr' ? 'tabler-search' : undefined"
+        :prepend-inner-icon="effectiveDir === 'rtl' ? 'tabler-search' : undefined"
+        :dir="props.searchDirection ?? effectiveDir"
+        clearable
+        density="compact"
+        @update:model-value="searchinfacet"
       />
     </div>
 
@@ -135,7 +154,7 @@ function searchinfacet(e: any) {
 
     <div v-else-if="(props.istree || props.facettype === FacetType.tree)" class="mc-data-scrolly-float" style="--block-size-offset:5px">
       <VTreeview
-        v-model:activated="selectedTreeFacetItems" :items="treeItems" expand-icon="mdi-menu-left" item-value="facetKey"
+        v-model:activated="selectedTreeFacetItems" :items="treeItems" :expand-icon="expandIcon" item-value="facetKey"
         item-title="title" min-height="300px" activatable
         density="compact" active-strategy="single-independent"
       />
