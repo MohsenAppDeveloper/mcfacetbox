@@ -109,81 +109,150 @@ const items: IFacetItem[] = [
     :searchable="true"
     facettitle="Categories"
     facettype="flat"
-    :selectedItems="selected"
-    @update:selectedItems="selected = $event"
-  />
-  <div>Selected: {{ selected }}</div>
-</template>
-```
+    # MCFacetBox
 
-نمونه‌ی درختی:
+    A Vue 3 + Vuetify facet box component supporting flat list, tree view, and switch facets.
 
-```vue
-<MCFacetBox
-  :dataitems="[
-    { key: 'root', title: 'All', count: 59 },
-    { key: 'root/history', title: 'History', parentKey: 'root', count: 42 },
-    { key: 'root/science', title: 'Science', parentKey: 'root', count: 17 },
-  ]"
-  facettitle="Subjects"
-  :istree="true"
-  facettype="tree"
-  :selectedItems="selected"
-  @update:selectedItems="selected = $event"
-/>
-```
+    ## Installation
 
-نمونه‌ی سوئیچ:
+    ```sh
+    # Using pnpm
+    pnpm add mcfacetbox
 
-```vue
-<MCFacetBox
-  :dataitems="[{ key: 'false', title: 'Only Available', count: 23 }]"
-  facettype="switch"
-  :selectedItems="selected"
-  @update:selectedItems="selected = $event"
-/>
-```
+    # Or if published under a scope (GitHub Packages)
+    pnpm add @<org>/mcfacetbox
+    ```
 
-## Development
+    ```ts
+    // If using GitHub Packages, configure your .npmrc
+    // @<org>:registry=https://npm.pkg.github.com/
+    // //npm.pkg.github.com/:_authToken=<YOUR_GITHUB_TOKEN>
+    ```
 
-```sh
-# From repository root
-pnpm install
-pnpm -C packages/mcfacetbox typecheck
-pnpm -C packages/mcfacetbox build
-```
+    ## Usage
 
-## Release via GitHub
+    Install as a plugin:
 
-Create a tag like `mcfacetbox-v0.1.0` and push it. The provided workflow will build the package and attach the `dist` artifact to the GitHub release.
+    ```ts
+    // main.ts
+    import { createApp } from 'vue'
+    import App from './App.vue'
+    import MCFacetBoxPlugin from 'mcfacetbox'
+    import 'mcfacetbox/style.css'
 
-```powershell
-# PowerShell
-$version = "0.1.0"
-$tag = "mcfacetbox-v$version"
-git tag -a $tag -m "Release $tag"; git push origin $tag
-```
+    const app = createApp(App)
+    app.use(MCFacetBoxPlugin)
+    app.mount('#app')
+    ```
 
-## Publish only this package to a separate GitHub repo
+    Or import the component directly:
 
-اگر workspace شما به GitLab متصل است و فقط می‌خواهید پکیج `mcfacetbox` را به GitHub منتقل کنید، از `git subtree` استفاده کنید تا تاریخچه‌ی پوشه‌ی پکیج جدا شود:
+    ```vue
+    <script setup lang="ts">
+    import { MCFacetBox } from 'mcfacetbox'
+    import 'mcfacetbox/style.css'
+    </script>
 
-```powershell
-# ساخت شاخه‌ی جداگانه از زیرپوشه‌ی پکیج
-git subtree split --prefix packages/mcfacetbox -b mcfacetbox-publish
+    <template>
+      <MCFacetBox />
+    </template>
+    ```
 
-# پوش به ریپوی جدید در GitHub (main)
-git push https://github.com/<USER_OR_ORG>/mcfacetbox.git mcfacetbox-publish:main -f
+    ## Props
 
-# اختیاری: تگ‌گذاری انتشار در ریپوی جدید
-$version = "0.1.0"; $tag = "mcfacetbox-v$version"
-git push https://github.com/<USER_OR_OR_ORG>/mcfacetbox.git $tag
-```
+    - `dataitems: IFacetItem[]`: Facet items array. Each item includes `key`, `title`, `count`. For tree mode, provide `parentKey`.
+    - `searchable: boolean`: Shows a search input for filtering.
+    - `facettitle: string`: Title of the facet box (flat and tree modes).
+    - `istree?: boolean`: Enables tree view when `true`; otherwise flat list.
+    - `scrollItemCount?: number`: Max visible rows in flat list before scrolling.
+    - `selectedItems?: string[]`: Initial selection. For switch mode, one value `'true' | 'false'`. For flat/tree, an array of keys.
+    - `facettype?: FacetType`: Facet mode: `flat`, `tree`, or `switch`. Defaults to flat unless `istree` is true.
 
-پس از ایجاد ریپوی جداگانه، Workflow انتشار را در آن ریپو نیز اضافه کنید (همین فایل `release-mcfacetbox.yml`) یا از Releases دستی استفاده کنید.
+    Type signature:
 
-## Links
+    ```ts
+    interface IFacetItem {
+      key: string
+      title: string
+      count: number
+      parentKey?: string // for tree mode
+    }
+    ```
 
-- Issues: https://github.com/<YOUR_GITHUB_USERNAME_OR_ORG>/mcfacetbox/issues
-- Changelog: see GitHub Releases
+    ## Emits
+
+    - `update:selectedItems: string[]` — Emitted whenever selection changes.
+      - Flat: selected item keys
+      - Tree: activated node keys
+      - Switch: `['true']` or `['false']`
+
+    ## Examples
+
+    Flat list:
+
+    ```vue
+    <script setup lang="ts">
+    import { ref } from 'vue'
+    import { MCFacetBox } from 'mcfacetbox'
+    import type { IFacetItem } from 'mcfacetbox'
+
+    const selected = ref<string[]>([])
+    const items: IFacetItem[] = [
+      { key: 'history', title: 'History', count: 42 },
+      { key: 'science', title: 'Science', count: 17 },
+    ]
+    </script>
+
+    <template>
+      <MCFacetBox
+        :dataitems="items"
+        :searchable="true"
+        facettitle="Categories"
+        facettype="flat"
+        :selectedItems="selected"
+        @update:selectedItems="selected = $event"
+      />
+      <div>Selected: {{ selected }}</div>
+    </template>
+    ```
+
+    Tree view:
+
+    ```vue
+    <MCFacetBox
+      :dataitems="[
+        { key: 'root', title: 'All', count: 59 },
+        { key: 'root/history', title: 'History', parentKey: 'root', count: 42 },
+        { key: 'root/science', title: 'Science', parentKey: 'root', count: 17 },
+      ]"
+      facettitle="Subjects"
+      :istree="true"
+      facettype="tree"
+      :selectedItems="selected"
+      @update:selectedItems="selected = $event"
+    />
+    ```
+
+    Switch facet:
+
+    ```vue
+    <MCFacetBox
+      :dataitems="[{ key: 'false', title: 'Only Available', count: 23 }]"
+      facettype="switch"
+      :selectedItems="selected"
+      @update:selectedItems="selected = $event"
+    />
+    ```
+
+    ## Development
+
+    ```sh
+    pnpm install
+    pnpm -C packages/mcfacetbox typecheck
+    pnpm -C packages/mcfacetbox build
+    ```
+
+    ## License
+
+    MIT
 
