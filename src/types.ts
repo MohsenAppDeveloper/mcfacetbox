@@ -1,7 +1,7 @@
 export enum FacetType {
-  flat = 'flat',
-  tree = 'tree',
-  switch = 'switch',
+  flat = 1,
+  tree = 2,
+  switch = 3,
 }
 
 export interface IFacetItem {

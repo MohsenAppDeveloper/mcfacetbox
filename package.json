@@ -1,58 +1,59 @@
 {
-  "name": "mcfacetbox",
-  "version": "0.1.0",
-  "private": false,
-  "type": "module",
-  "description": "A reusable Vue 3 + Vuetify facet box component supporting flat, tree, and switch facets.",
-  "main": "dist/mcfacetbox.umd.cjs",
-  "module": "dist/mcfacetbox.es.js",
-  "types": "dist/index.d.ts",
-  "style": "dist/style.css",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/mcfacetbox.es.js",
-      "require": "./dist/mcfacetbox.umd.cjs"
+    "name": "mcfacetbox",
+    "version": "0.1.1",
+    "private": false,
+    "type": "module",
+    "description": "A reusable Vue 3 + Vuetify facet box component supporting flat, tree, and switch facets.",
+    "main": "dist/mcfacetbox.umd.cjs",
+    "module": "dist/mcfacetbox.es.js",
+    "types": "dist/index.d.ts",
+    "style": "dist/style.css",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/mcfacetbox.es.js",
+            "require": "./dist/mcfacetbox.umd.cjs"
+        },
+        "./style.css": {
+            "default": "./dist/style.css"
+        }
     },
-    "./style.css": {
-      "default": "./dist/style.css"
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "vite build",
+        "typecheck": "vue-tsc --noEmit"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MohseAppDeveloper/mcfacetbox.git",
+        "directory": "packages/mcfacetbox"
+    },
+    "bugs": {
+        "url": "https://github.com/MohseAppDeveloper/mcfacetbox/issues"
+    },
+    "homepage": "https://github.com/MohseAppDeveloper/mcfacetbox#readme",
+    "keywords": [
+        "vue",
+        "vuetify",
+        "facet",
+        "filter",
+        "component",
+        "tree",
+        "switch",
+        "vue3"
+    ],
+    "peerDependencies": {
+        "vue": ">=3.3.0",
+        "vuetify": ">=3.3.0"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^5.0.4",
+        "vite-plugin-dts": "^3.9.1",
+        "typescript": "^5.3.3",
+        "vite": "^5.1.4",
+        "vue": "^3.4.21",
+        "vue-tsc": "^1.8.27"
     }
-  },
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "vite build",
-    "typecheck": "vue-tsc --noEmit"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/MohseAppDeveloper/mcfacetbox.git",
-    "directory": "packages/mcfacetbox"
-  },
-  "bugs": {
-    "url": "https://github.com/MohseAppDeveloper/mcfacetbox/issues"
-  },
-  "homepage": "https://github.com/MohseAppDeveloper/mcfacetbox#readme",
-  "keywords": [
-    "vue",
-    "vuetify",
-    "facet",
-    "filter",
-    "component",
-    "tree",
-    "switch",
-    "vue3"
-  ],
-  "peerDependencies": {
-    "vue": ">=3.3.0",
-    "vuetify": ">=3.3.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.4",
-    "typescript": "^5.3.3",
-    "vite": "^5.1.4",
-    "vue": "^3.4.21",
-    "vue-tsc": "^1.8.27"
-  }
 }

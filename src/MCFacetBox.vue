@@ -32,9 +32,11 @@ const treeItems = computed(() => convertFacetItemToFacetTree(props.dataitems))
 const effectiveDir = computed<'ltr' | 'rtl'>(() => {
   if (props.direction === 'ltr' || props.direction === 'rtl')
     return props.direction
+
   const docDir = (typeof document !== 'undefined'
     ? (document.documentElement.getAttribute('dir') || document.body.getAttribute('dir'))
     : '')
+
   return (docDir === 'rtl' || docDir === 'ltr') ? (docDir as 'ltr' | 'rtl') : 'ltr'
 })
 
