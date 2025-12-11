@@ -32,6 +32,7 @@ const refForm = ref<VForm>()
 const isloading = ref(false)
 const userData = reactive<IUserEdit>(new UserEditModel())
 const selectedGate = ref<number>(0)
+const btnsubmit = ref<HTMLInputElement>()
 
 // const selectedProject = ref<number>(0)
 const selectedTree = ref<ISimpleDTO<number>>(new SimpleDTOModel<number>(0, ''))
@@ -62,11 +63,12 @@ const loadGates = async () => {
     selectedGate.value = 0
     gateList.value.splice(0)
     gateList.value.push(...gateDataResult.items)
-
+    isloading.value = false
     if (gateList.value.length > 0)
       selectedGate.value = gateList.value[0].id
-
-    isloading.value = false
+    setTimeout(() => {
+      btnsubmit.value?.$el.focus()
+    }, 500)
   }
   catch (error) {
     isloading.value = false
@@ -86,9 +88,13 @@ const loadTrees = async () => {
     treeList.value.splice(0)
     treeList.value.push(...treeDataResult.items)
 
-    if (treeList.value.length > 0)
-      selectedTree.value = treeList.value[0]
     isloading.value = false
+    nextTick(() => {
+      if (treeList.value.length > 0)
+        selectedTree.value = treeList.value[0]
+
+    //   btnsubmit.value?.$el.focus()
+    })
   }
   catch (error) {
     isloading.value = false
@@ -202,7 +208,7 @@ defineExpose({ changeTree })
 
           <!-- 👉 Submit and Cancel -->
           <VCol cols="12">
-            <VBtn type="submit" class="me-3" :disabled="isloading || selectedTree.id === 0" @click="startWorkWithTree">
+            <VBtn ref="btnsubmit" autofocus="true" type="submit" class="me-3" :disabled="isloading || selectedTree.id === 0" @click="startWorkWithTree">
               <span>
                 {{ $t('accept') }}
               </span>
