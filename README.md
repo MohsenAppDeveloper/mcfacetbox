@@ -25,7 +25,7 @@ This package is not yet published to npm. Install directly from GitHub:
 
 ```sh
 # Use a tagged version for reproducibility (e.g., mcfacetbox-v0.1.0)
-pnpm add git+https://github.com/MohsenAppDeveloper/mcfacetbox.git#mcfacetbox-v0.1.0
+pnpm add git+https://github.com/MohsenAppDeveloper/mcfacetbox.git#mcfacetbox-v0.1.1
 ```
 
 - Option B — install from a Release artifact (tarball):
