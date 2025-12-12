@@ -1,3 +1,6 @@
+// Aliases for managing the mcfacetbox subtree
+//این فایل باید در مسیر گیت پروژه قرار بگیرد ولی فعلا این کار را نکردم، چون ممکن است باعث بروز مشکل شود
+
 git config --global alias.mcfacetboxpush  "subtree push --prefix=packages/mcfacetbox mcfacetbox main"
 git config --global alias.mcfacetboxpull  "subtree pull --prefix=packages/mcfacetbox mcfacetbox main --squash"
 git config --global alias.mcfacetboxsync  "subtree pull --prefix=packages/mcfacetbox mcfacetbox main --squash && git subtree push --prefix=packages/mcfacetbox mcfacetbox main"
