@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useToast } from 'vue-toastification'
+import { FacetBoxModel, MCFacetBox } from 'mcfacetbox'
 import MCDialogRepositorySearchHistory from '../dialogs/MCDialogRepositorySearchHistory.vue'
 import type { GridResultFacet, IRootServiceError } from '@/types/baseModels'
 import { DataBoxType, MessageType, QueryRequestModel, SearchConfig, SizeType } from '@/types/baseModels'
 import type { ISearchResultItem, SearchResultConfigModel } from '@/types/SearchResult'
-import { FacetBoxModel, SearchResultItemModel, TabSearchStateResultModel } from '@/types/SearchResult'
+import { SearchResultItemModel, TabSearchStateResultModel } from '@/types/SearchResult'
 import { HadithSearchResultItemModel } from '@/types/hadithResult'
 import { useTreeStoreV3 } from '@/store/treeStoreV3'
 import { useDataShelfStateChanged } from '@/store/databoxStore'

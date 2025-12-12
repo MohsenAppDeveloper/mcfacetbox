@@ -1,5 +1,5 @@
+import type { IFacetBox } from 'mcfacetbox'
 import type { ISelectable } from './baseModels'
-import type { IFacetBox } from './SearchResult'
 
 export interface IBookCreator {
   id: number

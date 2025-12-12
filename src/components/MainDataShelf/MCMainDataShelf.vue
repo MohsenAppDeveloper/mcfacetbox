@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useToast } from 'vue-toastification'
 import { VBtn } from 'vuetify/lib/components/index.mjs'
+import { FacetBoxModel, MCFacetBox } from 'mcfacetbox'
+import type { IFacetBox } from 'mcfacetbox'
 import MCDataShelfBox from './MCDataShelfBox.vue'
 import { useTreeStoreV3 } from '@/store/treeStoreV3'
 import type { GridResultFacet, IRootServiceError } from '@/types/baseModels'
@@ -9,8 +11,8 @@ import type { IDataShelfBoxView, LinkDetailModel, UnlinkDataModel } from '@/type
 import { DataShelfRouteQueryParams } from '@/types/dataShelf'
 import useRouterForGlobalVariables from '@/composables/useRouterVariables'
 import { useDataShelfStateChanged } from '@/store/databoxStore'
-import { FacetBoxModel, SearchResultItemModel } from '@/types/SearchResult'
-import type { IFacetBox, ISearchResultItem } from '@/types/SearchResult'
+import { SearchResultItemModel } from '@/types/SearchResult'
+import type { ISearchResultItem } from '@/types/SearchResult'
 import { SHORTCUTKeys, ShortcutName } from '@/types/shortcutKeys'
 
 interface ISelectAllState {

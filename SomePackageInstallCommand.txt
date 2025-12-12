@@ -1,0 +1,1 @@
+pnpm -C packages/mcfacetbox run build

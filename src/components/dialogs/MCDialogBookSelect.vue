@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { isUndefined } from '@sindresorhus/is'
+import { MCFacetBox } from 'mcfacetbox'
+import type { IFacetBox, IFacetItem } from 'mcfacetbox'
 import type { IBookSearchResult, ISelectableBookInfo } from '@/types/book'
 import { BookSearchRequestModel, SelectableBookInfo } from '@/types/book'
-import type { IFacetBox, IFacetItem } from '@/types/SearchResult'
 import { removeHtmlTags } from '@/utils/htmlUtils'
 import { MessageType } from '@/types/baseModels'
 import type { IRootServiceError, ISimpleDTO } from '@/types/baseModels'
@@ -306,7 +307,7 @@ const formattedField = (list: Record<string, any>[], fieldName: string) => {
               :key="item.key"
               v-model:selected-items="selectedFacetItems[item.key]" :istree="isTree(item)"
               :scroll-item-count="item.scrollSize" :searchable="item.hasSearchBox" :dataitems="item.itemList"
-              :facettitle="item.title" class="mb-2 w-100"
+              :facettitle="item.title" class="mb-2 w-100" direction="rtl"
             />
           </div>
           <div class="flex-grow-1 mc-data-scrolly-float" style="width:65%;--block-size-offset: 4px">
