@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'node:url'
+import path from 'node:path'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
@@ -7,7 +8,6 @@ import Components from 'unplugin-vue-components/vite'
 import { VueRouterAutoImports, getPascalCaseRouteName } from 'unplugin-vue-router'
 import VueRouter from 'unplugin-vue-router/vite'
 import { defineConfig } from 'vite'
-import VueDevTools from 'vite-plugin-vue-devtools'
 import Layouts from 'vite-plugin-vue-layouts'
 import vuetify from 'vite-plugin-vuetify'
 import svgLoader from 'vite-svg-loader'
@@ -79,6 +79,7 @@ export default defineConfig({
         './src/plugins/*/composables/*',
       ],
       vueTemplate: true,
+
       // ℹ️ Disabled to avoid confusion & accidental usage
       ignore: ['useCookies', 'useStorage'],
     }),
@@ -110,6 +111,7 @@ export default defineConfig({
       '@models': fileURLToPath(new URL('./src/models/', import.meta.url)),
       '@store': fileURLToPath(new URL('./src/store/', import.meta.url)),
 
+      // mcfacetbox resolved via pnpm workspaces; no local alias needed
     },
   },
   build: {

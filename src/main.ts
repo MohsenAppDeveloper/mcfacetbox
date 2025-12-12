@@ -2,6 +2,8 @@ import ContextMenu from '@imengyu/vue3-context-menu'
 import { createApp } from 'vue'
 import type { PluginOptions } from 'vue-toastification'
 import Toast, { POSITION } from 'vue-toastification'
+
+// import MCFacetBoxPlugin from 'mcfacetbox'
 import noContextMenu from './utils/directives'
 import { registerPlugins } from '@core/utils/plugins'
 import App from '@/App.vue'
@@ -13,6 +15,7 @@ import '@core/scss/template/index.scss'
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import '@styles/styles.scss'
 import 'vue-toastification/dist/index.css'
+import 'mcfacetbox/style.css'
 
 const options: PluginOptions = {
   rtl: true,

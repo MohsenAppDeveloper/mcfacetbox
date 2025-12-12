@@ -377,7 +377,7 @@ declare module 'vue' {
     MCDialogTreeWorkReport: typeof import('./src/components/dialogs/MCDialogTreeWorkReport.vue')['default']
     MCDialogUserAdd: typeof import('./src/components/dialogs/MCDialogUserAdd.vue')['default']
     MCDialogUserRoleSelect: typeof import('./src/components/dialogs/MCDialogUserRoleSelect.vue')['default']
-    MCFacetBox: typeof import('./src/components/MCFacetBox.vue')['default']
+    MCFacetBoxPre: typeof import('./src/components/MCFacetBox-pre.vue')['default']
     MCHadithViewBox: typeof import('./src/components/MainDataCollection/MCHadithViewBox.vue')['default']
     MCInputDatePicker: typeof import('./src/components/MCInputDatePicker.vue')['default']
     MCLoading: typeof import('./src/components/MCLoading.vue')['default']

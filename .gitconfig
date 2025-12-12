@@ -1,0 +1,3 @@
+git config --global alias.mcfacetboxpush  "subtree push --prefix=packages/mcfacetbox mcfacetbox main"
+git config --global alias.mcfacetboxpull  "subtree pull --prefix=packages/mcfacetbox mcfacetbox main --squash"
+git config --global alias.mcfacetboxsync  "subtree pull --prefix=packages/mcfacetbox mcfacetbox main --squash && git subtree push --prefix=packages/mcfacetbox mcfacetbox main"

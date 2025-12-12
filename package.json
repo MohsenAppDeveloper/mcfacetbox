@@ -1,7 +1,10 @@
 {
-    "name": "vuexy-vuejs-admin-template",
+    "name": "encyclopediafrontend",
     "version": "9.1.1",
     "private": true,
+    "workspaces": [
+        "packages/*"
+    ],
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -10,10 +13,10 @@
         "typecheck": "vue-tsc --noEmit",
         "lint": "eslint . -c .eslintrc.cjs --fix --rulesdir eslint-internal-rules/ --ext .ts,.js,.cjs,.vue,.tsx,.jsx",
         "build:icons": "tsx src/plugins/iconify/build-icons.ts",
-        "msw:init": "msw init public/ --save",
-        "postinstall": "npm run build:icons && npm run msw:init"
+        "postinstall": "npm run build:icons"
     },
     "dependencies": {
+        "mcfacetbox": "workspace:*",
         "@casl/ability": "6.7.0",
         "@casl/vue": "2.2.2",
         "@date-io/jalaali": "^3.1.0",

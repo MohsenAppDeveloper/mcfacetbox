@@ -358,73 +358,7 @@
     font-size: calc(var(--v-icon-size-multiplier) * 1em)
 }
 
-.mc-facet-box {
-    &:not(.v-theme--dark) {
-        background-color: rgba(var(--v-theme-primary), 0.1);
-    }
 
-    .v-card-title {
-        font-size: 1em;
-        margin-block: 3px;
-        margin-inline: 0;
-        padding-block: 0;
-        padding-inline: 10px;
-    }
-
-    .v-text-field {
-        padding-block: 0;
-        padding-inline: 10px;
-
-        &:not(.v-theme--dark) {
-            .v-field {
-                background-color: white;
-
-                .v-field__outline {
-                    display: none;
-                }
-            }
-        }
-    }
-
-    .v-list {
-        border-radius: 0;
-        background-color: transparent;
-        max-block-size: 148px;
-        overflow-y: auto;
-        padding-block: 4px;
-        padding-inline: 0;
-
-        @include mcvariables.custom-scrollbar;
-
-        .v-input {
-            .v-selection-control {
-                margin-inline-end: 0;
-
-                input {
-                    block-size: 13px;
-                    inline-size: 13px;
-                }
-            }
-        }
-
-        .v-list-item {
-            min-block-size: 28px;
-            padding: 0;
-
-            .v-list-item-title {
-                font-size: 0.9em;
-            }
-
-            .v-list-item__prepend {
-                .v-list-item__spacer {
-                    inline-size: 0;
-                }
-            }
-        }
-    }
-
-
-}
 
 .v-list-sm {
     padding-block: 4px;

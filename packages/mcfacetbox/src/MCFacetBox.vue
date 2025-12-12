@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { isNull, isUndefined } from '@sindresorhus/is'
+import { computed, onMounted, ref, watch } from 'vue'
 import { VTreeview } from 'vuetify/labs/VTreeview'
-import type { IFacetItem } from '@/types/SearchResult'
-import { convertFacetItemToFacetTree } from '@/types/SearchResult'
-import { FacetType } from '@/types/baseModels'
+import { VCard, VCardTitle } from 'vuetify/components/VCard'
+import { VList, VListItem, VListItemAction } from 'vuetify/components/VList'
+import { VCheckbox } from 'vuetify/components/VCheckbox'
+import { VTextField } from 'vuetify/components/VTextField'
+import { VSwitch } from 'vuetify/components/VSwitch'
+import type { IFacetItem } from './types'
+import { FacetType, convertFacetItemToFacetTree, isNullOrUndefined, searchItems } from './types'
 
 interface Props {
   dataitems: IFacetItem[]
@@ -13,6 +17,8 @@ interface Props {
   scrollItemCount?: number
   selectedItems?: string[]
   facettype?: FacetType
+  direction?: 'ltr' | 'rtl'
+  searchDirection?: 'ltr' | 'rtl'
 }
 interface Emit {
   (e: 'update:selectedItems', selectdItems: string[]): void
@@ -21,9 +27,20 @@ interface Emit {
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 
-const treeItems = computed(() =>
-  convertFacetItemToFacetTree(props.dataitems),
-)
+const treeItems = computed(() => convertFacetItemToFacetTree(props.dataitems))
+
+const effectiveDir = computed<'ltr' | 'rtl'>(() => {
+  if (props.direction === 'ltr' || props.direction === 'rtl')
+    return props.direction
+
+  const docDir = (typeof document !== 'undefined'
+    ? (document.documentElement.getAttribute('dir') || document.body.getAttribute('dir'))
+    : '')
+
+  return (docDir === 'rtl' || docDir === 'ltr') ? (docDir as 'ltr' | 'rtl') : 'ltr'
+})
+
+const expandIcon = computed(() => effectiveDir.value === 'rtl' ? 'mdi-menu-left' : 'mdi-menu-right')
 
 const selectedTreeFacetItems = ref<string[]>([])
 const selectedFacetItems = ref<string[]>([])
@@ -44,7 +61,7 @@ watch(() => props.selectedItems, newVal => {
     if (JSON.stringify(selectedTreeFacetItems.value) !== JSON.stringify(newVal.map(item => item)))
       selectedTreeFacetItems.value = [...newVal].map(item => item)
   }
-  else { // Flat list
+  else {
     if (JSON.stringify(selectedFacetItems.value) !== JSON.stringify(newVal.map(item => item)))
       selectedFacetItems.value = [...newVal].map(item => item)
   }
@@ -55,7 +72,6 @@ onMounted(() => {
     return
   if (props.facettype === FacetType.switch) {
     const boolVal = (props.selectedItems[0] === 'true')
-
     if (switchState.value !== boolVal)
       switchState.value = boolVal
   }
@@ -63,18 +79,21 @@ onMounted(() => {
     if (JSON.stringify(selectedTreeFacetItems.value) !== JSON.stringify(props.selectedItems))
       selectedTreeFacetItems.value = [...props.selectedItems].map(item => item)
   }
-  else { // Flat list
+  else {
     if (JSON.stringify(selectedFacetItems.value) !== JSON.stringify(props.selectedItems))
       selectedFacetItems.value = [...props.selectedItems].map(item => item)
   }
 })
-watch(filteredItems, () => {
-  if ((props.selectedItems?.length ?? 0) > 0)
-    !(props.istree ?? false) ? selectedFacetItems.value.push(...(props.selectedItems?.map(item => item.toString()) ?? [])) : selectedTreeFacetItems.value.push(...(props.selectedItems?.map(item => item.toString()) ?? []))
-}, { immediate: true })
-watch((selectedTreeFacetItems), newval => {
-  console.log('treefacetitem', newval)
 
+watch(filteredItems, () => {
+  if ((props.selectedItems?.length ?? 0) > 0) {
+    !(props.istree ?? false)
+      ? selectedFacetItems.value.push(...(props.selectedItems?.map(item => item.toString()) ?? []))
+      : selectedTreeFacetItems.value.push(...(props.selectedItems?.map(item => item.toString()) ?? []))
+  }
+}, { immediate: true })
+
+watch((selectedTreeFacetItems), newval => {
   emit('update:selectedItems', newval.map(item => item.toString()))
 })
 watch((selectedFacetItems), newval => {
@@ -84,55 +103,45 @@ watch(switchState, () => {
   emit('update:selectedItems', [String(switchState.value)])
 })
 
-// if (selectedTreeFacetItems.find(element => element === item.facetKey))
-
-// const selectTreeNode = (item: IFacetTreeItem) => {
-//   if (selectedTreeFacetItems.includes(item.facetKey)) { selectedTreeFacetItems.splice(0) }
-//   else {
-//     selectedTreeFacetItems.splice(0)
-//     selectedTreeFacetItems.push(item.facetKey)
-//   }
-// }
-
-// فیلتر کردن آیتم‌ها بر اساس متن جستجو
 function filterItems() {
-  if (searchText.value.trim() === '') {
-    // اگر ورودی خالی است، نمایش همه آیتم‌ها
+  if (searchText.value.trim() === '')
     filteredItems.value = props.dataitems
-  }
-  else {
-    // در غیر اینصورت، فیلتر کردن آرایه بر اساس متن
+
+  else
     filteredItems.value = searchItems<IFacetItem>(props.dataitems, searchText.value, 'title')
-  }
 }
-function chagenSwitchValue(value: boolean | null) {
-  console.log('swith', value)
-}
+function chagenSwitchValue(_value: boolean | null) {}
 function searchinfacet(e: any) {
-  searchText.value = (isNull(e) || isUndefined(e)) ? '' : e
+  searchText.value = (e === null || e === undefined) ? '' : e
   filterItems()
 }
 </script>
 
 <template>
-  <VCard class="mc-facet-box px-1" variant="flat">
+  <VCard class="mc-facet-box px-1" variant="flat" :dir="effectiveDir">
     <VCardTitle v-if="props.facettype !== FacetType.switch">
       {{ props.facettitle }}
     </VCardTitle>
     <div class="search-container pt-2">
       <VTextField
-        v-show="props.searchable" :placeholder="$t('search')" append-inner-icon="tabler-search" clearable
-        density="compact" @update:model-value="searchinfacet"
+        v-show="props.searchable"
+        placeholder="Search"
+        :append-inner-icon="effectiveDir === 'ltr' ? 'tabler-search' : undefined"
+        :prepend-inner-icon="effectiveDir === 'rtl' ? 'tabler-search' : undefined"
+        :dir="props.searchDirection ?? effectiveDir"
+        clearable
+        density="compact"
+        @update:model-value="searchinfacet"
       />
     </div>
 
     <VList
-      v-if="!(props.istree ?? false) && (isNullOrUndefined(props.facettype) || props.facettype === FacetType.flat)" v-model:selected="selectedFacetItems" item-value="key" item-title="title"
+      v-if="!(props.istree ?? false) && (isNullOrUndefined(props.facettype) || props.facettype === FacetType.flat)"
+      v-model:selected="selectedFacetItems" item-value="key" item-title="title"
       lines="one"
       select-strategy="leaf"
       :return-object="false" :height="(filteredItems.length ?? 10) * 36" :max-height="(props.scrollItemCount ?? 10) * 35"
     >
-      <!-- <VVirtualScroll :items="filteredItems" :height="(props.scrollItemCount ?? 10) * 20"> -->
       <VListItem v-for="item in filteredItems" :key="item.key" :title="item.title" :value="item.key">
         <template #prepend="{ isSelected }">
           <VListItemAction start>
@@ -147,8 +156,7 @@ function searchinfacet(e: any) {
 
     <div v-else-if="(props.istree || props.facettype === FacetType.tree)" class="mc-data-scrolly-float" style="--block-size-offset:5px">
       <VTreeview
-
-        v-model:activated="selectedTreeFacetItems" :items="treeItems" expand-icon="mdi-menu-left" item-value="facetKey"
+        v-model:activated="selectedTreeFacetItems" :items="treeItems" :expand-icon="expandIcon" item-value="facetKey"
         item-title="title" min-height="300px" activatable
         density="compact" active-strategy="single-independent"
       />
@@ -159,25 +167,64 @@ function searchinfacet(e: any) {
       </span>
       <VSwitch v-model="switchState" class="pl-2" @update:model-value="chagenSwitchValue" />
     </div>
-    <!--
-      <template #title="{ item }">
-      <VTreeviewItem>
-      <template #default="{ isActive, isSelected }">
-      <div @click="selectTreeNode(item)">
-      <span v-bind="props"> {{ item.title }}--{{ isSelected ?? 0 }}--{{ isActive ?? 0 }}</span>
-      </div>
-      </template>
-      </VTreeviewItem>
-      </template>
-    -->
-
-    <!--
-      <template #title="{ item }">
-      <div @click="selectTreeNode(item)">
-      <span v-bind="props"> {{ item.title }}</span>
-      </div>
-      </template>
-    -->
-    <!-- </VTreeview> -->
   </VCard>
 </template>
+
+<style lang="scss">
+.mc-facet-box
+{
+   padding: 2px;
+   background-color: rgba(var(--v-theme-primary), 0.1) !important;
+    .v-card-title {
+        font-size: 1em;
+        margin-block: 3px;
+        margin-inline: 0;
+        padding-block: 0;
+        padding-inline: 10px;
+    }
+    .v-text-field {
+        padding-block: 0;
+        padding-inline: 10px;
+    }
+
+    .v-list {
+        border-radius: 0;
+        background-color: transparent;
+        max-block-size: 148px;
+        overflow-y: auto;
+        padding-block: 4px;
+        padding-inline: 0;
+
+        .v-input {
+            .v-selection-control {
+                margin-inline-end: 0;
+
+                input {
+                    block-size: 13px;
+                    inline-size: 13px;
+                }
+            }
+        }
+
+        .v-list-item {
+            min-block-size: 28px;
+            padding: 0;
+
+            .v-list-item-title {
+                font-size: 0.9em;
+            }
+
+            .v-list-item__prepend {
+                .v-list-item__spacer {
+                    inline-size: 0;
+                }
+            }
+        }
+    }
+
+}
+
+.search-container {
+    padding-inline: 10px;
+}
+</style>
