@@ -6,9 +6,9 @@ A Vue 3 + Vuetify facet box component supporting flat list, tree view, and switc
 ## Installation (from GitHub)
 
 ```sh
-# Using pnpm
+# Using pnpm or npm
 pnpm add mcfacetbox
-
+npm install mcfacetbox
 # Or if published under a scope (GitHub Packages)
 
 ```
@@ -19,7 +19,7 @@ pnpm add mcfacetbox
 // //npm.pkg.github.com/:_authToken=<YOUR_GITHUB_TOKEN>
 ```
 
-This package is not yet published to npm. Install directly from GitHub:
+Install directly from GitHub:
 
 - Option A — add as a Git dependency (recommended with tags):
 
