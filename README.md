@@ -9,7 +9,6 @@ A Vue 3 + Vuetify facet box component supporting flat list, tree view, and switc
 # Using pnpm or npm
 pnpm add mcfacetbox
 npm install mcfacetbox
-# Or if published under a scope (GitHub Packages)
 
 ```
 
@@ -24,8 +23,8 @@ Install directly from GitHub:
 - Option A — add as a Git dependency (recommended with tags):
 
 ```sh
-# Use a tagged version for reproducibility (e.g., mcfacetbox-v0.1.1)
-pnpm add git+https://github.com/MohsenAppDeveloper/mcfacetbox.git#mcfacetbox-v0.1.1
+# Use a tagged version for reproducibility (e.g., mcfacetbox-v0.1.2)
+pnpm add git+https://github.com/MohsenAppDeveloper/mcfacetbox.git#mcfacetbox-v0.1.2
 ```
 
 - Option B — install from a Release artifact (tarball):
