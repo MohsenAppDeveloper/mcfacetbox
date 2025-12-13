@@ -24,7 +24,7 @@ Install directly from GitHub:
 - Option A — add as a Git dependency (recommended with tags):
 
 ```sh
-# Use a tagged version for reproducibility (e.g., mcfacetbox-v0.1.0)
+# Use a tagged version for reproducibility (e.g., mcfacetbox-v0.1.1)
 pnpm add git+https://github.com/MohsenAppDeveloper/mcfacetbox.git#mcfacetbox-v0.1.1
 ```
 
