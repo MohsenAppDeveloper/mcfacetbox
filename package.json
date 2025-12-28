@@ -1,6 +1,6 @@
 {
     "name": "mcfacetbox",
-    "version": "0.1.7",
+    "version": "0.2.0",
     "private": false,
     "type": "module",
     "description": "A reusable Vue 3 + Vuetify facet box component supporting flat, tree, and switch facets.",
