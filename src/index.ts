@@ -1,11 +1,11 @@
 import type { App } from 'vue'
-import MCFacet from './MCFacet.vue'
+import MCFacetBox from './MCFacetBox.vue'
 export * from './types'
 
-export { MCFacet }
+export { MCFacetBox }
 
 export default {
   install(app: App) {
-    app.component('MCFacet', MCFacet)  
+    app.component('MCFacetBox', MCFacetBox)  
   },
 }
