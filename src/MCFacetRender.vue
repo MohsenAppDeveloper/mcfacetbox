@@ -24,7 +24,6 @@ interface Props {
   searchable?: boolean
   isLoading?: boolean
   selectedItems?: string[]
-  istree?: boolean
   direction?: 'ltr' | 'rtl'
   searchDirection?: 'ltr' | 'rtl'
   searchPlaceholder?: string
@@ -113,7 +112,7 @@ function searchinfacet(e: any) {
       </div>
 
       <component :is="facetComponent(dataitems)" :title="facettitle" :items="dataitems.itemList" v-model="internalValue"
-        :searchable="searchable" :istree="istree" :direction="effectiveDir" :searchDirection="searchDirection" />
+        :searchable="searchable" :direction="effectiveDir" :searchDirection="searchDirection" />
       <v-divider></v-divider>
     </div>
   </v-defaults-provider>

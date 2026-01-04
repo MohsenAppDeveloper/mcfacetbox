@@ -33,19 +33,19 @@ import type { IFacetItem } from './types'
 
 const props = defineProps<{
   items: IFacetItem[]
-  modelValue: boolean
+  modelValue?: string[]
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', val: boolean): void
+  (e: 'update:modelValue', val: string[]): void
 }>()
 
 const trueItem = computed(() =>
   props.items.find(i => i.key === 'true')
 )
 
-const internalValue = computed({
-  get: () => props.modelValue,
+const internalValue = computed<string[]>({
+  get: () => props.modelValue?? [],   // ✅ همیشه آرایه
   set: v => emit('update:modelValue', v)
 })
 </script>
@@ -56,10 +56,6 @@ const internalValue = computed({
       {{ trueItem?.title }}
       <span v-if="trueItem">({{ trueItem.count }})</span>
     </span>
-    <VSwitch v-model="internalValue" />
+    <VSwitch v-model="internalValue" value="true" />
   </div>
 </template>
-
-
-
-
