@@ -18,6 +18,7 @@ interface Props {
   searchPlaceholder?: string
   filterTitle?: string
   facetLoading?: Record<string, boolean>
+  serverFilterable?: boolean
 }
 interface Emit {
   (e: 'update:selectedItems', selectdItems: ActiveFilters): void,
@@ -133,7 +134,7 @@ function removeAllFilter() {
           <MCFacetRender :dataitems="facet" :facettype="facet.type" v-model:selectedItems="activeFilters[facet.key]"
             :searchable="facet.hasSearchBox" @search="val => handleSearch(facet.key, val)"
             :isLoading="facetLoading?.[facet.key]" :direction="direction" :searchDirection="searchDirection"
-            :searchPlaceholder="searchPlaceholder" />
+            :searchPlaceholder="searchPlaceholder" :serverFilterable="serverFilterable"/>
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>

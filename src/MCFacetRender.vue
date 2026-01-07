@@ -14,7 +14,8 @@ import MCFacetTree from './MCFacetTree.vue'
 
 import { VTextField } from 'vuetify/components/VTextField'
 import { VProgressCircular } from 'vuetify/components/VProgressCircular'
-// import { searchItems } from './types'
+import { searchItems, type IFacetItem } from './types'
+
 
 
 interface Props {
@@ -26,7 +27,8 @@ interface Props {
   selectedItems?: string[]
   direction?: 'ltr' | 'rtl'
   searchDirection?: 'ltr' | 'rtl'
-  searchPlaceholder?: string
+  searchPlaceholder?: string,
+  serverFilterable?: boolean
 }
 
 interface Emit {
@@ -73,21 +75,23 @@ const effectiveDir = computed<'ltr' | 'rtl'>(() => {
 
 //search handling
 const searchText = ref('')
-// const filteredItems = ref<IFacetItem[]>(props.dataitems)
-
-// function filterItems() {
-//   if (searchText.value.trim() === '')
-//     filteredItems.value = props.dataitems
-
-//   else
-//     filteredItems.value = searchItems<IFacetItem>(props.dataitems, searchText.value, 'title')
-// }
 
 function searchinfacet(e: any) {
   searchText.value = (e === null || e === undefined) ? '' : e
-  // filterItems()
-  emit('search', searchText.value)
+  if (props.serverFilterable) {
+    emit('search', searchText.value)
+  }
 }
+
+const filteredItems = computed<IFacetItem[]>(() => {
+  // اگر فیلتر سمت سرور فعال است، فقط props را برگردان
+  if (props.serverFilterable) return props.dataitems.itemList
+
+  const q = searchText.value.trim()
+  if (!q) return props.dataitems.itemList
+
+  return searchItems<IFacetItem>(props.dataitems.itemList, q, 'title')
+})
 
 </script>
 
@@ -111,7 +115,7 @@ function searchinfacet(e: any) {
 
       </div>
 
-      <component :is="facetComponent(dataitems)" :title="facettitle" :items="dataitems.itemList" v-model="internalValue"
+      <component :is="facetComponent(dataitems)" :title="facettitle" :items="filteredItems" v-model="internalValue"
         :searchable="searchable" :direction="effectiveDir" :searchDirection="searchDirection" />
       <!-- <v-divider></v-divider> -->
     </div>
