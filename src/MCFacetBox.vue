@@ -18,13 +18,17 @@ interface Props {
   searchPlaceholder?: string
   filterTitle?: string
   facetLoading?: Record<string, boolean>
+  serverFilterable?: boolean,
+  filterTags?: boolean
 }
 interface Emit {
   (e: 'update:selectedItems', selectdItems: ActiveFilters): void,
   (e: 'search', key: string, value: string): void
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  filterTags: true, // default value
+});
 const emit = defineEmits<Emit>()
 
 /* =========================
@@ -86,13 +90,13 @@ function removeAllFilter() {
     CHIPS
   ======================== -->
 
-    <div class="remove-filter">
+    <div class="remove-filter" v-if="filterTags && getSelectedFacetItems(dataitems, activeFilters).length > 0">
 
       <div class="row justify-content-between align-items-center">
-        <VCardTitle class="filter-title">
-         {{ !filterTitle ? 'Applied filters' : filterTitle }}
-        </VCardTitle>
-        
+        <div class="filter-title">
+          {{ !filterTitle ? 'Applied filters' : filterTitle }}
+        </div>
+
         <v-btn icon variant="text" @click="removeAllFilter" density="compact">
           <v-icon :size="16">mdi-close</v-icon>
         </v-btn>
@@ -101,9 +105,9 @@ function removeAllFilter() {
       <div v-for="facet in getSelectedFacetItems(dataitems, activeFilters)"
         class="row justify-content-between align-items-center">
 
-        <VCardTitle>
+        <div class="title" style="width: 100%;">
           {{ facet.title }}:
-        </VCardTitle>
+        </div>
 
         <div style="width: calc(100% - 30px);">
           <VChip v-for="selectedItem in facet.selectedItems" :key="selectedItem.key" class="mr-1 mb-1" closable
@@ -116,7 +120,7 @@ function removeAllFilter() {
           <v-icon :size="16">mdi-close</v-icon>
         </v-btn>
       </div>
-      <v-divider></v-divider>
+      <v-divider style="margin: 0px -8px -4px -8px;"></v-divider>
     </div>
 
 
@@ -124,14 +128,23 @@ function removeAllFilter() {
     DYNAMIC FACETS
   ======================== -->
 
-    <MCFacetRender v-for="facet in dataitems" :key="facet.key" :facettitle="facet.title" :dataitems="facet"
-      :facettype="facet.type" v-model:selectedItems="activeFilters[facet.key]" :searchable="facet.hasSearchBox"
-      @search="val => handleSearch(facet.key, val)" :isLoading="facetLoading?.[facet.key]" :direction="direction"
-      :searchDirection="searchDirection" :searchPlaceholder="searchPlaceholder" />
+    <v-expansion-panels multiple :elevation="0" variant="accordion">
+      <v-expansion-panel v-for="facet in dataitems" :key="facet.key" :static="true">
+        <v-expansion-panel-title>
+          {{ facet.title }}
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <MCFacetRender :dataitems="facet" :facettype="facet.type" v-model:selectedItems="activeFilters[facet.key]"
+            :searchable="facet.hasSearchBox" @search="val => handleSearch(facet.key, val)"
+            :isLoading="facetLoading?.[facet.key]" :direction="direction" :searchDirection="searchDirection"
+            :searchPlaceholder="searchPlaceholder" :serverFilterable="serverFilterable" />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .mb-1 {
   margin-bottom: 0.25rem;
 }
@@ -196,5 +209,28 @@ function removeAllFilter() {
   margin-inline: 0;
   padding-block: 0;
   padding-inline: 10px;
+}
+
+.v-expansion-panels {
+
+  .v-expansion-panel {
+    margin-bottom: 0 !important;
+
+    .v-expansion-panel-title {
+      min-height: 30px !important;
+      padding: 12px 10px !important;
+      // border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+      border-radius: 0;
+      font-size: 1em;
+    }
+
+    .v-expansion-panel-text {
+      .v-expansion-panel-text__wrapper {
+        padding: 0;
+      }
+    }
+
+
+  }
 }
 </style>
