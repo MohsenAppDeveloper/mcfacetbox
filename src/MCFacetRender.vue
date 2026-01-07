@@ -54,7 +54,7 @@ const facetComponent = (item: IFacetBox) => {
     return MCFacetTree
   }
 
-  return componentMap[props.facettype] ?? MCFacetFlat
+  return componentMap[props.facettype ?? FacetType.flat]
 }
 
 
