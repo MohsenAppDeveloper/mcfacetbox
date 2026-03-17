@@ -24,7 +24,7 @@ export default {
     density: 'comfortable',
     hideDetails: 'auto',
   },
- 
+
   VSelect: {
     variant: 'outlined',
     density: 'compact',
@@ -42,12 +42,13 @@ export default {
     color: 'primary',
     hideDetails: 'auto',
   },
-  
+
   VSwitch: {
     // set v-switch default color to primary
     inset: true,
     color: 'primary',
     hideDetails: 'auto',
+    density: 'compact',
   },
-  
+
 }
