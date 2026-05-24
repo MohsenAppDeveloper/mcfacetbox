@@ -29,6 +29,7 @@ interface Props {
   searchDirection?: 'ltr' | 'rtl'
   searchPlaceholder?: string,
   serverFilterable?: boolean
+  scrollItemCount?: number
 }
 
 interface Emit {
@@ -53,8 +54,8 @@ const facetComponent = (item: IFacetBox) => {
   if (isTree(item)) {
     return MCFacetTree
   }
-
-  return componentMap[props.facettype] ?? MCFacetFlat
+  // return componentMap[props.facettype] ?? MCFacetFlat
+  return props.facettype && componentMap[props.facettype] ? componentMap[props.facettype] : MCFacetFlat
 }
 
 
@@ -88,9 +89,9 @@ const filteredItems = computed<IFacetItem[]>(() => {
   if (props.serverFilterable) return props.dataitems.itemList
 
   const q = searchText.value.trim()
-  if (!q) return props.dataitems.itemList
+  if (!q) return props.dataitems.itemList.slice(0, 30)
 
-  return searchItems<IFacetItem>(props.dataitems.itemList, q, 'title')
+  return searchItems<IFacetItem>(props.dataitems.itemList, q, 'title').slice(0, 30)
 })
 
 </script>
@@ -102,7 +103,7 @@ const filteredItems = computed<IFacetItem[]>(() => {
       <div class="title" v-if="props.facettype !== FacetType.switch">
         {{ props.facettitle }}
       </div>
-      <div class="search-container">
+      <div class="facet-search-container">
         <VTextField v-show="props.searchable" :placeholder="!searchPlaceholder ? 'Search' : searchPlaceholder"
           :append-inner-icon="effectiveDir === 'ltr' ? 'tabler-search' : undefined"
           :prepend-inner-icon="effectiveDir === 'rtl' ? 'tabler-search' : undefined"
@@ -116,7 +117,8 @@ const filteredItems = computed<IFacetItem[]>(() => {
       </div>
 
       <component :is="facetComponent(dataitems)" :title="facettitle" :items="filteredItems" v-model="internalValue"
-        :searchable="searchable" :direction="effectiveDir" :searchDirection="searchDirection" />
+        :searchable="searchable" :direction="effectiveDir" :searchDirection="searchDirection"
+        :scroll-item-count="props.scrollItemCount" />
       <!-- <v-divider></v-divider> -->
     </div>
   </v-defaults-provider>
