@@ -29,8 +29,6 @@ interface Props {
   searchDirection?: 'ltr' | 'rtl'
   searchPlaceholder?: string,
   serverFilterable?: boolean
-  scrollItemCount?: number
-  errorMessage?: string
 }
 
 interface Emit {
@@ -55,8 +53,8 @@ const facetComponent = (item: IFacetBox) => {
   if (item.itemList && isTree(item)) {
     return MCFacetTree
   }
-  // return componentMap[props.facettype] ?? MCFacetFlat
-  return props.facettype && componentMap[props.facettype] ? componentMap[props.facettype] : MCFacetFlat
+
+  return componentMap[props.facettype ?? FacetType.flat]
 }
 
 
@@ -86,16 +84,13 @@ function searchinfacet(e: any) {
 }
 
 const filteredItems = computed<IFacetItem[]>(() => {
-  const items = props.dataitems.itemList
-  if (!items) return []
-
   // اگر فیلتر سمت سرور فعال است، فقط props را برگردان
-  if (props.serverFilterable) return items
+  if (props.serverFilterable) return props.dataitems.itemList
 
   const q = searchText.value.trim()
-  if (!q) return items.slice(0, 30)
+  if (!q) return props.dataitems.itemList
 
-  return searchItems<IFacetItem>(items, q, 'title').slice(0, 30)
+  return searchItems<IFacetItem>(props.dataitems.itemList, q, 'title')
 })
 
 </script>
@@ -107,7 +102,7 @@ const filteredItems = computed<IFacetItem[]>(() => {
       <div class="title" v-if="props.facettype !== FacetType.switch">
         {{ props.facettitle }}
       </div>
-      <div class="facet-search-container">
+      <div class="search-container">
         <VTextField v-show="props.searchable" :placeholder="!searchPlaceholder ? 'Search' : searchPlaceholder"
           :append-inner-icon="effectiveDir === 'ltr' ? 'tabler-search' : undefined"
           :prepend-inner-icon="effectiveDir === 'rtl' ? 'tabler-search' : undefined"
@@ -127,8 +122,7 @@ const filteredItems = computed<IFacetItem[]>(() => {
       </div>
 
       <component :is="facetComponent(dataitems)" :title="facettitle" :items="filteredItems" v-model="internalValue"
-        :searchable="searchable" :direction="effectiveDir" :searchDirection="searchDirection"
-        :scroll-item-count="props.scrollItemCount" />
+        :searchable="searchable" :direction="effectiveDir" :searchDirection="searchDirection" />
       <!-- <v-divider></v-divider> -->
     </div>
   </v-defaults-provider>

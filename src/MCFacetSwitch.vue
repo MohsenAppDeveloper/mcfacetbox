@@ -45,7 +45,7 @@ const trueItem = computed(() =>
 )
 
 const internalValue = computed<string[]>({
-  get: () => props.modelValue ?? [],   // ✅ همیشه آرایه
+  get: () => props.modelValue?? [],   // ✅ همیشه آرایه
   set: v => emit('update:modelValue', v)
 })
 </script>
@@ -59,18 +59,3 @@ const internalValue = computed<string[]>({
     <VSwitch v-model="internalValue" value="true" />
   </div>
 </template>
-
-<style lang="scss">
-.facet-switch {
-  .v-selection-control__wrapper {
-    height: 34px;
-  }
-
-  .v-switch--inset {
-    .v-switch__track {
-      height: 25px;
-      min-width: 47px;
-    }
-  }
-}
-</style>
