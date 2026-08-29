@@ -41,7 +41,7 @@ const emit = defineEmits<{
 }>()
 
 const trueItem = computed(() =>
-  props.items.find(i => i.key === 'true')
+  props.items?.find(i => i.key === 'true')
 )
 
 const internalValue = computed<string[]>({

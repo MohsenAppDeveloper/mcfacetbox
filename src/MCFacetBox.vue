@@ -6,6 +6,8 @@ import { VChip } from 'vuetify/components/VChip'
 import type { IFacetBox } from './types'
 import { VBtn } from 'vuetify/components'
 
+const expandAll = ref(false)
+
 /* =========================
   TYPES
 ========================= */
@@ -13,23 +15,28 @@ import { VBtn } from 'vuetify/components'
 type ActiveFilters = Record<string, string[]>
 interface Props {
   dataitems: IFacetBox[]
-  selectedItems?: ActiveFilters
+  // expandAll?: boolean
+  selectedItems: ActiveFilters
   direction?: 'ltr' | 'rtl'
   searchDirection?: 'ltr' | 'rtl'
   searchPlaceholder?: string
   filterTitle?: string
   facetLoading?: Record<string, boolean>
   serverFilterable?: boolean,
-  filterTags?: boolean
+  filterTags?: boolean,
+  facetState?: Record<string, { errorMessage?: string }>
+  openPanels?: string[]
 }
 interface Emit {
   (e: 'update:selectedItems', selectdItems: ActiveFilters): void,
+  (e: 'update:openPanels', openPanels: string[]): void,
   (e: 'search', key: string, value: string): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
   filterTags: true, // default value
-  dataitems: () => []
+  dataitems: () => [],
+  openPanels: () => []
 });
 const emit = defineEmits<Emit>()
 
@@ -39,15 +46,22 @@ const emit = defineEmits<Emit>()
 // const activeFilters = ref<ActiveFilters>({})
 
 // computed دوطرفه روی کل selectedItems
-const activeFilters = computed({
-  get: () => props.selectedItems || {},
-  set: (val) => emit('update:selectedItems', val)
-})
-
+// const activeFilters = computed({
+//   get: () => props.selectedItems || {},
+//   set: (val) => emit('update:selectedItems', val)
+// })
+const updateFacet = (key: string, value: string[]) => {
+  emit('update:selectedItems', {
+    ...(props.selectedItems ?? {}),
+    [key]: value
+  })
+}
 
 const removeChip = (facetKey: string, value: string) => {
-  activeFilters.value[facetKey] =
-    activeFilters.value[facetKey]?.filter(v => v !== value) ?? []
+  updateFacet(
+    facetKey,
+    (props.selectedItems?.[facetKey] ?? []).filter(v => v !== value)
+  )
 }
 
 const handleSearch = async (facetKey: string, searchText: string) => {
@@ -78,46 +92,79 @@ function getSelectedFacetItems(response: IFacetBox[], selected: Record<string, s
 }
 
 function removeFilter(facetKey: string) {
-  delete activeFilters.value[facetKey];
+  const next = { ...(props.selectedItems ?? {}) }
+  delete next[facetKey]
+  emit('update:selectedItems', next)
 }
 
 function removeAllFilter() {
-  activeFilters.value = {};
+  emit('update:selectedItems', {})
 }
 
 
 // openPanels فقط خواندنی - بر اساس فیلترهای فعال
-const selectedValues = Object.keys(activeFilters.value);
+// reactive selected panels state
+const openPanels = computed<string[]>({
+  get: () => props.openPanels ?? [],
+  set: (val) => emit('update:openPanels', val)
+})
 
 const facet3Items = computed(() =>
-  props.dataitems.filter(f => Number(f.type) === 3)
+  props.dataitems.filter(f => Number(f.type) === 3 && f.itemList)
 )
 
 const nonFacet3Items = computed(() =>
-  props.dataitems.filter(f => Number(f.type) !== 3)
+  props.dataitems.filter(f => Number(f.type) !== 3 && f.itemList)
 )
+
+function openAll() {
+  openPanels.value = props.dataitems.map(f => f.key)
+}
+
+function closeAll() {
+  openPanels.value = []
+}
+
+watch(expandAll, (val) => {
+  if (val === true) openAll()
+  else if (val === false) closeAll()
+})
 </script>
 
 <template>
-  <div :dir="direction">
+  <div :dir="direction" class="facets-container">
     <!-- =======================
     CHIPS
   ======================== -->
 
-    <div class="remove-filter" v-if="filterTags && getSelectedFacetItems(dataitems, activeFilters).length > 0">
+    <div class="remove-filter">
 
       <div class="row justify-content-between align-items-center">
-        <div class="filter-title">
+        <!-- <div class="filter-title">
           {{ !filterTitle ? 'Applied filters' : filterTitle }}
-        </div>
+        </div> -->
 
-        <v-btn icon variant="text" @click="removeAllFilter" density="compact">
-          <v-icon :size="16">mdi-close</v-icon>
+        <v-btn variant="text" @click="removeAllFilter" density="compact" icon="tabler-filter-off" size="23"
+          title="حذف فیلتر ها" :disabled="!(getSelectedFacetItems(dataitems, selectedItems).length > 0)">
+          <!-- حذف فیلتر ها -->
         </v-btn>
+
+        <div class="facet-toolbar">
+          <div class="d-flex flex-row align-center justify-start facet-header">
+
+            <!-- Collapse -->
+            <v-btn :icon="expandAll ? 'mdi-chevron-double-up' : 'mdi-chevron-double-down'" variant="text"
+              @click="expandAll = !expandAll" size="23" />
+            <!-- Close -->
+            <slot name="facet-toolbar"></slot>
+          </div>
+        </div>
       </div>
 
-      <div v-for="facet in getSelectedFacetItems(dataitems, activeFilters)"
-        class="row justify-content-between align-items-center">
+      <v-divider style="margin: 0px -8px -0 -8px;"></v-divider>
+
+      <div v-for="facet in getSelectedFacetItems(dataitems, selectedItems)"
+        class="row justify-content-between align-items-center" v-if="filterTags">
 
         <div class="title" style="width: 100%;">
           {{ facet.title }}:
@@ -125,42 +172,50 @@ const nonFacet3Items = computed(() =>
 
         <div style="width: calc(100% - 30px);">
           <VChip v-for="selectedItem in facet.selectedItems" :key="selectedItem.key" class="mr-1 mb-1" closable
-            @click:close="removeChip(facet.key, selectedItem.key)" size="small">
+            @click:close="removeChip(facet.key, selectedItem.key)" size="small" close-icon="mdi-close">
             {{ selectedItem.title }}
           </VChip>
         </div>
 
-        <v-btn icon variant="text" @click="removeFilter(facet.key)" density="compact">
+        <!-- <v-btn icon variant="text" @click="removeFilter(facet.key)" density="compact">
           <v-icon :size="16">mdi-close</v-icon>
-        </v-btn>
+        </v-btn> -->
       </div>
-      <v-divider style="margin: 0px -8px -4px -8px;"></v-divider>
+      <v-divider style="margin: 0px -8px -4px -8px;"
+        v-if="filterTags && getSelectedFacetItems(dataitems, selectedItems).length > 0"></v-divider>
     </div>
 
+    <div class="facet-box">
 
-    <!-- =======================
+      <!-- =======================
     DYNAMIC FACETS
   ======================== -->
-    <v-expansion-panels multiple :elevation="0" variant="accordion" :model-value="selectedValues">
-      <v-expansion-panel v-for="facet in nonFacet3Items" :key="facet.key" :static="true" :value="facet.key">
-        <v-expansion-panel-title>
-          {{ facet.title }}
-        </v-expansion-panel-title>
-        <v-expansion-panel-text>
-          <MCFacetRender :dataitems="facet" :facettype="facet.type" v-model:selectedItems="activeFilters[facet.key]"
-            :searchable="facet.hasSearchBox" @search="val => handleSearch(facet.key, val)"
-            :isLoading="facetLoading?.[facet.key]" :direction="direction" :searchDirection="searchDirection"
-            :searchPlaceholder="searchPlaceholder" :serverFilterable="serverFilterable"
-            :scroll-item-count="facet.scrollSize" />
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-    </v-expansion-panels>
+      <v-expansion-panels multiple :elevation="0" variant="accordion" v-model="openPanels">
+        <v-expansion-panel v-for="facet in nonFacet3Items" :key="facet.key" :static="true" :value="facet.key">
+          <v-expansion-panel-title>
+            {{ facet.title }}
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <MCFacetRender :dataitems="facet" :facettype="facet.type"
+              :selectedItems="props.selectedItems?.[facet.key] ?? []"
+              @update:selectedItems="value => updateFacet(facet.key, value)" :searchable="facet.hasSearchBox"
+              @search="val => handleSearch(facet.key, val)" :isLoading="facetLoading?.[facet.key]"
+              :direction="direction" :searchDirection="searchDirection" :searchPlaceholder="searchPlaceholder"
+              :serverFilterable="serverFilterable" :scroll-item-count="facet.scrollSize"
+              :errorMessage="facetState?.[facet.key]?.errorMessage" />
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </v-expansion-panels>
 
-    <div class="facet-switch-container">
-      <div v-for="facet in facet3Items" :key="facet.key" class="facet3-container">
-        <MCFacetSwitch :items="facet.itemList" v-model="activeFilters[facet.key]" :direction="direction" />
+      <div class="facet-switch-container">
+        <div v-for="facet in facet3Items" :key="facet.key" class="facet3-container">
+          <MCFacetSwitch :items="facet.itemList" :selectedItems="props.selectedItems?.[facet.key] ?? []"
+            :model-value="props.selectedItems?.[facet.key] ?? []"
+            @update:model-value="value => updateFacet(facet.key, value)" :direction="direction" />
+        </div>
       </div>
     </div>
+
 
   </div>
 </template>
@@ -205,6 +260,11 @@ const nonFacet3Items = computed(() =>
 
 .facet-search-container {
   padding-inline: 10px;
+
+  .error-message {
+    color: rgb(var(--v-theme-error));
+    margin-top: 4px;
+  }
 }
 
 .remove-filter {
@@ -217,6 +277,14 @@ const nonFacet3Items = computed(() =>
 
   .v-card-title {
     padding: 0;
+  }
+
+  .v-chip {
+    .v-chip__content {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
   }
 }
 

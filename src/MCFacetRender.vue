@@ -30,6 +30,7 @@ interface Props {
   searchPlaceholder?: string,
   serverFilterable?: boolean
   scrollItemCount?: number
+  errorMessage?: string
 }
 
 interface Emit {
@@ -51,7 +52,7 @@ const componentMap = {
 
 
 const facetComponent = (item: IFacetBox) => {
-  if (isTree(item)) {
+  if (item.itemList && isTree(item)) {
     return MCFacetTree
   }
   // return componentMap[props.facettype] ?? MCFacetFlat
@@ -85,13 +86,16 @@ function searchinfacet(e: any) {
 }
 
 const filteredItems = computed<IFacetItem[]>(() => {
+  const items = props.dataitems.itemList
+  if (!items) return []
+
   // اگر فیلتر سمت سرور فعال است، فقط props را برگردان
-  if (props.serverFilterable) return props.dataitems.itemList
+  if (props.serverFilterable) return items
 
   const q = searchText.value.trim()
-  if (!q) return props.dataitems.itemList.slice(0, 30)
+  if (!q) return items.slice(0, 30)
 
-  return searchItems<IFacetItem>(props.dataitems.itemList, q, 'title').slice(0, 30)
+  return searchItems<IFacetItem>(items, q, 'title').slice(0, 30)
 })
 
 </script>
@@ -113,6 +117,12 @@ const filteredItems = computed<IFacetItem[]>(() => {
             <VProgressCircular v-if="isLoading" indeterminate size="20" width="2" />
           </template>
         </VTextField>
+        <div v-if="props.errorMessage && !isLoading" class="error-message">
+          {{ props.errorMessage }}
+        </div>
+        <div v-else-if="filteredItems.length === 0 && !isLoading">
+          موردی یافت نشد.
+        </div>
 
       </div>
 
