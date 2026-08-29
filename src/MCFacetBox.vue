@@ -23,9 +23,7 @@ interface Props {
   filterTitle?: string
   facetLoading?: Record<string, boolean>
   serverFilterable?: boolean,
-  filterTags?: boolean,
-  facetState?: Record<string, { errorMessage?: string }>
-  openPanels?: string[]
+  filterTags?: boolean
 }
 interface Emit {
   (e: 'update:selectedItems', selectdItems: ActiveFilters): void,
@@ -35,8 +33,6 @@ interface Emit {
 
 const props = withDefaults(defineProps<Props>(), {
   filterTags: true, // default value
-  dataitems: () => [],
-  openPanels: () => []
 });
 const emit = defineEmits<Emit>()
 
@@ -137,16 +133,15 @@ watch(expandAll, (val) => {
     CHIPS
   ======================== -->
 
-    <div class="remove-filter">
+    <div class="remove-filter" v-if="filterTags && getSelectedFacetItems(dataitems, activeFilters).length > 0">
 
       <div class="row justify-content-between align-items-center">
-        <!-- <div class="filter-title">
+        <div class="filter-title">
           {{ !filterTitle ? 'Applied filters' : filterTitle }}
-        </div> -->
+        </div>
 
-        <v-btn variant="text" @click="removeAllFilter" density="compact" icon="tabler-filter-off" size="23"
-          title="حذف فیلتر ها" :disabled="!(getSelectedFacetItems(dataitems, selectedItems).length > 0)">
-          <!-- حذف فیلتر ها -->
+        <v-btn icon variant="text" @click="removeAllFilter" density="compact">
+          <v-icon :size="16">mdi-close</v-icon>
         </v-btn>
 
         <div class="facet-toolbar">
@@ -181,8 +176,7 @@ watch(expandAll, (val) => {
           <v-icon :size="16">mdi-close</v-icon>
         </v-btn> -->
       </div>
-      <v-divider style="margin: 0px -8px -4px -8px;"
-        v-if="filterTags && getSelectedFacetItems(dataitems, selectedItems).length > 0"></v-divider>
+      <v-divider style="margin: 0px -8px -4px -8px;"></v-divider>
     </div>
 
     <div class="facet-box">
@@ -217,6 +211,19 @@ watch(expandAll, (val) => {
     </div>
 
 
+    <v-expansion-panels multiple :elevation="0" variant="accordion">
+      <v-expansion-panel v-for="facet in dataitems" :key="facet.key" :static="true">
+        <v-expansion-panel-title>
+          {{ facet.title }}
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <MCFacetRender :dataitems="facet" :facettype="facet.type" v-model:selectedItems="activeFilters[facet.key]"
+            :searchable="facet.hasSearchBox" @search="val => handleSearch(facet.key, val)"
+            :isLoading="facetLoading?.[facet.key]" :direction="direction" :searchDirection="searchDirection"
+            :searchPlaceholder="searchPlaceholder" :serverFilterable="serverFilterable" />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
   </div>
 </template>
 
@@ -321,9 +328,5 @@ watch(expandAll, (val) => {
 
 
   }
-}
-
-.facet-switch-container {
-  padding: 0 16px;
 }
 </style>
