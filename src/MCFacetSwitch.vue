@@ -41,7 +41,7 @@ const emit = defineEmits<{
 }>()
 
 const trueItem = computed(() =>
-  props.items.find(i => i.key === 'true')
+  props.items?.find(i => i.key === 'true')
 )
 
 const internalValue = computed<string[]>({
@@ -51,7 +51,7 @@ const internalValue = computed<string[]>({
 </script>
 
 <template>
-  <div class="d-flex align-center justify-space-between">
+  <div class="d-flex align-center justify-space-between facet-switch">
     <span>
       {{ trueItem?.title }}
       <span v-if="trueItem">({{ trueItem.count }})</span>

@@ -50,7 +50,7 @@ const componentMap = {
 
 
 const facetComponent = (item: IFacetBox) => {
-  if (isTree(item)) {
+  if (item.itemList && isTree(item)) {
     return MCFacetTree
   }
 
@@ -112,6 +112,12 @@ const filteredItems = computed<IFacetItem[]>(() => {
             <VProgressCircular v-if="isLoading" indeterminate size="20" width="2" />
           </template>
         </VTextField>
+        <div v-if="props.errorMessage && !isLoading" class="error-message">
+          {{ props.errorMessage }}
+        </div>
+        <div v-else-if="filteredItems.length === 0 && !isLoading">
+          موردی یافت نشد.
+        </div>
 
       </div>
 
